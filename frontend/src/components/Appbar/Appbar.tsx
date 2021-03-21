@@ -5,8 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import './Appbar.css';
-import useStyles from './styles';
+import useStyles from './Appbar.styles';
 
 export default function ButtonAppBar() {
   const classes = useStyles();
