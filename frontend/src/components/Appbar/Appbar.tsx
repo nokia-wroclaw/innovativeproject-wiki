@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import useStyles from './Appbar.styles';
 
-export default function ButtonAppBar() {
+export default function Appbar() {
   const classes = useStyles();
 
   return (
