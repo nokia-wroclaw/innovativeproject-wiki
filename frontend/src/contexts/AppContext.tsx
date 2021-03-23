@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 
 type ContextProps = {
-  user: string;
+  user: string | null;
+  setUser: (user: string | null) => void;
 };
 
-export const AppContext = React.createContext<Partial<ContextProps>>({});
+export const AppContext = React.createContext<ContextProps>({
+  user: 'user',
+  setUser: (user: string | null) => {},
+});
 
 export default function ContextProvider(props: { children: React.ReactChild }) {
-  const [user, setUser] = useState('Jessica');
+  const [user, setUser] = useState<null | string>('user');
+
   return (
-    <AppContext.Provider value={{ user }}>{props.children}</AppContext.Provider>
+    <AppContext.Provider value={{ user, setUser }}>
+      {props.children}
+    </AppContext.Provider>
   );
 }
