@@ -4,6 +4,7 @@ Main module that runs basic fast api app.
 """
 from fastapi import FastAPI
 
+
 app = FastAPI()
 
 @app.get("/")
