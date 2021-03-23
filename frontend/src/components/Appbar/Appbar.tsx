@@ -34,6 +34,9 @@ export default function Appbar() {
           <Button color="inherit" to="/login" component={Link}>
             Login
           </Button>
+          <Button color="inherit" to="/register" component={Link}>
+            Register
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
