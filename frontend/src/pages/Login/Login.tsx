@@ -1,13 +1,5 @@
 import React, { useState, useContext } from 'react';
-import {
-  Grid,
-  TextField,
-  Button,
-  Paper,
-  Typography,
-  Checkbox,
-  Link,
-} from '@material-ui/core';
+import { Grid, TextField, Button, Paper, Checkbox } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { AppContext } from '../../contexts/AppContext';
 import useStyles from './Login.styles';
@@ -15,6 +7,8 @@ import useStyles from './Login.styles';
 const Login: React.FC = () => {
   const classes = useStyles();
   const { user } = useContext(AppContext);
+  const [typedUsername, setTypedUsername] = useState('');
+  const [typedPassword, setTypedPassword] = useState('');
 
   return (
     <div>
@@ -25,12 +19,15 @@ const Login: React.FC = () => {
           justify="space-around"
           alignItems="center"
         >
-          <h2>Sign In</h2>
+          <h2>Log In</h2>
           <TextField
             label="Username"
             placeholder="Enter username"
             fullWidth
             className={classes.loginTextField}
+            onChange={({ target: { value } }) => {
+              setTypedUsername(value);
+            }}
           />
           <TextField
             label="Password"
@@ -38,6 +35,9 @@ const Login: React.FC = () => {
             type="password"
             fullWidth
             className={classes.loginTextField}
+            onChange={({ target: { value } }) => {
+              setTypedPassword(value);
+            }}
           />
 
           <Button
@@ -47,7 +47,7 @@ const Login: React.FC = () => {
             fullWidth
             className={classes.loginButton}
           >
-            Sign in
+            Log in
           </Button>
           <FormControlLabel
             control={<Checkbox color="primary" />}
