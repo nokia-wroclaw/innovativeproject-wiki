@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import { Link } from 'react-router-dom';
 import useStyles from './Appbar.styles';
 
 export default function Appbar() {
@@ -22,10 +23,20 @@ export default function Appbar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography
+            variant="h6"
+            className={classes.title}
+            to="/"
+            component={Link}
+          >
             InnoDocs
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" to="/login" component={Link}>
+            Login
+          </Button>
+          <Button color="inherit" to="/register" component={Link}>
+            Register
+          </Button>
         </Toolbar>
       </AppBar>
     </div>
