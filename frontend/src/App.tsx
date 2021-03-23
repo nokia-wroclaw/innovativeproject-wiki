@@ -3,21 +3,26 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Appbar from './components/Appbar/Appbar';
 import Home from './pages/Home';
 import About from './pages/About';
+import Login from './pages/Login/Login';
+import ContextProvider from './contexts/AppContext';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <div className="Navbar">
-          <Appbar />
+    <ContextProvider>
+      <Router>
+        <div className="App">
+          <div className="Appbar">
+            <Appbar />
+          </div>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/about" component={About} />
+            <Route exact path="/login" component={Login} />
+          </Switch>
         </div>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/About" component={About} />
-        </Switch>
-      </div>
-    </Router>
+      </Router>
+    </ContextProvider>
   );
 }
 
