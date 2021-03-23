@@ -6,9 +6,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-"""
-This is function docstring.
-"""
 @app.get("/")
 async def root():
+""" This is function docstring."""
     return {"message": "Hello World"}
