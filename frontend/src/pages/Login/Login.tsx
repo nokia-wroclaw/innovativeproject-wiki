@@ -1,5 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { Grid, TextField, Button, Paper, Checkbox, Typography, Link } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Button,
+  Paper,
+  Checkbox,
+  Typography,
+  Link,
+} from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { AppContext } from '../../contexts/AppContext';
 import useStyles from './Login.styles';
@@ -10,6 +18,38 @@ const Login: React.FC = () => {
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
 
+  const checkLogin = async () => {
+    try {
+      // TODO - change proxy to 5000
+      const response = await fetch(`/user`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: typedUsername,
+          password: typedPassword,
+        }),
+      });
+      const isCorrect: boolean = await response.json();
+      return isCorrect;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleLoginButton = () => {
+    checkLogin().then((isCorrect) => {
+      if (isCorrect === true) {
+        console.log('login success');
+        // TODO - set user in context
+      } else {
+        console.log('login fail');
+      }
+    });
+  };
+
   return (
     <div>
       <Paper elevation={10} className={classes.loginPaper}>
@@ -19,7 +59,7 @@ const Login: React.FC = () => {
           justify="space-around"
           alignItems="center"
         >
-          <h2>Log In</h2>
+          <h2>Sign In</h2>
           <TextField
             label="Username"
             placeholder="Enter username"
@@ -45,8 +85,9 @@ const Login: React.FC = () => {
             variant="contained"
             fullWidth
             className={classes.loginButton}
+            onClick={() => handleLoginButton()}
           >
-            Log in
+            Sign in
           </Button>
           <FormControlLabel
             control={<Checkbox color="primary" />}
