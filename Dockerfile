@@ -23,6 +23,8 @@ RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
 WORKDIR /app/frontend
 RUN apk add nodejs
 RUN apk add npm
+RUN npm install
+RUN npm start
 
 # Docker setup manual:
 # 
