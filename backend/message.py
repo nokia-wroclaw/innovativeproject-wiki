@@ -1,10 +1,11 @@
+# pylint: disable=no-name-in-module, too-few-public-methods
 """
     This module is responsible for everything related with logs.
     TODO: Make this docstring better
 """
 from datetime import datetime, date
-from pydantic import BaseModel
 from typing import Optional
+from pydantic import BaseModel
 
 class Message(BaseModel):
     """
@@ -18,7 +19,7 @@ class Message(BaseModel):
         content: str
             The content of the message.
         value: object
-            Extra information about the message.            
+            Extra information about the message.
     """
     status: str
     content: str
@@ -27,14 +28,14 @@ class Message(BaseModel):
 def log(message: Message) -> None:
     """
         Writes logs to files.
-        Logs are stored in 'logs\' folder. 
+        Logs are stored in 'logs\' folder.
         Example logs filename: '2021_03_25.log'
 
         Parameters:
             message (Message): Message that contains log information.
 
         Returns:
-            None 
+            None
     """
     today = date.today()
     day = today.strftime('%Y_%m_%d')
