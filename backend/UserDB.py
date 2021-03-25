@@ -1,12 +1,11 @@
-from tinydb import TinyDB, Query, where
+from tinydb import TinyDB, where
 
-# TODO
 # Replace all 'return None' with appropriate Message object
 # Complete missing docs
 
 
 class UserDB:
-    """ """
+    """ TODO """
 
     def __init__(self):
         self.db = TinyDB("db.json")
@@ -24,20 +23,17 @@ class UserDB:
         if not self._is_non_empty_string(username):
             return False
 
-        if db.contains(where('username') == username):
-            return True
-        else:
-            return False
+        return self.db.contains(where('username') == username)
 
     def add_user(self, username: str, password_hash: str, email: str):
-        """ """
+        """ TODO """
         if not self._is_non_empty_string((username, password_hash, email)):
             return None
 
-        if does_user_exist(username):
+        if self.does_user_exist(username):
             return None
         else:
-            db.insert({
+            self.db.insert({
                 'username': username,
                 'password_hash': password_hash,
                 'email': email
@@ -45,57 +41,53 @@ class UserDB:
             return None
 
     def delete_user(self, username: str):
-        """ """
+        """ TODO """
         if not self._is_non_empty_string(username):
             return None
 
-        if not does_user_exist(username):
+        if not self.does_user_exist(username):
             return None
         else:
-            db.remove(where('username') == username)
+            self.db.remove(where('username') == username)
             return None
 
-        pass
-
     def change_username(self, username: str, new_username: str):
-        """ """
+        """ TODO """
         if not self._is_non_empty_string((username, new_username)):
             return None
 
-        if not does_user_exist(username):
+        if not self.does_user_exist(username):
             return None
         else:
-            db.update({'username': new_username},
-                      where('username') == username)
+            self.db.update({'username': new_username},
+                           where('username') == username)
             return None
 
     def change_password(self, username: str, new_password_hash: str):
-        """ """
+        """ TODO """
         if not self._is_non_empty_string((username, new_password_hash)):
             return None
 
-        if not does_user_exist(username):
+        if not self.does_user_exist(username):
             return None
         else:
-            db.update({'password_hash': new_password_hash},
-                      where('username') == username)
+            self.db.update({'password_hash': new_password_hash},
+                           where('username') == username)
             return None
 
     def change_email(self, username: str, new_email: str):
-        """ """
+        """ TODO """
         if not self._is_non_empty_string((username, new_email)):
             return None
 
-        if not does_user_exist(username):
+        if not self.does_user_exist(username):
             return None
         else:
-            db.update({'email': new_email},
-                      where('username') == username)
+            self.db.update({'email': new_email},
+                           where('username') == username)
             return None
 
-        pass
-
-    def _is_non_empty_string(data):
+    def _is_non_empty_string(self, data):
         """
         Checks
 
