@@ -13,17 +13,32 @@ class Message(BaseModel):
 
         Attributes
         ----------
-        status: str
+        category: str
             A kind of an enum type that indicates the importance of the message.
             Most often: INFO, WARNING, ERROR.
         content: str
             The content of the message.
-        value: object
+        value: Optional[object]
             Extra information about the message.
     """
-    status: str
+    category: str
     content: str
     value: Optional[object]
+
+    def __init__(self, category: str, content: str, value: object=None):
+        """
+            Constructor for the Message class.
+
+            Parameters:
+            category: str
+
+            content: str
+
+            value: Optional[object]
+        """
+        self.category = category
+        self.content = content
+        self.value = value
 
 def log(message: Message) -> None:
     """
@@ -42,4 +57,4 @@ def log(message: Message) -> None:
     with open(fr"backend\logs\{day}.log", "a") as file:
         now = datetime.now()
         current_time = now.strftime('%H:%M:%S')
-        file.write(f"[{message.status}] [{current_time}] [{message.value}] {message.content}\n")
+        file.write(f"[{message.category}] [{current_time}] [{message.value}] {message.content}\n")
