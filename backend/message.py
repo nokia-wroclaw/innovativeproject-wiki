@@ -1,6 +1,9 @@
+"""
+    This module is responsible for everything related with logs.
+    TODO: Make this docstring better
+"""
 from datetime import datetime, date
 from pydantic import BaseModel
-import time
 from typing import Optional
 
 class Message(BaseModel):
@@ -10,7 +13,8 @@ class Message(BaseModel):
         Attributes
         ----------
         status: str
-            A kind of an enum type that indicates the importance of the message. Most often: INFO, WARNING, ERROR.
+            A kind of an enum type that indicates the importance of the message.
+            Most often: INFO, WARNING, ERROR.
         content: str
             The content of the message.
         value: object
@@ -18,7 +22,7 @@ class Message(BaseModel):
     """
     status: str
     content: str
-    value: object
+    value: Optional[object]
 
 def log(message: Message) -> None:
     """
@@ -34,7 +38,7 @@ def log(message: Message) -> None:
     """
     today = date.today()
     day = today.strftime('%Y_%m_%d')
-    with open(f"backend\logs\{day}.log", "a") as file:
+    with open(fr"backend\logs\{day}.log", "a") as file:
         now = datetime.now()
         current_time = now.strftime('%H:%M:%S')
         file.write(f"[{message.status}] [{current_time}] [{message.value}] {message.content}\n")
