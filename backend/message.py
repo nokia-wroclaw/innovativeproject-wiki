@@ -18,14 +18,14 @@ class Message(BaseModel):
             Most often: INFO, WARNING, ERROR.
         content: str
             The content of the message.
-        value: Optional[object]
+        value: Optional[int]
             Extra information about the message.
     """
     category: str
     content: str
-    value: Optional[object]
+    value: Optional[int]
 
-    def __init__(self, category: str, content: str, value: object=None):
+    def __init__(self, category: str, content: str, value: int=None):
         """
             Constructor for the Message class.
 
@@ -34,7 +34,7 @@ class Message(BaseModel):
 
             content: str
 
-            value: Optional[object]
+            value: Optional[int]
         """
         self.category = category
         self.content = content
