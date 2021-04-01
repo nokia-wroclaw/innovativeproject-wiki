@@ -1,7 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine3.13
+
+# Create app directory
+RUN mkdir -p /app
 
 # Install Python dependency manager (Poetry)
-RUN apt-get update && apt-get -y install curl
+RUN apk add curl
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
     cd /usr/local/bin && \
     ln -s /opt/poetry/bin/poetry && \
@@ -12,13 +15,15 @@ WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./
 
 # Install Python dependencies
-RUN poetry install --no-root
+RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
+    && poetry install --no-root \
+    && apk del .build-deps gcc libc-dev make
 
-# Copy backend code and run server
+# Copy backend files and run app
 COPY . ./
-EXPOSE 8000
-CMD ["uvicorn", "src.main:app", "--host=0.0.0.0", "--reload"]
+EXPOSE 8080
+CMD ["uvicorn", "src.main:app", "--host=0.0.0.0", "--port=8080"]
 
-# MANUAL
-# sudo docker build -t inner-docs-backend .
-# sudo docker run -p 8000:8000 --name backend-container inner-docs-backend:latest
+# Manual setup
+# sudo docker build . -t backend-image
+# sudo docker run -p 8080:8080 --name backend-container backend-image:latest
