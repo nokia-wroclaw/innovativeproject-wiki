@@ -98,7 +98,8 @@ def log_to_std(message: Message) -> None:
     now = datetime.now()
     day_time = now.strftime('%Y_%m_%d %H:%M:%S')
     if message.category == "ERROR":  # todo improve
-        print(f"[{message.category}] [{day_time}] [{message.value}] {message.content}\n", file=sys.stderr)
+        print(f"[{message.category}] [{day_time}] [{message.value}] {message.content}\n",
+              file=sys.stderr)
     else:
         print(f"[{message.category}] [{day_time}] [{message.value}] {message.content}\n")
 
