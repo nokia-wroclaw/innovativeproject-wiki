@@ -6,6 +6,12 @@
 from datetime import datetime, date
 from typing import Optional
 
+FILE = 0  # log to file
+STD = 1  # log to stdout or stderr
+SYSLOG = 2  # log to syslog
+
+log_type = FILE  # default for now; TODO: read from some config file
+
 
 class Message:
     """
