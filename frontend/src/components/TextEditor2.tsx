@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HOTKEYS = {
+const HOTKEYS: Record<string, string> = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
@@ -84,8 +84,8 @@ const TextEditor2 = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               if (isHotkey(hotkey, event as any)) {
                 event.preventDefault();
-                // const mark: string = HOTKEYS[hotkey];
-                // toggleMark(editor, mark);
+                const mark: string = HOTKEYS[hotkey];
+                toggleMark(editor, mark);
               }
             }
           }}
@@ -99,13 +99,13 @@ const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
 
-  // Transforms.unwrapNodes(editor, {
-  //   match: (n) =>
-  //     LIST_TYPES.includes(
-  //       !Editor.isEditor(n) && SlateElement.isElement(n) && n.type
-  //     ),
-  //   split: true,
-  // }) ;
+  Transforms.unwrapNodes(editor, {
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      LIST_TYPES.includes(n.type as string),
+    split: true,
+  });
   const newProperties: Partial<SlateElement> = {
     // eslint-disable-next-line no-nested-ternary
     type: isActive ? 'paragraph' : isList ? 'list-item' : format,
@@ -189,7 +189,7 @@ const BlockButton = ({ format, icon }: any) => {
   const editor = useSlate();
   return (
     <Button
-      //   active={isBlockActive(editor, format)}
+      variant={isBlockActive(editor, format) ? 'outlined' : 'text'}
       onClick={(event) => {
         event.preventDefault();
         toggleBlock(editor, format);
@@ -205,7 +205,7 @@ const MarkButton = ({ format, icon }: any) => {
   const editor = useSlate();
   return (
     <Button
-      //   active={isMarkActive(editor, format)}
+      variant={isMarkActive(editor, format) ? 'outlined' : 'text'}
       onClick={(event) => {
         event.preventDefault();
         toggleMark(editor, format);
