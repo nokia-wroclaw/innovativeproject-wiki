@@ -22,6 +22,15 @@ import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+  slate: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '100px',
+    marginRight: '100px',
+    marginTop: '20px',
+    borderStyle: 'outset',
+    borderWidth: '10px',
+  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -38,7 +47,7 @@ const HOTKEYS = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const RichTextExample = () => {
+const TextEditor2 = () => {
   const [value, setValue] = useState<Descendant[]>(initialValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
@@ -47,40 +56,42 @@ const RichTextExample = () => {
   const classes = useStyles();
 
   return (
-    <Slate
-      editor={editor}
-      value={value}
-      onChange={(newValue) => setValue(newValue)}
-    >
-      <Toolbar className={classes.toolbar}>
-        <MarkButton format="bold" icon="format_bold" />
-        <MarkButton format="italic" icon="format_italic" />
-        <MarkButton format="underline" icon="format_underlined" />
-        <MarkButton format="code" icon="code" />
-        <BlockButton format="heading-one" icon="looks_one" />
-        <BlockButton format="heading-two" icon="looks_two" />
-        <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
-        <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-      </Toolbar>
-      <Editable
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        placeholder="Enter some rich text…"
-        spellCheck
-        autoFocus
-        onKeyDown={(event) => {
-          for (const hotkey in HOTKEYS) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            if (isHotkey(hotkey, event as any)) {
-              event.preventDefault();
-              //   const mark = HOTKEYS[hotkey];
-              //   toggleMark(editor, mark);
+    <div className={classes.slate}>
+      <Slate
+        editor={editor}
+        value={value}
+        onChange={(newValue) => setValue(newValue)}
+      >
+        <Toolbar className={classes.toolbar}>
+          <MarkButton format="bold" icon="format_bold" />
+          <MarkButton format="italic" icon="format_italic" />
+          <MarkButton format="underline" icon="format_underlined" />
+          <MarkButton format="code" icon="code" />
+          <BlockButton format="heading-one" icon="looks_one" />
+          <BlockButton format="heading-two" icon="looks_two" />
+          <BlockButton format="block-quote" icon="format_quote" />
+          <BlockButton format="numbered-list" icon="format_list_numbered" />
+          <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+        </Toolbar>
+        <Editable
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          placeholder="Enter some rich text…"
+          spellCheck
+          autoFocus
+          onKeyDown={(event) => {
+            for (const hotkey in HOTKEYS) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              if (isHotkey(hotkey, event as any)) {
+                event.preventDefault();
+                // const mark: string = HOTKEYS[hotkey];
+                // toggleMark(editor, mark);
+              }
             }
-          }
-        }}
-      />
-    </Slate>
+          }}
+        />
+      </Slate>
+    </div>
   );
 };
 
@@ -88,13 +99,13 @@ const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
 
-  //   Transforms.unwrapNodes(editor, {
-  //     match: (n) =>
-  //       LIST_TYPES.includes(
-  //         !Editor.isEditor(n) && SlateElement.isElement(n) && n.type
-  //       ),
-  //     split: true,
-  //   });
+  // Transforms.unwrapNodes(editor, {
+  //   match: (n) =>
+  //     LIST_TYPES.includes(
+  //       !Editor.isEditor(n) && SlateElement.isElement(n) && n.type
+  //     ),
+  //   split: true,
+  // }) ;
   const newProperties: Partial<SlateElement> = {
     // eslint-disable-next-line no-nested-ternary
     type: isActive ? 'paragraph' : isList ? 'list-item' : format,
@@ -242,4 +253,4 @@ const initialValue: Descendant[] = [
   },
 ];
 
-export default RichTextExample;
+export default TextEditor2;
