@@ -5,9 +5,9 @@
 """
 from datetime import datetime, date
 from typing import Optional
-from pydantic import BaseModel
 
-class Message(BaseModel):
+
+class Message:
     """
         A class representing a message.
 
@@ -21,11 +21,8 @@ class Message(BaseModel):
         value: Optional[int]
             Extra information about the message.
     """
-    category: str
-    content: str
-    value: Optional[int]
 
-    def __init__(self, category: str, content: str, value: int=None):
+    def __init__(self, category: str, content: str, value: Optional[int] = None):
         """
             Constructor for the Message class.
 
@@ -39,6 +36,7 @@ class Message(BaseModel):
         self.category = category
         self.content = content
         self.value = value
+
 
 def log(message: Message) -> None:
     """
