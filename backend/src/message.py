@@ -79,6 +79,15 @@ def log(message: Message) -> None:
         log_to_syslog(message)
 
 
+def _prepare_message_as_string(message: Message, time: str) -> str:
+    # don't 'print' None
+    value = message.value
+    if value is None:
+        value = ""
+
+    return f"[{message.severity.name}] [{time}] [{value}]: {message.content}\n"
+
+
 def log_to_file(message: Message) -> None:
     """
         Writes logs to files.
@@ -96,7 +105,10 @@ def log_to_file(message: Message) -> None:
     with open(fr"backend\logs\{day}.log", "a") as file:
         now = datetime.now()
         current_time = now.strftime('%H:%M:%S')
-        file.write(f"[{message.severity}] [{current_time}] [{message.value}] {message.content}\n")
+
+        message_to_print = _prepare_message_as_string(message, current_time)
+
+        file.write(message_to_print)
 
 
 def log_to_std(message: Message) -> None:
@@ -110,15 +122,19 @@ def log_to_std(message: Message) -> None:
             None
     """
     now = datetime.now()
-    day_time = now.strftime('%Y_%m_%d %H:%M:%S')
-    if message.severity == "ERROR":  # todo improve
-        print(f"[{message.severity}] [{day_time}] [{message.value}] {message.content}\n",
-              file=sys.stderr)
+    day_time = now.strftime('%Y-%m-%d %H:%M:%S')
+
+    message_to_print = _prepare_message_as_string(message, day_time)
+
+    # stdout
+    if message.severity == Severity.NOTICE or message.severity == Severity.INFO:
+        print(message_to_print)
+    # stderr
     else:
-        print(f"[{message.severity}] [{day_time}] [{message.value}] {message.content}\n")
+        print(message_to_print, file=sys.stderr)
 
 
-# https://docs.python.org/3/library/syslog.html todo improve
+# https://docs.python.org/3/library/syslog.html
 def log_to_syslog(message: Message) -> None:
     """
         Writes logs to syslog.
@@ -129,4 +145,4 @@ def log_to_syslog(message: Message) -> None:
         Returns:
             None
     """
-    syslog.syslog(message.content)
+    syslog.syslog(message.severity.value, message.content)
