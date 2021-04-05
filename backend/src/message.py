@@ -17,6 +17,7 @@ SYSLOG = 2  # log to syslog
 LOG_DESTINATION = FILE  # default for now; TODO: read from some config file
 
 
+# https://en.wikipedia.org/wiki/Syslog#Severity_level
 class Severity(Enum):
     """
         Enum type indicating the severity of the message.
@@ -113,12 +114,10 @@ def log_to_file(message: Message) -> None:
     """
     today = date.today()
     day = today.strftime('%Y_%m_%d')
+    now = datetime.now()
+    current_time = now.strftime('%H:%M:%S')
+    message_to_print = _prepare_message_as_string(message, current_time)
     with open(fr"backend\logs\{day}.log", "a") as file:
-        now = datetime.now()
-        current_time = now.strftime('%H:%M:%S')
-
-        message_to_print = _prepare_message_as_string(message, current_time)
-
         file.write(message_to_print)
 
 
