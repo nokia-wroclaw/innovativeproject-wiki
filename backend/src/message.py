@@ -7,12 +7,28 @@ import sys
 import syslog
 from datetime import datetime, date
 from typing import Optional
+from enum import Enum
 
+# log destination constants
 FILE = 0  # log to file
 STD = 1  # log to stdout or stderr
 SYSLOG = 2  # log to syslog
 
-LOG_TYPE = FILE  # default for now; TODO: read from some config file
+LOG_DESTINATION = FILE  # default for now; TODO: read from some config file
+
+
+class Severity(Enum):
+    """
+        Enum type indicating the severity of the message.
+    """
+    EMERGENCY = 0
+    ALERT = 1
+    CRITICAL = 2
+    ERROR = 3
+    WARNING = 4
+    NOTICE = 5
+    INFO = 6
+    DEBUG = 7
 
 
 class Message:
@@ -21,27 +37,26 @@ class Message:
 
         Attributes
         ----------
-        category: str
-            A kind of an enum type that indicates the importance of the message.
-            Most often: INFO, WARNING, ERROR.
+        severity: Severity
+            An enum type that indicates the severity of the message.
         content: str
             The content of the message.
         value: Optional[int]
             Extra information about the message.
     """
 
-    def __init__(self, category: str, content: str, value: Optional[int] = None):
+    def __init__(self, severity: Severity, content: str, value: Optional[int] = None):
         """
             Constructor for the Message class.
 
             Parameters:
-            category: str
+                severity: Severity
 
-            content: str
+                content: str
 
-            value: Optional[int]
+                value: Optional[int]
         """
-        self.category = category
+        self.severity = severity
         self.content = content
         self.value = value
 
@@ -56,11 +71,11 @@ def log(message: Message) -> None:
         Returns:
             None
     """
-    if LOG_TYPE == FILE:
+    if LOG_DESTINATION == FILE:
         log_to_file(message)
-    elif LOG_TYPE == STD:
+    elif LOG_DESTINATION == STD:
         log_to_std(message)
-    elif LOG_TYPE == SYSLOG:
+    elif LOG_DESTINATION == SYSLOG:
         log_to_syslog(message)
 
 
@@ -81,27 +96,26 @@ def log_to_file(message: Message) -> None:
     with open(fr"backend\logs\{day}.log", "a") as file:
         now = datetime.now()
         current_time = now.strftime('%H:%M:%S')
-        file.write(f"[{message.category}] [{current_time}] [{message.value}] {message.content}\n")
+        file.write(f"[{message.severity}] [{current_time}] [{message.value}] {message.content}\n")
 
 
 def log_to_std(message: Message) -> None:
     """
-        Writes logs to stdout/stderr depending on the message.
+        Writes logs to stdout/stderr depending of the message.
 
         Parameters:
             message (Message): Message that contains log information.
-            is_error (bool): todo write something
 
         Returns:
             None
     """
     now = datetime.now()
     day_time = now.strftime('%Y_%m_%d %H:%M:%S')
-    if message.category == "ERROR":  # todo improve
-        print(f"[{message.category}] [{day_time}] [{message.value}] {message.content}\n",
+    if message.severity == "ERROR":  # todo improve
+        print(f"[{message.severity}] [{day_time}] [{message.value}] {message.content}\n",
               file=sys.stderr)
     else:
-        print(f"[{message.category}] [{day_time}] [{message.value}] {message.content}\n")
+        print(f"[{message.severity}] [{day_time}] [{message.value}] {message.content}\n")
 
 
 # https://docs.python.org/3/library/syslog.html todo improve
