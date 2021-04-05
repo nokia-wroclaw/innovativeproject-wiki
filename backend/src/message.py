@@ -80,6 +80,17 @@ def log(message: Message) -> None:
 
 
 def _prepare_message_as_string(message: Message, time: str) -> str:
+    """
+        Formats a message into a string to be logged to file or stdout/stderr.
+
+        Parameters:
+            message (Message): Message that contains log information.
+
+            time (str): Time formatted as a string.
+
+        Returns:
+            None
+    """
     # don't 'print' None
     value = message.value
     if value is None:
