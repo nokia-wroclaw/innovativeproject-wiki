@@ -8,13 +8,22 @@ import syslog
 from datetime import datetime, date
 from typing import Optional
 from enum import Enum
+import json
 
-# log destination constants
-FILE = 0  # log to file
-STD = 1  # log to stdout or stderr
-SYSLOG = 2  # log to syslog
 
-LOG_DESTINATION = FILE  # default for now; TODO: read from some config file
+class LogDestination(Enum):
+    """
+        Enum type representing the log destination.
+    """
+    FILE = 0  # log to file
+    STD = 1  # log to stdout or stderr
+    SYSLOG = 2  # log to syslog
+
+
+with open("../../config.json") as config_file:
+    json_data = json.load(config_file)
+
+LOG_DESTINATION = LogDestination[json_data['log_destination']]  # todo default value in json for now
 
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
@@ -62,24 +71,6 @@ class Message:
         self.value = value
 
 
-def log(message: Message) -> None:
-    """
-        Writes logs to the destination given in config file.
-
-        Parameters:
-            message (Message): Message that contains log information.
-
-        Returns:
-            None
-    """
-    if LOG_DESTINATION == FILE:
-        log_to_file(message)
-    elif LOG_DESTINATION == STD:
-        log_to_std(message)
-    elif LOG_DESTINATION == SYSLOG:
-        log_to_syslog(message)
-
-
 def _prepare_message_as_string(message: Message, time: str) -> str:
     """
         Formats a message into a string to be logged to file or stdout/stderr.
@@ -98,6 +89,24 @@ def _prepare_message_as_string(message: Message, time: str) -> str:
         value = ""
 
     return f"[{message.severity.name}] [{time}] [{value}]: {message.content}\n"
+
+
+def log(message: Message) -> None:
+    """
+        Writes logs to the destination given in config file.
+
+        Parameters:
+            message (Message): Message that contains log information.
+
+        Returns:
+            None
+    """
+    if LOG_DESTINATION == LogDestination.FILE:
+        log_to_file(message)
+    elif LOG_DESTINATION == LogDestination.STD:
+        log_to_std(message)
+    elif LOG_DESTINATION == LogDestination.SYSLOG:
+        log_to_syslog(message)
 
 
 def log_to_file(message: Message) -> None:
