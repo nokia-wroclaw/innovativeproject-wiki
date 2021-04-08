@@ -20,10 +20,7 @@ class LogDestination(Enum):
     SYSLOG = 2  # log to syslog
 
 
-with open("../../config.json") as config_file:
-    json_data = json.load(config_file)
-
-LOG_DESTINATION = LogDestination[json_data['log_destination']]  # todo default value in json for now
+LOG_DESTINATION = LogDestination["STD"]  # todo default value in json for now
 
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
@@ -126,7 +123,7 @@ def log_to_file(message: Message) -> None:
     now = datetime.now()
     current_time = now.strftime('%H:%M:%S')
     message_to_print = _prepare_message_as_string(message, current_time)
-    with open(fr"backend\logs\{day}.log", "a") as file:
+    with open(fr"/app/logs/{day}.log", "a") as file:
         file.write(message_to_print)
 
 

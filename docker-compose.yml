@@ -5,7 +5,7 @@ services:
     restart: always
     build: ./backend
     ports: 
-      - "8080:8080"
+      - "80:80"
   
   frontend:
     container_name: frontend-container
@@ -19,4 +19,4 @@ services:
 # MANUAL
 # sudo docker-compose build (build images)
 # sudo docker-compose up -d (start containers)
-# sudo dcoker-compose down  (delete containers)
+# sudo docker-compose down  (delete containers)
