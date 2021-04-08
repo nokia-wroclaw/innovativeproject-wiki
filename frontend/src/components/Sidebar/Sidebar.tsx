@@ -29,37 +29,37 @@ const Sidebar: React.FC = () => {
       aria-labelledby="nested-list-subheader"
       subheader={
         <ListSubheader component="div" id="nested-list-subheader">
-          Book
+          DOCUMENTS
         </ListSubheader>
       }
       className={classes.root}
     >
       <ListItem button>
-        <ListItemIcon>
+        {/* <ListItemIcon>
           <RemoveIcon />
-        </ListItemIcon>
-        <ListItemText primary="Chapter 1" />
+        </ListItemIcon> */}
+        <ListItemText primary="Report SO2" />
       </ListItem>
       <ListItem button>
-        <ListItemIcon>
+        {/* <ListItemIcon>
           <RemoveIcon />
-        </ListItemIcon>
-        <ListItemText primary="Chapter 2" />
+        </ListItemIcon> */}
+        <ListItemText primary="TODO" />
       </ListItem>
       <ListItem button onClick={handleClick}>
-        <ListItemIcon>
+        {/* <ListItemIcon>
           <RemoveIcon />
-        </ListItemIcon>
-        <ListItemText primary="Chapter 3" />
+        </ListItemIcon> */}
+        <ListItemText primary="GTA codes" />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <ListItem button className={classes.nested}>
-            <ListItemIcon>
+            {/* <ListItemIcon>
               <RemoveIcon />
-            </ListItemIcon>
-            <ListItemText primary="Chapter 3.1" />
+            </ListItemIcon> */}
+            <ListItemText primary="Kill all" />
           </ListItem>
         </List>
       </Collapse>

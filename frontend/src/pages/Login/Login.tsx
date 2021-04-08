@@ -14,7 +14,7 @@ import useStyles from './Login.styles';
 
 const Login: React.FC = () => {
   const classes = useStyles();
-  const { user } = useContext(AppContext);
+  const { user, setUser } = useContext(AppContext);
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
 
