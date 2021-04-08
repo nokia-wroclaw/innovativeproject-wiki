@@ -8,7 +8,7 @@ import TextEditor2 from '../components/TextEditor2';
 
 const useStyles = makeStyles((theme) => ({
   editor: {
-    marginLeft: '100 px',
+    // marginLeft: '100px',
     display: 'flex',
     flexDirection: 'row-reverse',
     alignContent: 'space-between',
