@@ -2,7 +2,8 @@
 This is module docstring.
 Main module that runs basic fast api app.
 """
-from user_db import UserDB, UserInDB, User
+from typing import Optional
+from user_db import UserDB
 from message import Message, log
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -80,7 +81,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-@app.post("/token", response_model=Token)
+@app.post("/login", response_model=dict)
 async def login(form: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form.username, form.password)
     if not user:
@@ -96,6 +97,23 @@ async def login(form: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_user)):
+@app.post("/register", response_model=dict)
+async def register(form: OAuth2PasswordRequestForm = Depends()):
+    if user_db.does_user_exist(form.username):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User already exists",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user_db.add_user(form.username, form.password, "test")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"username": form.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/users/me/", response_model=dict)
+async def read_users_me(current_user: dict = Depends(get_current_user)):
     return current_user

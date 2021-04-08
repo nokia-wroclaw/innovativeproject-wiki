@@ -21,9 +21,10 @@ RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
 
 # Copy backend files and run app
 COPY . ./
-EXPOSE 8080
-CMD ["uvicorn", "src.main:app", "--host=0.0.0.0", "--port=8080"]
+WORKDIR /app/src
+EXPOSE 80
+CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=80"]
 
 # Manual setup
 # sudo docker build . -t backend-image
-# sudo docker run -p 8080:8080 --name backend-container backend-image:latest
+# sudo docker run -p 80:80 --name backend-container backend-image:latest

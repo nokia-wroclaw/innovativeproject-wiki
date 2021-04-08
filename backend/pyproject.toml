@@ -10,6 +10,9 @@ fastapi = "^0.63.0"
 uvicorn = "^0.13.4"
 tinydb = "^4.4.0"
 pydantic = "^1.8.1"
+passlib = "^1.7.4"
+python-jose = "^3.2.0"
+python-multipart = "^0.0.5"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.7.4"
