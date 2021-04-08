@@ -11,14 +11,14 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.hash import bcrypt
 
-user_db = UserDB()
 app = FastAPI()
+user_db = UserDB()
 
 SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
 
 
 def verify_password(plain_password, hashed_password):
@@ -26,7 +26,7 @@ def verify_password(plain_password, hashed_password):
 
 
 def hash_password(plain_password):
-    return bcrypt.hash(password)
+    return bcrypt.hash(plain_password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -81,9 +81,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-@app.post("/login", response_model=dict)
-async def login(form: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form.username, form.password)
+@app.post("/auth/token")
+async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -92,28 +92,26 @@ async def login(form: OAuth2PasswordRequestForm = Depends()):
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"username": user.username}, expires_delta=access_token_expires
-    )
+        data={"username": user["username"]}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/register", response_model=dict)
-async def register(form: OAuth2PasswordRequestForm = Depends()):
-    if user_db.does_user_exist(form.username):
+@app.post('/auth/register')
+async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
+    if user_db.does_user_exist(form_data.username):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User already exists",
+            detail="Given user already exists",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    user_db.add_user(form.username, form.password, "test")
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"username": form.username}, expires_delta=access_token_expires
+
+    return user_db.add_user(
+        form_data.username,
+        hash_password(form_data.password),
+        "testowy@email.com"
     )
-    return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=dict)
-async def read_users_me(current_user: dict = Depends(get_current_user)):
-    return current_user
+@app.get('/users/me', response_model=dict)
+async def get_user(user: dict = Depends(get_current_user)):
+    return user
