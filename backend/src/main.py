@@ -115,3 +115,7 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
 @app.get('/users/me', response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
     return user
+
+@app.get('/connect', response_model=dict)
+async def connect_test():
+    return {"Connected": "You are"}
