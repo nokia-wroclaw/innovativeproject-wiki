@@ -9,7 +9,23 @@ RUN npm install
 ENV PATH="./node_modules/.bin:$PATH"
 
 COPY . ./
+
+# install curl
+# RUN apk add curl
+# # setup caddy
+# RUN apk add -y debian-keyring debian-archive-keyring apt-transport-https
+# RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | apt-key add -
+# RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee -a /etc/apt/sources.list.d/caddy-stable.list
+# RUN apt update
+# RUN apt install caddy
+
 RUN npm run build
+
+FROM caddy:latest
+
+COPY Caddyfile /etc/caddy/Caddyfile
+# COPY site /srv
+RUN caddy start
 
 FROM nginx:1.17-alpine
 RUN apk --no-cache add curl
