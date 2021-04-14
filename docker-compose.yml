@@ -5,14 +5,15 @@ services:
     restart: always
     build: ./backend
     ports: 
-      - "80:80"
+      - "3001:80"
   
   frontend:
     container_name: frontend-container
     restart: always
     build: ./frontend
     ports:
-      - "3000:40"
+      - "443:443"
+      - "80:80"
     depends_on: 
       - "backend"
     stdin_open: true # docker run -i

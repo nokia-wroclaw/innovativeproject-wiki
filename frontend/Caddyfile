@@ -1,1 +1,10 @@
-innodocs.tech
+innodocs.tech {
+	tls jakubtolsciuk@gmail.com
+	gzip
+	log / stdout "{method} {path} {status}"
+	root /usr/share/caddy/html
+	rewrite {
+		regexp .*
+		to {path} /
+	}
+}
