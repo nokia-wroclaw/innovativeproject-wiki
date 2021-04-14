@@ -1,24 +1,19 @@
-# =========BUILD==========
-FROM node:14.1-alpine AS builder
+FROM node:14-alpine AS builder
 
-WORKDIR /opt/web
+WORKDIR /app
 COPY package.json package-lock.json ./
-
-RUN rm -rf node_modules
-RUN npm install
-
-ENV PATH="./node_modules/.bin:$PATH"
-
+RUN yarn install --frozen-lockfile
 COPY . ./
+RUN yarn build
 
-RUN npm run build
+FROM caddy:2-alpine
 
-# ========= RUN =========
-FROM abiosoft/caddy:1.0.3
+WORKDIR /app
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=builder /app/build /var/wwww/html
 
-COPY Caddyfile /etc/Caddyfile
-COPY --from=builder /opt/web/build /usr/share/caddy/html
-
+#COPY --from=builder /app/build /var/www/html
+#COPY Caddyfile .
 
 # Manual setup
 # sudo docker build . -t frontend-image
