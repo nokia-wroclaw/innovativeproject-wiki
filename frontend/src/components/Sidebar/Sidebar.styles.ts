@@ -10,6 +10,11 @@ const useStyles = makeStyles((theme: Theme) =>
     nested: {
       paddingLeft: theme.spacing(4),
     },
+    inputContainer: {
+      display: 'flex',
+      height: 40,
+      padding: 20,
+    },
   })
 );
 
