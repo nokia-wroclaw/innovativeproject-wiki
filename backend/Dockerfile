@@ -21,7 +21,7 @@ RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
 
 # Copy backend files and run app
 COPY . ./
-WORKDIR /app/src
+WORKDIR /app/app
 EXPOSE 80
 CMD ["uvicorn", "main:app", "--host=0.0.0.0", "--port=80"]
 
