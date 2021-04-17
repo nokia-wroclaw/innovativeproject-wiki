@@ -1,5 +1,5 @@
 from tinydb import TinyDB, where
-from message import Message
+from .message import Message
 
 # Messages value codes
 SUCCESS = 0
