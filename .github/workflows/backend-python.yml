@@ -1,4 +1,4 @@
-name: Python application
+name: Backend
 
 on: [push]
 
@@ -19,4 +19,5 @@ jobs:
         virtualenvs-in-project: false
     - name: Install dependencies
       run: poetry install --no-root
+      working-directory: backend
         
