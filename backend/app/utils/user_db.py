@@ -1,3 +1,6 @@
+'''
+TODO module docstring
+'''
 from tinydb import TinyDB, where
 from .message import Message
 
@@ -11,11 +14,11 @@ class UserDB:
     Interface for communication with the user database.
 
     Attributes:
-        db (TinyDB): instance of the database
+        database (TinyDB): instance of the database
     """
 
     def __init__(self):
-        self.db = TinyDB("db.json")
+        self.database = TinyDB("database.json")
 
     def does_user_exist(self, username: str) -> bool:
         """
@@ -30,7 +33,7 @@ class UserDB:
         if not _is_non_empty_string(username):
             return False
 
-        return self.db.contains(where("username") == username)
+        return self.database.contains(where("username") == username)
 
     def add_user(self, username: str, password_hash: str, email: str):
         """
@@ -49,11 +52,11 @@ class UserDB:
 
         if self.does_user_exist(username):
             return Message("INFO", "Given user already exists", FAILURE)
-        else:
-            self.db.insert(
-                {"username": username, "password_hash": password_hash, "email": email}
-            )
-            return Message("INFO", "User added successfully", SUCCESS)
+
+        self.database.insert(
+            {"username": username, "password_hash": password_hash, "email": email}
+        )
+        return Message("INFO", "User added successfully", SUCCESS)
 
     def remove_user(self, username: str):
         """
@@ -63,16 +66,17 @@ class UserDB:
             username (str): user to remove
 
         Returns:
-            Message: the result of an attempted user deletion (SUCCESS/FAILURE) with some additional info
+            Message: the result of an attempted user deletion (SUCCESS/FAILURE)
+                     with some additional info
         """
         if not _is_non_empty_string(username):
             return Message("ERROR", "Invalid parameter type detected", FAILURE)
 
         if not self.does_user_exist(username):
             return Message("INFO", "Given user doesn't exists", FAILURE)
-        else:
-            self.db.remove(where("username") == username)
-            return Message("INFO", "User removed successfully", SUCCESS)
+
+        self.database.remove(where("username") == username)
+        return Message("INFO", "User removed successfully", SUCCESS)
 
     def get_user_data(self, username: str):
         """
@@ -91,9 +95,9 @@ class UserDB:
             return Message("ERROR", "Invalid parameter type detected", FAILURE)
 
         if self.does_user_exist(username):
-            return self.db.get(where("username") == username)
-        else:
-            return Message("INFO", "Given user doesn't exists", FAILURE)
+            return self.database.get(where("username") == username)
+
+        return Message("INFO", "Given user doesn't exists", FAILURE)
 
     def edit_user_data(self, username, edited_field, new_value):
         """
@@ -101,23 +105,26 @@ class UserDB:
 
         Parameters:
             username (str): user we are editing
-            edited_field (str): field we want to edit. Possible values: "username", "hashed_password", "email"
+            edited_field (str): field we want to edit.
+                                Possible values: "username", "hashed_password", "email"
             new_value (str): new value of selected field
 
         Returns:
-            Message: the result of an attempted user data edition (SUCCESS/FAILURE) with some additional info
+            Message: the result of an attempted user data edition (SUCCESS/FAILURE)
+                     with some additional info
         """
         if not _is_non_empty_string((username, new_value)):
             return Message("ERROR", "Invalid parameter type detected", FAILURE)
 
         if not self.does_user_exist(username):
             return Message("INFO", "Given user doesn't exists", FAILURE)
-        else:
-            if edited_field in ("username", "password_hash", "email"):
-                self.db.update({edited_field: new_value}, where("username") == username)
-                return Message("INFO", "User data edited successfully", SUCCESS)
-            else:
-                return Message("ERROR", "Non-existent field type", FAILURE)
+
+        if edited_field in ("username", "password_hash", "email"):
+            self.database.update({edited_field: new_value},
+                                 where("username") == username)
+            return Message("INFO", "User data edited successfully", SUCCESS)
+
+        return Message("ERROR", "Non-existent field type", FAILURE)
 
 
 def _is_non_empty_string(data: list) -> bool:

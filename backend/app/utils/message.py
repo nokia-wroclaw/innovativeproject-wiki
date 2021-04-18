@@ -20,7 +20,7 @@ class LogDestination(Enum):
     SYSLOG = 2  # log to syslog
 
 
-LOG_DESTINATION = LogDestination["STD"]  # todo default value in json for now
+LOG_DESTINATION = LogDestination["STD"]
 
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
