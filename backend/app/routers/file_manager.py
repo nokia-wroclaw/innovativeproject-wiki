@@ -17,11 +17,11 @@ DOC_ATCH_DIR = DOCS_DIR + "{id!s}/atch/"
 router = APIRouter()
 
 
-def new_file_name(doc_id: str, old_filename: str):
+def new_file_name(old_filename: str):
     """
     TODO function docstring
     """
-    filename = doc_id + str(time.time())
+    filename = old_filename + str(time.time())
     filename = hashlib.md5(filename.encode("utf-8")).hexdigest()
     _, ext = os.path.splitext(old_filename)
 
@@ -45,7 +45,7 @@ async def upload_img(doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
     """
-    path = DOC_IMG_DIR.format(id=doc_id) + new_file_name(doc_id, file.filename)
+    path = DOC_IMG_DIR.format(id=doc_id) + new_file_name(file.filename)
     return await upload_file(file, path)
 
 
@@ -54,7 +54,7 @@ async def upload_atch(doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
     """
-    path = DOC_ATCH_DIR.format(id=doc_id) + new_file_name(doc_id, file.filename)
+    path = DOC_ATCH_DIR.format(id=doc_id) + new_file_name(file.filename)
     return await upload_file(file, path)
 
 
