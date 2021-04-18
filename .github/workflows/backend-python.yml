@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -21,11 +20,3 @@ jobs:
     - name: Install dependencies
       run: poetry install --no-root
       working-directory: backend
-    - name: Run Pylint
-      run: pylint --fail_under=8.0 backend/app/*
-    - name: Run Black
-      run: black backend/app/*
-    - name: Testing (PyTest)
-      run: python -m pytest
-      working-directory: backend
-      
