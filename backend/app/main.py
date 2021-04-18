@@ -13,4 +13,7 @@ app.include_router(file_manager.router)
 
 @app.get("/connect", response_model=dict)
 async def connect_test():
+    '''
+    TODO function docstring
+    '''
     return {"Connected": "You are"}

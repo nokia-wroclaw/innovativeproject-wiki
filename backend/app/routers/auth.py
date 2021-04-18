@@ -1,11 +1,15 @@
-from passlib.hash import bcrypt
-from jose import JWTError, jwt
+'''
+TODO module docstring
+'''
 from typing import Optional
-from datetime import timedelta
+from datetime import timedelta, datetime
+from jose import JWTError, jwt
+from passlib.hash import bcrypt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from ..utils.user_db import UserDB
+from ..utils.message import Message, log
 
 router = APIRouter()
 user_db = UserDB()
@@ -18,14 +22,23 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 def verify_password(plain_password, hashed_password):
+    '''
+    TODO function docstring
+    '''
     return bcrypt.verify(plain_password, hashed_password)
 
 
 def hash_password(plain_password):
+    '''
+    TODO function docstring
+    '''
     return bcrypt.hash(plain_password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    '''
+    TODO function docstring
+    '''
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -58,6 +71,9 @@ def authenticate_user(username: str, password: str):
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    '''
+    TODO function docstring
+    '''
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -68,8 +84,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("username")
         if username is None:
             raise credentials_exception
-    except JWTError:
-        raise credentials_exception
+    except JWTError as jwt_error:
+        raise credentials_exception from jwt_error
     user = user_db.get_user_data(username)
     if isinstance(user, Message):
         log(user)
@@ -79,6 +95,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/auth/token")
 async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    '''
+    TODO function docstring
+    '''
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -95,6 +114,9 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @router.post("/auth/register")
 async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
+    '''
+    TODO function docstring
+    '''
     if user_db.does_user_exist(form_data.username):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -109,4 +131,7 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @router.get("/users/me", response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
+    '''
+    TODO function docstring
+    '''
     return user
