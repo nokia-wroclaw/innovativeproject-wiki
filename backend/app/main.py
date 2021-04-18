@@ -11,6 +11,6 @@ app.include_router(auth.router)
 app.include_router(file_manager.router)
 
 
-@app.get('/connect', response_model=dict)
+@app.get("/connect", response_model=dict)
 async def connect_test():
     return {"Connected": "You are"}

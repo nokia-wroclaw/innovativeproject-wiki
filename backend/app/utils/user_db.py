@@ -7,7 +7,7 @@ FAILURE = 1
 
 
 class UserDB:
-    """ 
+    """
     Interface for communication with the user database.
 
     Attributes:
@@ -30,7 +30,7 @@ class UserDB:
         if not _is_non_empty_string(username):
             return False
 
-        return self.db.contains(where('username') == username)
+        return self.db.contains(where("username") == username)
 
     def add_user(self, username: str, password_hash: str, email: str):
         """
@@ -50,11 +50,9 @@ class UserDB:
         if self.does_user_exist(username):
             return Message("INFO", "Given user already exists", FAILURE)
         else:
-            self.db.insert({
-                'username': username,
-                'password_hash': password_hash,
-                'email': email
-            })
+            self.db.insert(
+                {"username": username, "password_hash": password_hash, "email": email}
+            )
             return Message("INFO", "User added successfully", SUCCESS)
 
     def remove_user(self, username: str):
@@ -73,7 +71,7 @@ class UserDB:
         if not self.does_user_exist(username):
             return Message("INFO", "Given user doesn't exists", FAILURE)
         else:
-            self.db.remove(where('username') == username)
+            self.db.remove(where("username") == username)
             return Message("INFO", "User removed successfully", SUCCESS)
 
     def get_user_data(self, username: str):
@@ -93,7 +91,7 @@ class UserDB:
             return Message("ERROR", "Invalid parameter type detected", FAILURE)
 
         if self.does_user_exist(username):
-            return self.db.get(where('username') == username)
+            return self.db.get(where("username") == username)
         else:
             return Message("INFO", "Given user doesn't exists", FAILURE)
 
@@ -116,8 +114,7 @@ class UserDB:
             return Message("INFO", "Given user doesn't exists", FAILURE)
         else:
             if edited_field in ("username", "password_hash", "email"):
-                self.db.update({edited_field: new_value},
-                               where('username') == username)
+                self.db.update({edited_field: new_value}, where("username") == username)
                 return Message("INFO", "User data edited successfully", SUCCESS)
             else:
                 return Message("ERROR", "Non-existent field type", FAILURE)
@@ -128,7 +125,7 @@ def _is_non_empty_string(data: list) -> bool:
     Checks if all values in list are non-empty string
 
     Parameters:
-        data (list): list of values ​​to be checked 
+        data (list): list of values ​​to be checked
 
     Returns:
         bool: True if all values are non-empty string, False otherwise
@@ -138,4 +135,3 @@ def _is_non_empty_string(data: list) -> bool:
             return False
 
     return True
-    

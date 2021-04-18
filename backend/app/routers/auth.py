@@ -14,7 +14,7 @@ SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 def verify_password(plain_password, hashed_password):
@@ -45,14 +45,14 @@ def authenticate_user(username: str, password: str):
         password (str): password from form
 
     Returns:
-        bool: False if a user doesn't exist 
+        bool: False if a user doesn't exist
         dict: Dict with user info if it does exist
     """
     user = user_db.get_user_data(username)
     if isinstance(user, Message):
         log(user)
         return False
-    if not verify_password(password, user['password_hash']):
+    if not verify_password(password, user["password_hash"]):
         return False
     return user
 
@@ -88,11 +88,12 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"username": user["username"]}, expires_delta=access_token_expires)
+        data={"username": user["username"]}, expires_delta=access_token_expires
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post('/auth/register')
+@router.post("/auth/register")
 async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
     if user_db.does_user_exist(form_data.username):
         raise HTTPException(
@@ -102,12 +103,10 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
         )
 
     return user_db.add_user(
-        form_data.username,
-        hash_password(form_data.password),
-        "testowy@email.com"
+        form_data.username, hash_password(form_data.password), "testowy@email.com"
     )
 
 
-@router.get('/users/me', response_model=dict)
+@router.get("/users/me", response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
     return user
