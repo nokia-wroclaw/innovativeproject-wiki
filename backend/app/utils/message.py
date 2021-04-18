@@ -8,13 +8,13 @@ import syslog
 from datetime import datetime, date
 from typing import Optional
 from enum import Enum
-import json
 
 
 class LogDestination(Enum):
     """
-        Enum type representing the log destination.
+    Enum type representing the log destination.
     """
+
     FILE = 0  # log to file
     STD = 1  # log to stdout or stderr
     SYSLOG = 2  # log to syslog
@@ -26,8 +26,9 @@ LOG_DESTINATION = LogDestination["STD"]  # todo default value in json for now
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 class Severity(Enum):
     """
-        Enum type indicating the severity of the message.
+    Enum type indicating the severity of the message.
     """
+
     EMERGENCY = 0
     ALERT = 1
     CRITICAL = 2
@@ -40,28 +41,28 @@ class Severity(Enum):
 
 class Message:
     """
-        A class representing a message.
+    A class representing a message.
 
-        Attributes
-        ----------
-        severity: Severity
-            An enum type that indicates the severity of the message.
-        content: str
-            The content of the message.
-        value: Optional[int]
-            Extra information about the message.
+    Attributes
+    ----------
+    severity: Severity
+        An enum type that indicates the severity of the message.
+    content: str
+        The content of the message.
+    value: Optional[int]
+        Extra information about the message.
     """
 
     def __init__(self, severity: Severity, content: str, value: Optional[int] = None):
         """
-            Constructor for the Message class.
+        Constructor for the Message class.
 
-            Parameters:
-                severity: Severity
+        Parameters:
+            severity: Severity
 
-                content: str
+            content: str
 
-                value: Optional[int]
+            value: Optional[int]
         """
         self.severity = severity
         self.content = content
@@ -70,15 +71,15 @@ class Message:
 
 def _prepare_message_as_string(message: Message, time: str) -> str:
     """
-        Formats a message into a string to be logged to file or stdout/stderr.
+    Formats a message into a string to be logged to file or stdout/stderr.
 
-        Parameters:
-            message (Message): Message that contains log information.
+    Parameters:
+        message (Message): Message that contains log information.
 
-            time (str): Time formatted as a string.
+        time (str): Time formatted as a string.
 
-        Returns:
-            None
+    Returns:
+        None
     """
     # don't 'print' None
     value = message.value
@@ -90,13 +91,13 @@ def _prepare_message_as_string(message: Message, time: str) -> str:
 
 def log(message: Message) -> None:
     """
-        Writes logs to the destination given in config file.
+    Writes logs to the destination given in config file.
 
-        Parameters:
-            message (Message): Message that contains log information.
+    Parameters:
+        message (Message): Message that contains log information.
 
-        Returns:
-            None
+    Returns:
+        None
     """
     if LOG_DESTINATION == LogDestination.FILE:
         log_to_file(message)
@@ -108,20 +109,20 @@ def log(message: Message) -> None:
 
 def log_to_file(message: Message) -> None:
     """
-        Writes logs to files.
-        Logs are stored in 'logs\' folder.
-        Example logs filename: '2021_03_25.log'
+    Writes logs to files.
+    Logs are stored in 'logs\' folder.
+    Example logs filename: '2021_03_25.log'
 
-        Parameters:
-            message (Message): Message that contains log information.
+    Parameters:
+        message (Message): Message that contains log information.
 
-        Returns:
-            None
+    Returns:
+        None
     """
     today = date.today()
-    day = today.strftime('%Y_%m_%d')
+    day = today.strftime("%Y_%m_%d")
     now = datetime.now()
-    current_time = now.strftime('%H:%M:%S')
+    current_time = now.strftime("%H:%M:%S")
     message_to_print = _prepare_message_as_string(message, current_time)
     with open(fr"/app/logs/{day}.log", "a") as file:
         file.write(message_to_print)
@@ -129,16 +130,16 @@ def log_to_file(message: Message) -> None:
 
 def log_to_std(message: Message) -> None:
     """
-        Writes logs to stdout/stderr depending of the message.
+    Writes logs to stdout/stderr depending of the message.
 
-        Parameters:
-            message (Message): Message that contains log information.
+    Parameters:
+        message (Message): Message that contains log information.
 
-        Returns:
-            None
+    Returns:
+        None
     """
     now = datetime.now()
-    day_time = now.strftime('%Y-%m-%d %H:%M:%S')
+    day_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
     message_to_print = _prepare_message_as_string(message, day_time)
 
@@ -153,12 +154,12 @@ def log_to_std(message: Message) -> None:
 # https://docs.python.org/3/library/syslog.html
 def log_to_syslog(message: Message) -> None:
     """
-        Writes logs to syslog.
+    Writes logs to syslog.
 
-        Parameters:
-            message (Message): Message that contains log information.
+    Parameters:
+        message (Message): Message that contains log information.
 
-        Returns:
-            None
+    Returns:
+        None
     """
     syslog.syslog(message.severity.value, message.content)
