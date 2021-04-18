@@ -20,5 +20,11 @@ jobs:
     - name: Install dependencies
       run: poetry install --no-root
       working-directory: backend
-    - name: Run pylint
-      run: pylint backend/app/* backend/tests/*
+    - name: Run Pylint
+      run: pylint backend/app/*
+    - name: Run Black
+      run: black backend/app/*
+    - name: Testing (PyTest)
+      run: python -m pytest
+      working-directory: backend
+      
