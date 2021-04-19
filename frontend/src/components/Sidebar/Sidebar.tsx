@@ -9,6 +9,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import useStyles from './Sidebar.styles';
+import ContextMenu from './ContextMenu';
 
 const initialList = [
   {
@@ -31,9 +32,9 @@ const Sidebar: React.FC = () => {
   const [itemList, setItemList] = useState(initialList);
   const [typedItem, setTypedItem] = useState('');
 
-  useEffect(() => {
-    setSelectedIndex(itemList.length - 1);
-  }, [itemList]);
+  // useEffect(() => {
+  //   setSelectedIndex(selectedIndex);
+  // }, [itemList]);
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -42,9 +43,12 @@ const Sidebar: React.FC = () => {
     setSelectedIndex(index);
   };
 
-  const addItem = (text: string) => {
+  const addItem = (text: string, index: number) => {
     if (!itemList.find((item) => item.text === text)) {
-      setItemList([...itemList, { text }]);
+      const tempList = [...itemList];
+      tempList.splice(index + 1, 0, { text });
+      setItemList(tempList);
+      setSelectedIndex(index + 1);
     }
     // eslint-disable-next-line no-alert
     else window.alert('This file already exists');
@@ -70,7 +74,7 @@ const Sidebar: React.FC = () => {
         <Button
           color="primary"
           variant="contained"
-          onClick={() => addItem(typedItem)}
+          onClick={() => addItem(typedItem, selectedIndex)}
         >
           Add
         </Button>
@@ -94,26 +98,17 @@ const Sidebar: React.FC = () => {
         className={classes.root}
       >
         {itemList.map((item, index) => (
-          <ListItem
-            button
+          <ContextMenu
             key={`key-${item.text}`}
-            selected={selectedIndex === index}
-            onClick={(event) => handleListItemClick(event, index)}
-          >
-            <ListItemText primary={item.text} />
-          </ListItem>
+            item={item}
+            index={index}
+            selectedIndex={selectedIndex}
+            handleListItemClick={handleListItemClick}
+            addItem={addItem}
+            removeItem={removeItem}
+            setSelectedIndex={setSelectedIndex}
+          />
         ))}
-        {/* <ListItem button onClick={handleClick}>
-          <ListItemText primary="GTA codes" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemText primary="Kill all" />
-            </ListItem>
-          </List>
-        </Collapse> */}
       </List>
     </div>
   );
