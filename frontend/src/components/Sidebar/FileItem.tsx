@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const initialState = {
   mouseX: null,
@@ -11,7 +13,7 @@ const initialState = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function ContextMenu(props: any) {
+export default function FileItem(props: any) {
   const [state, setState] = useState<{
     mouseX: null | number;
     mouseY: null | number;
@@ -20,7 +22,7 @@ export default function ContextMenu(props: any) {
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (state.mouseY == null) {
       setState({
@@ -37,12 +39,15 @@ export default function ContextMenu(props: any) {
   };
 
   return (
-    <div onContextMenu={handleClick} style={{ cursor: 'context-menu' }}>
+    <div onContextMenu={handleRightClick} style={{ cursor: 'context-menu' }}>
       <ListItem
         button
         selected={props.selectedIndex === props.index}
         onClick={(event) => props.handleListItemClick(event, props.index)}
       >
+        <ListItemIcon>
+          <DescriptionIcon />
+        </ListItemIcon>
         <ListItemText primary={props.item.text} />
       </ListItem>
       {addOpen ? (

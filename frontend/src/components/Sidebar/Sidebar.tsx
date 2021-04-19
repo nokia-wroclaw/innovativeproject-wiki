@@ -9,11 +9,16 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import useStyles from './Sidebar.styles';
-import ContextMenu from './ContextMenu';
+import FileItem from './FileItem';
 
 const initialList = [
   {
     text: 'Report SO2',
+    children: [
+      {
+        text: 'Zad 1',
+      },
+    ],
   },
   {
     text: 'TODO',
@@ -31,10 +36,6 @@ const Sidebar: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(1);
   const [itemList, setItemList] = useState(initialList);
   const [typedItem, setTypedItem] = useState('');
-
-  // useEffect(() => {
-  //   setSelectedIndex(selectedIndex);
-  // }, [itemList]);
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -98,7 +99,7 @@ const Sidebar: React.FC = () => {
         className={classes.root}
       >
         {itemList.map((item, index) => (
-          <ContextMenu
+          <FileItem
             key={`key-${item.text}`}
             item={item}
             index={index}
