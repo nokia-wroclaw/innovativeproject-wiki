@@ -1,4 +1,3 @@
-# pylint: disable=no-name-in-module, too-few-public-methods
 """
     This module is responsible for everything related with logs.
     TODO: Make this docstring better
