@@ -11,23 +11,44 @@ import TextField from '@material-ui/core/TextField';
 import useStyles from './Sidebar.styles';
 import FileItem from './FileItem';
 
-const initialList = [
+type Node = {
+  text: string;
+  level: number;
+  children?: Node[];
+};
+
+const initialList: Node[] = [
   {
-    text: 'Report SO2',
+    text: 'Rport SO2',
+    level: 0,
     children: [
       {
         text: 'Zad 1',
+        level: 1,
+      },
+      {
+        text: 'Zad 2',
+        level: 1,
+        children: [
+          {
+            text: 'IDK',
+            level: 2,
+          },
+        ],
       },
     ],
   },
   {
     text: 'TODO',
+    level: 0,
   },
   {
     text: 'GTA codes',
+    level: 0,
   },
   {
     text: 'bubu',
+    level: 0,
   },
 ];
 
@@ -47,7 +68,8 @@ const Sidebar: React.FC = () => {
   const addItem = (text: string, index: number) => {
     if (!itemList.find((item) => item.text === text)) {
       const tempList = [...itemList];
-      tempList.splice(index + 1, 0, { text });
+      const newItem: Node = { text, level: 1 };
+      tempList.splice(index + 1, 0, newItem);
       setItemList(tempList);
       setSelectedIndex(index + 1);
     }
@@ -64,30 +86,6 @@ const Sidebar: React.FC = () => {
 
   return (
     <div>
-      <div className={classes.inputContainer}>
-        <TextField
-          variant="outlined"
-          value={typedItem}
-          onChange={({ target: { value } }) => {
-            setTypedItem(value);
-          }}
-        />
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={() => addItem(typedItem, selectedIndex)}
-        >
-          Add
-        </Button>
-        <Button
-          color="secondary"
-          variant="contained"
-          onClick={() => removeItem(selectedIndex)}
-        >
-          Delete
-        </Button>
-      </div>
-
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
@@ -100,7 +98,7 @@ const Sidebar: React.FC = () => {
       >
         {itemList.map((item, index) => (
           <FileItem
-            key={`key-${item.text}`}
+            key={`${item.text}-${item.level}`}
             item={item}
             index={index}
             selectedIndex={selectedIndex}

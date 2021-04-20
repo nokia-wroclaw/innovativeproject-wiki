@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
@@ -12,8 +13,26 @@ const initialState = {
   mouseY: null,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function FileItem(props: any) {
+type Node = {
+  text: string;
+  level: number;
+  children?: Node[];
+};
+
+type FileItemProps = {
+  item: Node;
+  index: number;
+  selectedIndex: number;
+  handleListItemClick: (
+    event: React.MouseEvent<HTMLDivElement>,
+    index: number
+  ) => void;
+  addItem: (text: string, index: number) => void;
+  removeItem: (index: number) => void;
+  setSelectedIndex: (selectedIndex: number) => void;
+};
+
+const FileItem: React.FC<FileItemProps> = (props) => {
   const [state, setState] = useState<{
     mouseX: null | number;
     mouseY: null | number;
@@ -38,6 +57,24 @@ export default function FileItem(props: any) {
     setAddOpen(false);
   };
 
+  let childNodes = null;
+
+  // the Node component calls itself if there are children
+  if (props.item.children) {
+    childNodes = props.item.children.map((childNode: Node) => (
+      <FileItem
+        key={`${props.item.text}-${props.item.level}`}
+        item={childNode}
+        index={props.index}
+        selectedIndex={props.selectedIndex}
+        handleListItemClick={props.handleListItemClick}
+        addItem={props.addItem}
+        removeItem={props.removeItem}
+        setSelectedIndex={props.setSelectedIndex}
+      />
+    ));
+  }
+
   return (
     <div onContextMenu={handleRightClick} style={{ cursor: 'context-menu' }}>
       <ListItem
@@ -56,7 +93,7 @@ export default function FileItem(props: any) {
             onKeyPress={(event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();
-                props.addItem(input, props.index);
+                if (input) props.addItem(input, props.index);
                 setAddOpen(false);
                 setInput('');
               }
@@ -68,7 +105,7 @@ export default function FileItem(props: any) {
           />
         </ListItem>
       ) : null}
-
+      {childNodes ? <ul>{childNodes}</ul> : null}
       <Menu
         keepMounted
         open={state.mouseY !== null}
@@ -99,4 +136,6 @@ export default function FileItem(props: any) {
       </Menu>
     </div>
   );
-}
+};
+
+export default FileItem;
