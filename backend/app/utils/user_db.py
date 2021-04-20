@@ -1,8 +1,8 @@
-'''
+"""
 TODO module docstring
-'''
+"""
 from tinydb import TinyDB, where
-from .message import Message
+from app.utils.message import Message
 
 # Messages value codes
 SUCCESS = 0
@@ -120,8 +120,9 @@ class UserDB:
             return Message("INFO", "Given user doesn't exists", FAILURE)
 
         if edited_field in ("username", "password_hash", "email"):
-            self.database.update({edited_field: new_value},
-                                 where("username") == username)
+            self.database.update(
+                {edited_field: new_value}, where("username") == username
+            )
             return Message("INFO", "User data edited successfully", SUCCESS)
 
         return Message("ERROR", "Non-existent field type", FAILURE)

@@ -40,7 +40,7 @@ async def upload_file(file: UploadFile, path: str):
     return {"Result": "Success", "File path": path}
 
 
-@router.post("/uploadfile/{doc_id}/img")
+@router.post("/uploadfile/{doc_id}/img", tags=["files"])
 async def upload_img(doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
@@ -49,7 +49,7 @@ async def upload_img(doc_id: str, file: UploadFile = File(...)):
     return await upload_file(file, path)
 
 
-@router.post("/uploadfile/{doc_id}/atch")
+@router.post("/uploadfile/{doc_id}/atch", tags=["files"])
 async def upload_atch(doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
@@ -58,7 +58,7 @@ async def upload_atch(doc_id: str, file: UploadFile = File(...)):
     return await upload_file(file, path)
 
 
-@router.get("/files/{doc_id}/img/{img_id}")
+@router.get("/files/{doc_id}/img/{img_id}", tags=["files"])
 async def get_img(doc_id: str, img_id: str):
     """
     TODO function docstring
@@ -67,7 +67,7 @@ async def get_img(doc_id: str, img_id: str):
     return FileResponse(path)
 
 
-@router.get("/files/{doc_id}/atch/{atch_id}")
+@router.get("/files/{doc_id}/atch/{atch_id}", tags=["files"])
 async def get_atch(doc_id: str, atch_id: str):
     """
     TODO function docstring
