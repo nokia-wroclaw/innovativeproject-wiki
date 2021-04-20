@@ -12,11 +12,14 @@ services:
     restart: always
     build: ./frontend
     ports:
-      - "3000:40"
-    depends_on: 
-      - "backend"
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+      - "443:443"
+      - "80:80"
+    volumes:
+      - "./caddy-data:/data"
+        #depends_on: 
+        #- "backend"
+        #stdin_open: true # docker run -i
+        #tty: true        # docker run -t
 
 # MANUAL
 # sudo docker-compose build (build images)
