@@ -39,15 +39,10 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleLoginButton = () => {
-    checkLogin().then((isCorrect) => {
-      if (isCorrect === true) {
-        console.log('login success');
-        // TODO - set user in context
-      } else {
-        console.log('login fail');
-      }
-    });
+  const handleLoginButton = async () => {
+    fetch('/api/connect')
+      .then((res) => res.json())
+      .then((data) => console.log(data));
   };
 
   return (
