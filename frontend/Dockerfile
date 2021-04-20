@@ -10,10 +10,7 @@ FROM caddy:2-alpine
 
 WORKDIR /app
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY --from=builder /app/build /var/wwww/html
-
-#COPY --from=builder /app/build /var/www/html
-#COPY Caddyfile .
+COPY --from=builder /app/build /var/www/html
 
 # Manual setup
 # sudo docker build . -t frontend-image

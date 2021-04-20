@@ -1,3 +1,7 @@
+https://www.innodocs.tech {
+	redir https://innodocs.tech{uri}
+}
+
 https://innodocs.tech {
 	root * /var/www/html
 	file_server
