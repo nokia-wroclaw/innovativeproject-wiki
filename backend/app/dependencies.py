@@ -19,18 +19,18 @@ def get_data_paths():
     """
     TODO function docstring
     """
-    DATA = Path("./data").absolute()
-    WORKSPACES = DATA / "workspaces"
-    USERS = DATA / "users"
-    PAGES = WORKSPACES / "{workspace_id!s}/pages"
-    PAGE_IMG = PAGES / "{page_id!s}/img"
-    PAGE_ATCH = PAGES / "{page_id!s}/atch"
+    data = Path("./data").absolute()
+    workspaces = data / "workspaces"
+    users = data / "users"
+    pages = workspaces / "{workspace_id!s}/pages"
+    page_img = pages / "{page_id!s}/img"
+    page_atch = pages / "{page_id!s}/atch"
 
     return {
-        "data": DATA,
-        "workspaces": WORKSPACES,
-        "users": USERS,
-        "pages": PAGES,
-        "page_img": PAGE_IMG,
-        "page_athc": PAGE_ATCH
+        "data": data,
+        "workspaces": workspaces,
+        "users": users,
+        "pages": pages,
+        "page_img": page_img,
+        "page_athc": page_atch,
     }

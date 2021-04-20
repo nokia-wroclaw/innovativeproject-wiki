@@ -4,8 +4,6 @@ TODO module docstring
 
 from fastapi import APIRouter
 
-from app.dependencies import random_filename
-
 router = APIRouter()
 
 
@@ -14,4 +12,4 @@ async def create_new_workspace(workspace_name: str, creator_username: str):
     """
     TODO function docstring
     """
-    return 0
+    return workspace_name + creator_username
