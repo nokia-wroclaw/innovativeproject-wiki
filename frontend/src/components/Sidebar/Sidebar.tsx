@@ -132,8 +132,7 @@ const Sidebar: React.FC = () => {
         variant="contained"
         color="secondary"
         onClick={() => {
-          const hasIt = containsInNestedObjectDF(itemList, 'dfg'); // true
-          console.log(hasIt);
+          console.log(itemList);
         }}
       >
         Click me

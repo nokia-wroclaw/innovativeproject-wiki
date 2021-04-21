@@ -58,7 +58,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         mouseY: event.clientY - 4,
       });
     } else handleClose();
-    props.setSelectedIndex(props.index);
     // props.handleListItemClick(event, props.index, props.item);
     props.setSelectedNode(props.item);
     console.log(props.item);
@@ -74,7 +73,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         // props.addItem(input, props.index);
         const node: Node = {
           text: input,
-          level: 1,
+          level: props.item.level + 1,
         };
         console.log(node);
         props.addNode(node, props.item, props.itemList);
@@ -118,15 +117,10 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     >
       <ListItem
         button
-        // className={!childNodes ? classes.nested : undefined}
-        selected={
-          // props.selectedIndex === props.index &&
-          // props.selectedNode?.level === props.item.level
-          props.selectedNode?.text === props.item.text
-        }
+        selected={props.selectedNode?.text === props.item.text}
         onClick={(event) => {
-          props.handleListItemClick(event, props.index, props.item);
-          console.log(props.selectedNode);
+          props.setSelectedNode(props.item);
+          console.log(props.item);
         }}
       >
         <ListItemIcon>
