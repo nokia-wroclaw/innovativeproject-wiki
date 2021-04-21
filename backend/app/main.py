@@ -4,8 +4,7 @@ Main module that runs basic fast api app.
 """
 from fastapi import FastAPI
 
-from app.routers import auth, file_manager, workspace_manager
-from app.dependencies import get_data_paths
+from app.routers import auth, file_handler, workspace_manager
 
 tags_metadata = [
     {
@@ -24,7 +23,7 @@ tags_metadata = [
 
 app = FastAPI(openapi_tags=tags_metadata)
 app.include_router(auth.router)
-app.include_router(file_manager.router)
+app.include_router(file_handler.router)
 app.include_router(workspace_manager.router)
 
 
@@ -33,4 +32,4 @@ async def connect_test():
     """
     TODO function docstring
     """
-    return {"Connected": "You are", "Path": get_data_paths()}
+    return {"Connected": "You are"}
