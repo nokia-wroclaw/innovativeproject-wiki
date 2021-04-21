@@ -36,6 +36,10 @@ const initialList: Node[] = [
           },
         ],
       },
+      {
+        text: 'Item 1.3',
+        level: 1,
+      },
     ],
   },
   {
@@ -60,44 +64,17 @@ const initialList: Node[] = [
 
 const Sidebar: React.FC = () => {
   const classes = useStyles();
-  const [selectedIndex, setSelectedIndex] = useState(1);
   const [itemList, setItemList] = useState(initialList);
   const [typedItem, setTypedItem] = useState('');
-  const [selectedNode, setSelectedNode] = useState<Node>();
-
-  const handleListItemClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    index: number,
-    item: Node
-  ) => {
-    setSelectedIndex(index);
-    setSelectedNode(item);
-  };
-
-  const addItem = (text: string, index: number) => {
-    if (!itemList.find((item) => item.text === text)) {
-      const tempList = [...itemList];
-      const newItem: Node = { text, level: 1 };
-      tempList.splice(index + 1, 0, newItem);
-      setItemList(tempList);
-      setSelectedIndex(index + 1);
-    }
-    // eslint-disable-next-line no-alert
-    else window.alert('This file already exists');
-    setTypedItem('');
-  };
-
-  const removeItem = (index: number) => {
-    const list = [...itemList];
-    list.splice(index, 1);
-    setItemList(list);
-  };
+  const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
 
     if (foundItem) {
+      console.log('added');
       parentItem.children?.push(item);
+      return;
     }
 
     list.forEach((node) => {
@@ -105,26 +82,19 @@ const Sidebar: React.FC = () => {
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function containsInNestedObjectDF(obj: any, val: any) {
-    if (obj === val) {
-      return true;
+  const removeNode = (item: Node, list: Node[]) => {
+    const foundIndex = list.findIndex((node) => node.text === item.text);
+
+    if (foundIndex >= 0) {
+      list.splice(foundIndex, 1);
+      // setSelectedNode(selectedNode);
+      return;
     }
 
-    const keys = obj instanceof Object ? Object.keys(obj) : [];
-
-    for (const key of keys) {
-      const objval = obj[key];
-
-      const isMatch = containsInNestedObjectDF(objval, val);
-
-      if (isMatch) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+    list.forEach((node) => {
+      if (node.children) removeNode(item, node.children);
+    });
+  };
 
   return (
     <div>
@@ -151,16 +121,11 @@ const Sidebar: React.FC = () => {
           <FileItem
             key={`${item.text}-${item.level}`}
             item={item}
-            index={index}
-            selectedIndex={selectedIndex}
-            handleListItemClick={handleListItemClick}
-            addItem={addItem}
-            removeItem={removeItem}
-            setSelectedIndex={setSelectedIndex}
             selectedNode={selectedNode}
             setSelectedNode={setSelectedNode}
             itemList={itemList}
             addNode={addNode}
+            removeNode={removeNode}
           />
         ))}
       </List>

@@ -24,20 +24,11 @@ type Node = {
 
 type FileItemProps = {
   item: Node;
-  index: number;
-  selectedIndex: number;
-  handleListItemClick: (
-    event: React.MouseEvent<HTMLDivElement>,
-    index: number,
-    item: Node
-  ) => void;
-  addItem: (text: string, index: number) => void;
-  removeItem: (index: number) => void;
-  setSelectedIndex: (selectedIndex: number) => void;
-  selectedNode: Node | undefined;
+  selectedNode: Node;
   setSelectedNode: (selectedNode: Node) => void;
   itemList: Node[];
   addNode: (item: Node, parentItem: Node, list: Node[]) => void;
+  removeNode: (item: Node, list: Node[]) => void;
 };
 
 const FileItem: React.FC<FileItemProps> = (props) => {
@@ -58,7 +49,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         mouseY: event.clientY - 4,
       });
     } else handleClose();
-    // props.handleListItemClick(event, props.index, props.item);
     props.setSelectedNode(props.item);
     console.log(props.item);
   };
@@ -70,7 +60,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (input) {
-        // props.addItem(input, props.index);
         const node: Node = {
           text: input,
           level: props.item.level + 1,
@@ -96,16 +85,11 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       <FileItem
         key={`${childNode.text}-${childNode.level}`}
         item={childNode}
-        index={props.index}
-        selectedIndex={props.selectedIndex}
-        handleListItemClick={props.handleListItemClick}
-        addItem={props.addItem}
-        removeItem={props.removeItem}
-        setSelectedIndex={props.setSelectedIndex}
         selectedNode={props.selectedNode}
         setSelectedNode={props.setSelectedNode}
         itemList={props.itemList}
         addNode={props.addNode}
+        removeNode={props.removeNode}
       />
     ));
   }
@@ -148,49 +132,47 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           </Collapse>
         </div>
       ) : null}
-      {childNodes ? (
-        <Menu
-          keepMounted
-          open={state.mouseY !== null}
-          onClose={handleClose}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            state.mouseY !== null && state.mouseX !== null
-              ? { top: state.mouseY, left: state.mouseX }
-              : undefined
-          }
-        >
+      <Menu
+        keepMounted
+        open={state.mouseY !== null}
+        onClose={handleClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          state.mouseY !== null && state.mouseX !== null
+            ? { top: state.mouseY, left: state.mouseX }
+            : undefined
+        }
+      >
+        {childNodes ? (
+          <div>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                setAddOpen(true);
+              }}
+            >
+              Add file
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                props.removeNode(props.item, props.itemList);
+              }}
+            >
+              Remove folder
+            </MenuItem>
+          </div>
+        ) : (
           <MenuItem
             onClick={() => {
               handleClose();
-              setAddOpen(true);
-            }}
-          >
-            Add file
-          </MenuItem>
-        </Menu>
-      ) : (
-        <Menu
-          keepMounted
-          open={state.mouseY !== null}
-          onClose={handleClose}
-          anchorReference="anchorPosition"
-          anchorPosition={
-            state.mouseY !== null && state.mouseX !== null
-              ? { top: state.mouseY, left: state.mouseX }
-              : undefined
-          }
-        >
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              props.removeItem(props.index);
+              props.removeNode(props.item, props.itemList);
             }}
           >
             Remove file
           </MenuItem>
-        </Menu>
-      )}
+        )}
+      </Menu>
     </div>
   );
 };
