@@ -19,19 +19,19 @@ type Node = {
 
 const initialList: Node[] = [
   {
-    text: 'Rport SO2',
+    text: 'Item 1',
     level: 0,
     children: [
       {
-        text: 'Zad 1',
+        text: 'Item 1.1',
         level: 1,
       },
       {
-        text: 'Zad 2',
+        text: 'Item 1.2',
         level: 1,
         children: [
           {
-            text: 'IDK',
+            text: 'Item 1.2.1',
             level: 2,
           },
         ],
@@ -39,15 +39,21 @@ const initialList: Node[] = [
     ],
   },
   {
-    text: 'TODO',
+    text: 'Item 2',
     level: 0,
   },
   {
-    text: 'GTA codes',
+    text: 'Item 3',
     level: 0,
+    children: [
+      {
+        text: 'Item 3.1',
+        level: 1,
+      },
+    ],
   },
   {
-    text: 'bubu',
+    text: 'Item 4',
     level: 0,
   },
 ];
@@ -57,12 +63,15 @@ const Sidebar: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(1);
   const [itemList, setItemList] = useState(initialList);
   const [typedItem, setTypedItem] = useState('');
+  const [selectedNode, setSelectedNode] = useState<Node>();
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    index: number
+    index: number,
+    item: Node
   ) => {
     setSelectedIndex(index);
+    setSelectedNode(item);
   };
 
   const addItem = (text: string, index: number) => {
@@ -84,8 +93,51 @@ const Sidebar: React.FC = () => {
     setItemList(list);
   };
 
+  const addNode = (item: Node, parentItem: Node, list: Node[]) => {
+    const foundItem = list.find((node) => node.text === parentItem.text);
+
+    if (foundItem) {
+      parentItem.children?.push(item);
+    }
+
+    list.forEach((node) => {
+      if (node.children) addNode(item, parentItem, node.children);
+    });
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function containsInNestedObjectDF(obj: any, val: any) {
+    if (obj === val) {
+      return true;
+    }
+
+    const keys = obj instanceof Object ? Object.keys(obj) : [];
+
+    for (const key of keys) {
+      const objval = obj[key];
+
+      const isMatch = containsInNestedObjectDF(objval, val);
+
+      if (isMatch) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   return (
     <div>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => {
+          const hasIt = containsInNestedObjectDF(itemList, 'dfg'); // true
+          console.log(hasIt);
+        }}
+      >
+        Click me
+      </Button>{' '}
       <List
         component="nav"
         aria-labelledby="nested-list-subheader"
@@ -106,6 +158,10 @@ const Sidebar: React.FC = () => {
             addItem={addItem}
             removeItem={removeItem}
             setSelectedIndex={setSelectedIndex}
+            selectedNode={selectedNode}
+            setSelectedNode={setSelectedNode}
+            itemList={itemList}
+            addNode={addNode}
           />
         ))}
       </List>
