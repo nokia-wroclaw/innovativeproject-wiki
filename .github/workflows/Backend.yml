@@ -22,7 +22,7 @@ jobs:
     - name: Format with Black
       run: black backend/
     - name: Lint with Pylint
-      run: pylint backend/app/ --fail-under=10.0
+      run: pylint backend/app/ --fail-under=10.0 --rcfile=backend/app/pylintrc 
     - name: Test with PyTest
       run: python -m pytest
       working-directory: backend

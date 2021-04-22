@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '100px',
     width: '800px',
     marginTop: '20px',
-    borderStyle: 'outset',
-    borderWidth: '10px',
+    boxShadow: '2px 2px 2px 2px lightgray',
+    borderRadius: '5px',
   },
   toolbar: {
     display: 'flex',
@@ -48,7 +48,7 @@ const HOTKEYS: Record<string, string> = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const TextEditor2 = () => {
+const TextEditor = () => {
   const [value, setValue] = useState<Descendant[]>(initialValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
@@ -224,4 +224,4 @@ const initialValue: Descendant[] = [
   },
 ];
 
-export default TextEditor2;
+export default TextEditor;

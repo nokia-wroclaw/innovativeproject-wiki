@@ -1,26 +1,87 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import RemoveIcon from '@material-ui/icons/Remove';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
 import useStyles from './Sidebar.styles';
+import FileItem from './FileItem';
+import type { Node } from './Sidebar.types';
+
+const initialList: Node[] = [
+  {
+    text: 'Item 1',
+    level: 0,
+    open: true,
+    children: [
+      {
+        text: 'Item 1.1',
+        level: 1,
+      },
+      {
+        text: 'Item 1.2',
+        level: 1,
+        open: false,
+        children: [
+          {
+            text: 'Item 1.2.1',
+            level: 2,
+          },
+        ],
+      },
+      {
+        text: 'Item 1.3',
+        level: 1,
+      },
+    ],
+  },
+  {
+    text: 'Item 2',
+    level: 0,
+  },
+  {
+    text: 'Item 3',
+    level: 0,
+    open: true,
+    children: [
+      {
+        text: 'Item 3.1',
+        level: 1,
+      },
+    ],
+  },
+  {
+    text: 'Item 4',
+    level: 0,
+  },
+];
 
 const Sidebar: React.FC = () => {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [itemList, setItemList] = useState(initialList);
+  const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
-  const handleClick = () => {
-    setOpen(!open);
+  const addNode = (item: Node, parentItem: Node, list: Node[]) => {
+    const foundItem = list.find((node) => node.text === parentItem.text);
+
+    if (foundItem) {
+      parentItem.children?.push(item);
+      return;
+    }
+
+    list.forEach((node) => {
+      if (node.children) addNode(item, parentItem, node.children);
+    });
+  };
+
+  const removeNode = (item: Node, list: Node[]) => {
+    const foundIndex = list.findIndex((node) => node.text === item.text);
+
+    if (foundIndex >= 0) {
+      list.splice(foundIndex, 1);
+      return;
+    }
+
+    list.forEach((node) => {
+      if (node.children) removeNode(item, node.children);
+    });
   };
 
   return (
@@ -34,35 +95,18 @@ const Sidebar: React.FC = () => {
       }
       className={classes.root}
     >
-      <ListItem button>
-        {/* <ListItemIcon>
-          <RemoveIcon />
-        </ListItemIcon> */}
-        <ListItemText primary="Report SO2" />
-      </ListItem>
-      <ListItem button>
-        {/* <ListItemIcon>
-          <RemoveIcon />
-        </ListItemIcon> */}
-        <ListItemText primary="TODO" />
-      </ListItem>
-      <ListItem button onClick={handleClick}>
-        {/* <ListItemIcon>
-          <RemoveIcon />
-        </ListItemIcon> */}
-        <ListItemText primary="GTA codes" />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItem button className={classes.nested}>
-            {/* <ListItemIcon>
-              <RemoveIcon />
-            </ListItemIcon> */}
-            <ListItemText primary="Kill all" />
-          </ListItem>
-        </List>
-      </Collapse>
+      {itemList.map((item) => (
+        <FileItem
+          key={`${item.text}-${item.level}`}
+          item={item}
+          selectedNode={selectedNode}
+          setSelectedNode={setSelectedNode}
+          itemList={itemList}
+          addNode={addNode}
+          removeNode={removeNode}
+          setItemList={setItemList}
+        />
+      ))}
     </List>
   );
 };
