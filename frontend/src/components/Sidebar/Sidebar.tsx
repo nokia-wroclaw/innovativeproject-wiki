@@ -3,13 +3,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import useStyles from './Sidebar.styles';
 import FileItem from './FileItem';
-
-type Node = {
-  text: string;
-  level: number;
-  open?: boolean;
-  children?: Node[];
-};
+import type { Node } from './Sidebar.types';
 
 const initialList: Node[] = [
   {

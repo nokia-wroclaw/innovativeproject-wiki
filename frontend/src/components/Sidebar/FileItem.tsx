@@ -12,17 +12,11 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import useStyles from './Sidebar.styles';
+import type { Node } from './Sidebar.types';
 
 const initialState = {
   mouseX: null,
   mouseY: null,
-};
-
-type Node = {
-  text: string;
-  level: number;
-  open?: boolean;
-  children?: Node[];
 };
 
 type FileItemProps = {

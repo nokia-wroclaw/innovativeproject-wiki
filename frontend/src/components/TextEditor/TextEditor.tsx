@@ -48,7 +48,7 @@ const HOTKEYS: Record<string, string> = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const TextEditor2 = () => {
+const TextEditor = () => {
   const [value, setValue] = useState<Descendant[]>(initialValue);
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
@@ -224,4 +224,4 @@ const initialValue: Descendant[] = [
   },
 ];
 
-export default TextEditor2;
+export default TextEditor;
