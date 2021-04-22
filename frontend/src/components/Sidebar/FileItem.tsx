@@ -45,18 +45,17 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(props.item.open);
+  const [isAddFolder, setIsAddFolder] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleRightClick = (event: any) => {
+  const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
-    props.setSelectedNode(props.item);
-    console.log(props.selectedNode);
     if (state.mouseY == null) {
       setState({
         mouseX: event.clientX - 2,
         mouseY: event.clientY - 4,
       });
     } else handleClose();
+    props.setSelectedNode(props.item);
   };
 
   const handleEnterPress = (event: {
@@ -66,11 +65,19 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (input) {
-        const node: Node = {
-          text: input,
-          level: props.item.level + 1,
-        };
-        console.log(node);
+        let node: Node;
+        if (isAddFolder) {
+          node = {
+            text: input,
+            level: props.item.level + 1,
+            children: [],
+          };
+        } else {
+          node = {
+            text: input,
+            level: props.item.level + 1,
+          };
+        }
         props.addNode(node, props.item, props.itemList);
       }
       setAddOpen(false);
@@ -81,6 +88,13 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const handleClose = () => {
     setState(initialState);
     setAddOpen(false);
+  };
+
+  const handleRemoveNode = () => {
+    handleClose();
+    const newItemList = JSON.parse(JSON.stringify(props.itemList));
+    props.removeNode(props.item, newItemList);
+    props.setItemList(newItemList);
   };
 
   let childNodes = null;
@@ -103,7 +117,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   return (
     <div
-      style={{ cursor: 'context-menu', paddingLeft: props.item.level * 20 }}
+      style={{ cursor: 'context-menu', paddingLeft: 20 }}
       onContextMenu={(event) => event.preventDefault()}
     >
       <ListItem
@@ -112,7 +126,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         onClick={(event) => {
           props.setSelectedNode(props.item);
           setOpen(!open);
-          console.log(props.item);
         }}
         onContextMenu={handleRightClick}
       >
@@ -158,6 +171,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
               onClick={() => {
                 handleClose();
                 setAddOpen(true);
+                setIsAddFolder(false);
               }}
             >
               Add file
@@ -165,25 +179,16 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                const newItemList = JSON.parse(JSON.stringify(props.itemList));
-                props.removeNode(props.item, newItemList);
-                props.setItemList(newItemList);
+                setAddOpen(true);
+                setIsAddFolder(true);
               }}
             >
-              Remove folder
+              Add folder
             </MenuItem>
+            <MenuItem onClick={handleRemoveNode}>Remove folder</MenuItem>
           </div>
         ) : (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              const newItemList = JSON.parse(JSON.stringify(props.itemList));
-              props.removeNode(props.item, newItemList);
-              props.setItemList(newItemList);
-            }}
-          >
-            Remove file
-          </MenuItem>
+          <MenuItem onClick={handleRemoveNode}>Remove file</MenuItem>
         )}
       </Menu>
     </div>

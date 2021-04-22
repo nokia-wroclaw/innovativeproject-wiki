@@ -1,12 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import useStyles from './Sidebar.styles';
 import FileItem from './FileItem';
 
@@ -107,7 +101,7 @@ const Sidebar: React.FC = () => {
       }
       className={classes.root}
     >
-      {itemList.map((item, index) => (
+      {itemList.map((item) => (
         <FileItem
           key={`${item.text}-${item.level}`}
           item={item}
