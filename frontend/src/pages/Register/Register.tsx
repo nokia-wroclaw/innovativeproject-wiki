@@ -12,6 +12,28 @@ const Register: React.FC = () => {
   const [typedPassword, setTypedPassword] = useState('');
   const [typedEmail, setTypedEmail] = useState('');
 
+
+  const handleRegisterButton = async () => {
+    fetch('/auth/register', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+         username: typedUsername,
+         password: typedPassword, 
+         scope: typedEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:');
+    })
+    .catch((error) => {
+      console.error('Error:');
+    });
+  };
+
   return (
     <div>
       <Paper elevation={10} className={classes.registerPaper}>
@@ -67,6 +89,7 @@ const Register: React.FC = () => {
             variant="contained"
             fullWidth
             className={classes.registerButton}
+            onClick={() => handleRegisterButton()}
           >
             Sign up
           </Button>
