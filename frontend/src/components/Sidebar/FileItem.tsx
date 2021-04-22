@@ -29,6 +29,7 @@ type FileItemProps = {
   itemList: Node[];
   addNode: (item: Node, parentItem: Node, list: Node[]) => void;
   removeNode: (item: Node, list: Node[]) => void;
+  setItemList: (itemList: Node[]) => void;
 };
 
 const FileItem: React.FC<FileItemProps> = (props) => {
@@ -91,6 +92,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         itemList={props.itemList}
         addNode={props.addNode}
         removeNode={props.removeNode}
+        setItemList={props.setItemList}
       />
     ));
   }
@@ -158,7 +160,9 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             <MenuItem
               onClick={() => {
                 handleClose();
-                props.removeNode(props.item, props.itemList);
+                const newItemList = JSON.parse(JSON.stringify(props.itemList));
+                props.removeNode(props.item, newItemList);
+                props.setItemList(newItemList);
               }}
             >
               Remove folder
@@ -168,7 +172,9 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           <MenuItem
             onClick={() => {
               handleClose();
-              props.removeNode(props.item, props.itemList);
+              const newItemList = JSON.parse(JSON.stringify(props.itemList));
+              props.removeNode(props.item, newItemList);
+              props.setItemList(newItemList);
             }}
           >
             Remove file

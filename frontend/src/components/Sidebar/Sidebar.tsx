@@ -126,6 +126,7 @@ const Sidebar: React.FC = () => {
             itemList={itemList}
             addNode={addNode}
             removeNode={removeNode}
+            setItemList={setItemList}
           />
         ))}
       </List>
