@@ -11,10 +11,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignContent: 'space-between',
     height: '80vh ',
-    // alignItems: 'flex-start',
   },
   sidebar: {
     marginLeft: 20,
+    marginTop: 20,
   },
   editor: {
     width: '100%',
@@ -23,14 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
-  const classes = useStyles();
 
+export default function Editor() {
+  const classes = useStyles();
   return (
     <div>
-      <Button color="primary" to="/about" component={Link}>
-        Go to About
-      </Button>
       <div className={classes.editPageContainer}>
         <div className={classes.sidebar}>
           <Sidebar />

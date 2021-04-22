@@ -7,6 +7,10 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
   },
+  darkModeButton: {
+    textDecoration: 'none',
+    color: '#fff',
+  },
   title: {
     flexGrow: 1,
     color: '#fff',
