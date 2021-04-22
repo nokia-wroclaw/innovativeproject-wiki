@@ -40,9 +40,23 @@ const Login: React.FC = () => {
   };
 
   const handleLoginButton = async () => {
-    fetch('/api/connect')
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    fetch('/auth/login', {
+      method: 'POST', // or 'PUT'
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+         username: typedUsername,
+         password: typedPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:');
+    })
+    .catch((error) => {
+      console.error('Error:');
+    });
   };
 
   return (
@@ -58,6 +72,7 @@ const Login: React.FC = () => {
           <TextField
             label="Username"
             placeholder="Enter username"
+            type="username"
             fullWidth
             className={classes.loginTextField}
             onChange={({ target: { value } }) => {
