@@ -4,8 +4,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import useStyles from './Sidebar.styles';
@@ -14,6 +13,7 @@ import FileItem from './FileItem';
 type Node = {
   text: string;
   level: number;
+  open?: boolean;
   children?: Node[];
 };
 
@@ -21,6 +21,7 @@ const initialList: Node[] = [
   {
     text: 'Item 1',
     level: 0,
+    open: true,
     children: [
       {
         text: 'Item 1.1',
@@ -29,6 +30,7 @@ const initialList: Node[] = [
       {
         text: 'Item 1.2',
         level: 1,
+        open: false,
         children: [
           {
             text: 'Item 1.2.1',
@@ -49,6 +51,7 @@ const initialList: Node[] = [
   {
     text: 'Item 3',
     level: 0,
+    open: true,
     children: [
       {
         text: 'Item 3.1',
@@ -65,14 +68,12 @@ const initialList: Node[] = [
 const Sidebar: React.FC = () => {
   const classes = useStyles();
   const [itemList, setItemList] = useState(initialList);
-  const [typedItem, setTypedItem] = useState('');
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
 
     if (foundItem) {
-      console.log('added');
       parentItem.children?.push(item);
       return;
     }
@@ -87,7 +88,6 @@ const Sidebar: React.FC = () => {
 
     if (foundIndex >= 0) {
       list.splice(foundIndex, 1);
-      // setSelectedNode(selectedNode);
       return;
     }
 
@@ -97,40 +97,29 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => {
-          console.log(itemList);
-        }}
-      >
-        Click me
-      </Button>{' '}
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            DOCUMENTS
-          </ListSubheader>
-        }
-        className={classes.root}
-      >
-        {itemList.map((item, index) => (
-          <FileItem
-            key={`${item.text}-${item.level}`}
-            item={item}
-            selectedNode={selectedNode}
-            setSelectedNode={setSelectedNode}
-            itemList={itemList}
-            addNode={addNode}
-            removeNode={removeNode}
-            setItemList={setItemList}
-          />
-        ))}
-      </List>
-    </div>
+    <List
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader component="div" id="nested-list-subheader">
+          DOCUMENTS
+        </ListSubheader>
+      }
+      className={classes.root}
+    >
+      {itemList.map((item, index) => (
+        <FileItem
+          key={`${item.text}-${item.level}`}
+          item={item}
+          selectedNode={selectedNode}
+          setSelectedNode={setSelectedNode}
+          itemList={itemList}
+          addNode={addNode}
+          removeNode={removeNode}
+          setItemList={setItemList}
+        />
+      ))}
+    </List>
   );
 };
 

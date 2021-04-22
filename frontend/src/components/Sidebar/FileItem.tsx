@@ -9,6 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import DescriptionIcon from '@material-ui/icons/Description';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 import useStyles from './Sidebar.styles';
 
 const initialState = {
@@ -19,6 +21,7 @@ const initialState = {
 type Node = {
   text: string;
   level: number;
+  open?: boolean;
   children?: Node[];
 };
 
@@ -41,6 +44,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [open, setOpen] = useState(props.item.open);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleRightClick = (event: any) => {
@@ -107,6 +111,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         selected={props.selectedNode?.text === props.item.text}
         onClick={(event) => {
           props.setSelectedNode(props.item);
+          setOpen(!open);
           console.log(props.item);
         }}
         onContextMenu={handleRightClick}
@@ -115,6 +120,8 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           {childNodes ? <FolderIcon /> : <DescriptionIcon />}
         </ListItemIcon>
         <ListItemText primary={props.item.text} />
+        {props.item.children && open && <ExpandLess />}
+        {props.item.children && !open && <ExpandMore />}
       </ListItem>
       {addOpen ? (
         <ListItem className={classes.nested}>
@@ -128,13 +135,11 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         </ListItem>
       ) : null}
       {childNodes ? (
-        <div>
-          <Collapse in={true} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              {childNodes}
-            </List>
-          </Collapse>
-        </div>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {childNodes}
+          </List>
+        </Collapse>
       ) : null}
       <Menu
         keepMounted
