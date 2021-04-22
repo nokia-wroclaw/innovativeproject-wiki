@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Sidebar from '../components/Sidebar/Sidebar';
-import TextEditor from '../components/TextEditor';
-import TextEditor2 from '../components/TextEditor2';
+import TextEditor from '../components/TextEditor/TextEditor';
 
 const useStyles = makeStyles((theme) => ({
   editPageContainer: {
@@ -37,7 +36,7 @@ export default function Home() {
           <Sidebar />
         </div>
         <div className={classes.editor}>
-          <TextEditor2 />
+          <TextEditor />
         </div>
       </div>
     </div>
