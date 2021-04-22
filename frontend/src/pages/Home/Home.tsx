@@ -18,8 +18,10 @@ export default function Home() {
           justify="space-around"
           alignItems="center"
         >
-        
-        up:  <h1>InnoDocs</h1>
+        <div style={{fontSize: 180, marginTop: 70}} >
+          InnoDocs
+        </div>
+               
         
         </Grid>
       </Paper>
