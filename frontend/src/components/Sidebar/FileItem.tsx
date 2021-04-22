@@ -41,16 +41,17 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
 
-  const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleRightClick = (event: any) => {
     event.preventDefault();
+    props.setSelectedNode(props.item);
+    console.log(props.selectedNode);
     if (state.mouseY == null) {
       setState({
         mouseX: event.clientX - 2,
         mouseY: event.clientY - 4,
       });
     } else handleClose();
-    props.setSelectedNode(props.item);
-    console.log(props.item);
   };
 
   const handleEnterPress = (event: {
@@ -96,8 +97,8 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   return (
     <div
-      onContextMenu={handleRightClick}
       style={{ cursor: 'context-menu', paddingLeft: props.item.level * 20 }}
+      onContextMenu={(event) => event.preventDefault()}
     >
       <ListItem
         button
@@ -106,6 +107,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           props.setSelectedNode(props.item);
           console.log(props.item);
         }}
+        onContextMenu={handleRightClick}
       >
         <ListItemIcon>
           {childNodes ? <FolderIcon /> : <DescriptionIcon />}
