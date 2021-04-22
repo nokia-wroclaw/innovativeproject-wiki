@@ -1,6 +1,6 @@
-'''
+"""
 TODO module docstring
-'''
+"""
 from typing import Optional
 from datetime import timedelta, datetime
 from jose import JWTError, jwt
@@ -8,37 +8,37 @@ from passlib.hash import bcrypt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from ..utils.user_db import UserDB
-from ..utils.message import Message, log
+from app.utils.user_db import UserDB
+from app.utils.message import Message, log
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 user_db = UserDB()
 
 SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def verify_password(plain_password, hashed_password):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     return bcrypt.verify(plain_password, hashed_password)
 
 
 def hash_password(plain_password):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     return bcrypt.hash(plain_password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -71,9 +71,9 @@ def authenticate_user(username: str, password: str):
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -93,11 +93,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-@router.post("/auth/token")
+@router.post("/login")
 async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -112,11 +112,11 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/auth/register")
+@router.post("/register")
 async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     if user_db.does_user_exist(form_data.username):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -129,9 +129,9 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
     )
 
 
-@router.get("/users/me", response_model=dict)
+@router.get("/me", response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
-    '''
+    """
     TODO function docstring
-    '''
+    """
     return user

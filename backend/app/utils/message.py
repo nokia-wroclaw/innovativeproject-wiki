@@ -7,65 +7,46 @@ import syslog
 from datetime import datetime, date
 from typing import Optional
 from enum import Enum
+from pydantic import BaseModel
 
 
-class LogDestination(Enum):
+class MsgStatus(str, Enum):
     """
-    Enum type representing the log destination.
-    """
-
-    FILE = 0  # log to file
-    STD = 1  # log to stdout or stderr
-    SYSLOG = 2  # log to syslog
-
-
-LOG_DESTINATION = LogDestination["STD"]
-
-
-# https://en.wikipedia.org/wiki/Syslog#Severity_level
-class Severity(Enum):
-    """
-    Enum type indicating the severity of the message.
+    Enum type indicating the type of the message.
     """
 
-    EMERGENCY = 0
-    ALERT = 1
-    CRITICAL = 2
-    ERROR = 3
-    WARNING = 4
-    NOTICE = 5
-    INFO = 6
-    DEBUG = 7
+    EMERGENCY = "Emergency"
+    ALERT = "Alert"
+    CRITICAL = "Critical"
+    ERROR = "Error"
+    WARNING = "Warning"
+    NOTICE = "Notice"
+    INFO = "Info"
+    DEBUG = "Debug"
 
 
-class Message:
+class Message(BaseModel):
     """
     A class representing a message.
 
     Attributes
     ----------
-    severity: Severity
-        An enum type that indicates the severity of the message.
-    content: str
+    status: MsgStatus
+        An enum type that indicates the type of the message.
+    detail: str
         The content of the message.
-    value: Optional[int]
+    values: Any
         Extra information about the message.
     """
 
-    def __init__(self, severity: Severity, content: str, value: Optional[int] = None):
-        """
-        Constructor for the Message class.
+    status: MsgStatus
+    detail: str
+    values: Optional[dict] = None
 
-        Parameters:
-            severity: Severity
+    class Config:
+        """Message config"""
 
-            content: str
-
-            value: Optional[int]
-        """
-        self.severity = severity
-        self.content = content
-        self.value = value
+        use_enum_values = True
 
 
 def _prepare_message_as_string(message: Message, time: str) -> str:
@@ -80,12 +61,25 @@ def _prepare_message_as_string(message: Message, time: str) -> str:
     Returns:
         None
     """
-    # don't 'print' None
-    value = message.value
+
+    value = message.values
     if value is None:
         value = ""
 
-    return f"[{message.severity.name}] [{time}] [{value}]: {message.content}\n"
+    return f"[{message.type.name}] [{time}] [{value}]: {message.detail}\n"
+
+
+class LogDestination(Enum):
+    """
+    Enum type representing the log destination.
+    """
+
+    FILE = 0  # log to file
+    STD = 1  # log to stdout or stderr
+    SYSLOG = 2  # log to syslog
+
+
+LOG_DESTINATION = LogDestination["STD"]
 
 
 def log(message: Message) -> None:
@@ -143,7 +137,7 @@ def log_to_std(message: Message) -> None:
     message_to_print = _prepare_message_as_string(message, day_time)
 
     # stdout
-    if message.severity == Severity.NOTICE or message.severity == Severity.INFO:
+    if message.status == MsgStatus.NOTICE or message.status == MsgStatus.INFO:
         print(message_to_print)
     # stderr
     else:
@@ -161,4 +155,4 @@ def log_to_syslog(message: Message) -> None:
     Returns:
         None
     """
-    syslog.syslog(message.severity.value, message.content)
+    syslog.syslog(message.status.values, message.detail)
