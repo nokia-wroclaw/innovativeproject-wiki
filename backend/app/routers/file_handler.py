@@ -2,8 +2,6 @@
 TODO module docstring
 """
 
-import time
-import hashlib
 import os
 from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import FileResponse
@@ -37,7 +35,7 @@ async def upload_file(file: UploadFile, path: str):
     return Message(
         status=MsgStatus.INFO,
         detail="File uploaded successfuly",
-        values={"upload_path": path}
+        values={"upload_path": path},
     )
 
 
@@ -47,7 +45,9 @@ async def upload_img(workspace_id: str, doc_id: str, file: UploadFile = File(...
     TODO function docstring
     """
 
-    path = get_doc_img_path(workspace_id, doc_id) / random_filename_with_ext(file.filename)
+    path = get_doc_img_path(workspace_id, doc_id) / random_filename_with_ext(
+        file.filename
+    )
     return await upload_file(file, path.absolute())
 
 
@@ -57,7 +57,9 @@ async def upload_atch(workspace_id: str, doc_id: str, file: UploadFile = File(..
     TODO function docstring
     """
 
-    path = get_doc_atch_path(workspace_id, doc_id) / random_filename_with_ext(file.filename)
+    path = get_doc_atch_path(workspace_id, doc_id) / random_filename_with_ext(
+        file.filename
+    )
     return await upload_file(file, path.absolute())
 
 

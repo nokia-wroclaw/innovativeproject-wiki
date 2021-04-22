@@ -9,8 +9,9 @@ from app.routers import auth, file_handler, workspace_manager
 
 tags_metadata = [
     {
-        "name": "users",
-        "description": "Operations with users. The **login** and **register** logic is also here.",
+        "name": "auth",
+        "description": "Operations with authentication. \
+                        The **login** and **register** logic is here.",
     },
     {
         "name": "files",
@@ -30,6 +31,10 @@ app.include_router(workspace_manager.router)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
+    """
+    TODO function docstring
+    """
+    _ = request  # Change this later
     return PlainTextResponse(exc.detail, status_code=exc.status_code)
 
 
@@ -38,4 +43,5 @@ async def connect_test():
     """
     TODO function docstring
     """
+
     return {"Connected": "You are"}

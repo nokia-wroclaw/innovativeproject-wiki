@@ -11,14 +11,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.user_db import UserDB
 from app.utils.message import Message, log
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 user_db = UserDB()
 
 SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def verify_password(plain_password, hashed_password):
@@ -93,7 +93,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-@router.post("/auth/login", tags=["users"])
+@router.post("/login")
 async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     TODO function docstring
@@ -112,7 +112,7 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/auth/register", tags=["users"])
+@router.post("/register")
 async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     TODO function docstring
@@ -129,7 +129,7 @@ async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
     )
 
 
-@router.get("/users/me", tags=["users"], response_model=dict)
+@router.get("/me", response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
     """
     TODO function docstring

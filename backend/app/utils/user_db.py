@@ -1,6 +1,7 @@
 """
 TODO module docstring
 """
+from pathlib import Path
 from tinydb import TinyDB, where
 from app.utils.message import Message
 
@@ -18,7 +19,7 @@ class UserDB:
     """
 
     def __init__(self):
-        self.database = TinyDB("database.json")
+        self.database = TinyDB(Path("./data/users/database.json").absolute())
 
     def does_user_exist(self, username: str) -> bool:
         """

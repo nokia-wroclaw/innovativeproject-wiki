@@ -28,7 +28,7 @@ def get_workspace_path(workspace_id: str = ""):
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Workspace with id <<{workspace_id}>> doesn't exists"
+            detail=f"Workspace with id <<{workspace_id}>> doesn't exists",
         )
 
     return path
@@ -44,7 +44,7 @@ def get_doc_path(workspace_id: str, doc_id: str = ""):
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Document with id <<{doc_id}>> doesn't exists in workspace <<{workspace_id}>>"
+            detail=f"Document with id <<{doc_id}>> doesn't exists in workspace <<{workspace_id}>>",
         )
 
     return path
@@ -60,7 +60,7 @@ def get_doc_img_path(workspace_id: str, doc_id: str, img_id: str = ""):
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Image with id <<{img_id}>> doesn't exists in document <<{doc_id}>>"
+            detail=f"Image with id <<{img_id}>> doesn't exists in document <<{doc_id}>>",
         )
 
     return path
@@ -76,7 +76,7 @@ def get_doc_atch_path(workspace_id: str, doc_id: str, atch_id: str = ""):
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"There is no attachment with id \"{atch_id}\" in document \"{doc_id}\""
+            detail=f'There is no attachment with id "{atch_id}" in document "{doc_id}"',
         )
 
     return path
@@ -90,21 +90,19 @@ def update_main_info_file(workspace_id: str, workspace_name: str, creator: str):
     path = get_workspace_path() / INFO_FILE
     if not path.exists():
         raise HTTPException(
-            status_code=404,
-            detail=f"Can't find info file at {path.absolute()}"
+            status_code=404, detail=f"Can't find info file at {path.absolute()}"
         )
 
     with open(path.absolute(), "a") as file:
         writer = csv.writer(file)
         writer.writerow([workspace_id, workspace_name, creator])
 
-    return Message(
-        status=MsgStatus.INFO,
-        detail="Info file updated successfuly"
-    )
+    return Message(status=MsgStatus.INFO, detail="Info file updated successfuly")
 
 
-def update_workspace_info_file(workspace_id: str, doc_id: str, doc_name: str, creator: str):
+def update_workspace_info_file(
+    workspace_id: str, doc_id: str, doc_name: str, creator: str
+):
     """
     TODO function docstring
     """
@@ -112,18 +110,14 @@ def update_workspace_info_file(workspace_id: str, doc_id: str, doc_name: str, cr
     path = get_workspace_path(workspace_id) / INFO_FILE
     if not path.exists():
         raise HTTPException(
-            status_code=404,
-            detail=f"Can't find info file at {path.absolute()}"
+            status_code=404, detail=f"Can't find info file at {path.absolute()}"
         )
 
     with open(path.absolute(), "a") as file:
         writer = csv.writer(file)
         writer.writerow([doc_id, doc_name, creator])
 
-    return Message(
-        status=MsgStatus.INFO,
-        detail="Info file updated successfuly"
-    )
+    return Message(status=MsgStatus.INFO, detail="Info file updated successfuly")
 
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
@@ -138,7 +132,7 @@ async def create_new_workspace(workspace_name: str, creator: str):
     if path.exists():
         raise HTTPException(
             status_code=409,
-            detail=f"Workspace with id <<{workspace_id}>> already exists"
+            detail=f"Workspace with id <<{workspace_id}>> already exists",
         )
 
     path.mkdir()
@@ -156,7 +150,7 @@ async def create_new_workspace(workspace_name: str, creator: str):
     return Message(
         status=MsgStatus.INFO,
         detail="Workspace created successfuly",
-        values={"workspace_id": workspace_id}
+        values={"workspace_id": workspace_id},
     )
 
 
@@ -171,7 +165,7 @@ async def create_new_document(workspace_id: str, doc_name: str, creator: str):
     if path.exists():
         raise HTTPException(
             status_code=409,
-            detail=f"Document with id <<{doc_id}>> already exists in workspace <<{workspace_id}>>"
+            detail=f"Document with id <<{doc_id}>> already exists in workspace <<{workspace_id}>>",
         )
 
     path.mkdir()
@@ -186,5 +180,5 @@ async def create_new_document(workspace_id: str, doc_name: str, creator: str):
     return Message(
         status=MsgStatus.INFO,
         detail="Document created successfuly",
-        values={"document_id": doc_id}
+        values={"document_id": doc_id},
     )
