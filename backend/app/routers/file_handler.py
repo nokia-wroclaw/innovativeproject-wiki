@@ -19,7 +19,7 @@ def random_filename_with_ext(filename: str):
     """
 
     _, ext = os.path.splitext(filename)
-    return random_filename(lenght=16, endwith=ext)
+    return random_filename(length=16, endwith=ext)
 
 
 async def upload_file(file: UploadFile, path: str):
