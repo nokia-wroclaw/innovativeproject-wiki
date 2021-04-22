@@ -94,11 +94,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 @router.post("/login")
-async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
+async def generate_token(form: OAuth2PasswordRequestForm = Depends()):
     """
     TODO function docstring
     """
-    user = authenticate_user(form_data.username, form_data.password)
+    user = authenticate_user(form.username, form.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -113,19 +113,21 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post("/register")
-async def create_user(form_data: OAuth2PasswordRequestForm = Depends()):
+async def create_user(form: OAuth2PasswordRequestForm = Depends()):
     """
     TODO function docstring
     """
-    if user_db.does_user_exist(form_data.username):
+
+    if user_db.does_user_exist(form.username):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Given user already exists",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    email = form.scopes[0]
     return user_db.add_user(
-        form_data.username, hash_password(form_data.password), "testowy@email.com"
+        form.username, hash_password(form.password), email
     )
 
 

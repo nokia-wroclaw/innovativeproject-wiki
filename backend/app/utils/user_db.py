@@ -3,7 +3,7 @@ TODO module docstring
 """
 from pathlib import Path
 from tinydb import TinyDB, where
-from app.utils.message import Message
+from app.utils.message import Message, MsgStatus
 
 # Messages value codes
 SUCCESS = 0
@@ -57,7 +57,7 @@ class UserDB:
         self.database.insert(
             {"username": username, "password_hash": password_hash, "email": email}
         )
-        return Message("INFO", "User added successfully", SUCCESS)
+        return Message(status=MsgStatus.INFO, detail="User added successfully")
 
     def remove_user(self, username: str):
         """
