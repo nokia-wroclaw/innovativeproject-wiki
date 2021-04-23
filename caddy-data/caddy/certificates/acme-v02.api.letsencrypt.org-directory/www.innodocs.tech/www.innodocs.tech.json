@@ -1,8 +1,0 @@
-{
-	"sans": [
-		"www.innodocs.tech"
-	],
-	"issuer_data": {
-		"url": "https://acme-v02.api.letsencrypt.org/acme/cert/033b6caf18e0c623745ca6f27be79be52b49"
-	}
-}
