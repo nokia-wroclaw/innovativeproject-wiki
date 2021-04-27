@@ -5,8 +5,10 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
+import LastActivity from './pages/LastActivity/LastActivity';
 import ContextProvider from './contexts/AppContext';
 import './App.css';
+
 
 
 function App() {
@@ -22,6 +24,7 @@ function App() {
             <Route exact path="/about" component={About} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
+            <Route exact path="/lastActivity" component={LastActivity} />
           </Switch>
         </div>
       </Router>

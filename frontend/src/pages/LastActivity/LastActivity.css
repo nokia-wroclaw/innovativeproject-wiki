@@ -1,0 +1,96 @@
+.shadow1{
+    /* border: 1px solid; */
+    padding: 10px;
+    box-shadow: 5px 10px 18px #888888;
+}
+
+.lastDocContainer{
+    height: 50px;
+    width: 800px;
+    /*background-color: #c4c4c4;*/
+    background-color: gainsboro;
+    margin-top: 20px;
+    margin-left: 50px;
+    box-shadow: 2px 2px #727272;
+    line-height: 50px;
+}
+
+.docName{
+    font-size: 25px;
+    font-weight: bold;
+    float: left;
+    /*background-color: bisque;*/
+    width: 250px;
+    height: 50px;
+    text-align: center;
+}
+
+.pathToDoc{
+    float: left;
+    width: 300px;
+    height: 50px;
+    /*background-color: gainsboro;*/
+}
+
+.modificationDate{
+    float: left;
+    width: 250px;
+    height: 50px;
+    /*background-color: cornsilk;*/
+}
+
+#greetings{
+    font-size: 30px;
+    margin-top: 50px;
+    font-weight: bold;
+}
+
+#userName{
+    color: #704ed4;
+}
+
+#activitiesContainerTitle{
+    margin-top: 80px;
+    font-size: 24px;
+}
+
+#activitiesContainer{
+    margin-top: 30px;
+    width: 900px;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#headerContainer{
+    height: 30px;
+    width: 800px;
+    /*background-color: #c4c4c4;*/
+    margin-top: 10px;
+    margin-left: 50px;
+    line-height: 30px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#docNameHeader{
+    
+    font-weight: bold;
+    float: left;
+    width: 250px;
+    height: 50px;
+    text-align: center;
+}
+
+#pathToDocHeader{
+    float: left;
+    width: 300px;
+    height: 50px;
+}
+
+#modificationDateHeader{
+    float: left;
+    width: 250px;
+    height: 50px;
+}
+
