@@ -1,9 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import './LastActivity.css'
 
 export default function LastActivity() {
+
+  const [lastDocs, setLastDocs] = useState([
+    {"name": "Document 1", "path": "Workspace 1 >> Catalog 1", "modificationDate": "25.04.2021"},
+    {"name": "Document 2", "path": "Workspace 2", "modificationDate": "14.04.2021"},
+    {"name": "Document 3", "path": "Workspace 3 >> Catalog 2", "modificationDate": "10.04.2021"}
+  ])
+
   return (
     <div>
       <div id="greetings">Hello <span id="userName">Filip</span>!</div>
@@ -24,37 +31,37 @@ export default function LastActivity() {
 
         <div className="lastDocContainer">
           <div className="docName">
-            Document 1
+            {lastDocs[0].name}
           </div>
           <div className="pathToDoc">
-            Workspace 1 {'>>'} Catalog 1
+            {lastDocs[0].path}
           </div>
           <div className="modificationDate">
-            25.04.2021
+            {lastDocs[0].modificationDate}
           </div>
         </div>
 
         <div className="lastDocContainer">
           <div className="docName">
-            Document 2
+            {lastDocs[1].name}
           </div>
           <div className="pathToDoc">
-            Workspace 2 
+            {lastDocs[1].path}
           </div>
           <div className="modificationDate">
-            14.04.2021
+            {lastDocs[1].modificationDate}
           </div>
         </div>
           
         <div className="lastDocContainer">
           <div className="docName">
-            Document 3
+            {lastDocs[2].name}
           </div>
           <div className="pathToDoc">
-            Workspace 3 {'>>'} Catalog 2
+            {lastDocs[2].path}
           </div>
           <div className="modificationDate">
-            10.04.2021
+            {lastDocs[2].modificationDate}
           </div>
         </div>
       </div>
