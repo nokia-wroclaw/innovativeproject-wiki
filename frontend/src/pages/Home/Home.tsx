@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, Box } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import SettingsIcon from '@material-ui/icons/Settings';
 import SearchIcon from '@material-ui/icons/Search';
+import BuildIcon from '@material-ui/icons/Build';
 import useStyles from './Home.styles';
 
 export default function Home() {
@@ -11,10 +12,8 @@ export default function Home() {
 
   return (
     <div>
-      <Button color="primary" to="/editor"component={Link}>
-        Go to Editor Page
-      </Button>
-      <Paper elevation={10} className={classes.homeTitlePaper}>
+    
+      <Paper elevation={2} className={classes.homeTitlePaper}>
         <Grid
           container
           direction="row"
@@ -27,31 +26,45 @@ export default function Home() {
 
       <Grid 
         container
-        direction="row"
-        justify="space-around"
-        alignItems="center"
+        justify="center"
+        spacing={5}
         >
-        <Grid> 
-          <Paper elevation={5} square={false} className={classes.firstFeaturePaper}>
-            <CreateIcon className={classes.firstFeature}/>
+
+        <Grid item> 
+          <Paper elevation={2} className={classes.featurePaper}>
+            <CreateIcon className={classes.penIcon}/>
               EASY-TO-USE
           </Paper>
         </Grid>
-        <Grid>
-          <Paper elevation={5} className={classes.firstFeaturePaper}>
-            <SearchIcon className={classes.secondFeature}/>
+
+        <Grid item >
+          <Paper elevation={2} className={classes.featurePaper}>
+            <SearchIcon className={classes.searchIcon}/>
               SEARCHEABLE
           </Paper>
         </Grid>
-        <Grid>
-          <Paper elevation={5} className={classes.firstFeaturePaper}>
-            <SettingsIcon className={classes.thirdFeature}/>
+
+        <Grid item>
+          <Paper elevation={2} className={classes.featurePaper}>
+            <SettingsIcon className={classes.settingsIcon}/>  
               CONFIGURABLE
+
           </Paper>
         </Grid>
+
       </Grid>
+
+      <Button
+        className={classes.demoButton}
+        variant="contained"
+        color="primary"
+        to="/editor"component={Link}
+        endIcon={<BuildIcon/>}
+      >
+        Go to Editor Demo Page
+      </Button>
+
     </div>
-    
     
   );
 }

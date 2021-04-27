@@ -2,32 +2,53 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   homeTitlePaper: {
+    display: 'flex',
     padding: 40,
     height: 200,
     width: 800,
     margin: '30px auto',
     fontSize: 180,
+    background: 'rgba(52, 52, 52, 0.05)',
+    borderRadius: 20,
+    marginTop: 80,
   },
-  firstFeaturePaper: {
+
+  featurePaper: {
+    display: 'flex',
     padding: 40,
     height: 30,
-    width: 350,
+    width: 345,
     margin: '30px auto',
     fontWeight: 'bold',
     fontSize: 40,
+    background: 'rgba(52, 52, 52, 0.05)' ,
+    borderRadius: 20,
   },
-  firstFeature: {
+
+  penIcon: {
     color: '#0386D0',
-    fontSize: 40,
+    fontSize: 60,
+    marginLeft: 10,
+    marginTop: -10,
   },
-  secondFeature: {
+
+  searchIcon: {
     color: 'red',
-    fontSize: 40,
+    fontSize: 60,
+    marginTop: -10,
   },
-  thirdFeature: {
+
+  settingsIcon: {
     color: 'grey',
-    fontSize: 40,
+    fontSize: 60,
+    marginLeft: -8,
+    marginTop: -10,
   },
+
+  demoButton:  {
+    marginTop: 70,
+  },
+
 }));
 
 export default useStyles;
