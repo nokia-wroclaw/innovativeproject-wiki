@@ -4,13 +4,15 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   title: {
-    flexGrow: 1,
     color: '#fff',
     textDecoration: 'none',
+    float: 'left',
+  },
+  buttons: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    paddingRight: 0,
   },
 }));
 
