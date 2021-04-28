@@ -58,18 +58,23 @@ const Sidebar: React.FC = () => {
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
-  const postItem = async (itemPath: string) => {
+  const postItem = async (itemName: string, itemPath: string) => {
     try {
       const workspaceName = 'nalesniki';
-      console.log(itemPath);
-      await fetch(`/workspace/new/${workspaceName}/${itemPath}`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-      }).then((res) => console.log(res));
+      console.log(
+        `/workspace/new/${workspaceName}/${itemName}?virtual_path=${itemPath}`
+      );
+      await fetch(
+        `/workspace/new/${workspaceName}/${itemName}?virtual_path=${itemPath}`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        }
+      ).then((res) => console.log(res));
     } catch {
       console.error('Error');
     }
@@ -80,9 +85,8 @@ const Sidebar: React.FC = () => {
     const foundItem = list.find((node) => node.text === parentItem.text);
     path += `${parentItem.text}#`;
     if (foundItem) {
-      path += `${item.text}`;
       parentItem.children?.push(item);
-      postItem(path);
+      postItem(item.text, path);
       path = '';
       return;
     }
