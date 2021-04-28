@@ -19,6 +19,7 @@ function App() {
             <Appbar />
           </div>
           <Switch>
+            <Route exact path="/:fileName" component={FilePage} />
             <Route exact path="/" component={Home} />
             <Route exact path="/about" component={About} />
             <Route exact path="/login" component={Login} />
