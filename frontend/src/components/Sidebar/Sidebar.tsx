@@ -58,11 +58,29 @@ const Sidebar: React.FC = () => {
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
+  const postItem = async (itemName: string) => {
+    try {
+      await fetch(`/user`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          document_name: itemName,
+        }),
+      }).then((res) => console.log(res));
+    } catch {
+      console.error('Error');
+    }
+  };
+
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
 
     if (foundItem) {
       parentItem.children?.push(item);
+      postItem(item.text);
       return;
     }
 
