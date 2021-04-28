@@ -1,11 +1,9 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Sidebar from '../components/Sidebar/Sidebar';
-import TextEditor from '../components/TextEditor/TextEditor';
-import FilePage from './FilePage/FilePage';
+import Sidebar from '../../components/Sidebar/Sidebar';
+import TextEditor from '../../components/TextEditor/TextEditor';
 
 const useStyles = makeStyles((theme) => ({
   editPageContainer: {
@@ -25,14 +23,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function FilePage({ match }: { match: any }) {
   const classes = useStyles();
+  const { fileName } = match.params;
 
   return (
     <div>
+      <Button color="primary" to="/" component={Link}>
+        {fileName}
+      </Button>
       <div className={classes.editPageContainer}>
-        <div className={classes.sidebar}>
-          <Sidebar />
+        <div className={classes.editor}>
+          <TextEditor fileName={fileName} />
         </div>
       </div>
     </div>
