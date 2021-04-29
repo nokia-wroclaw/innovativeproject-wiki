@@ -5,12 +5,12 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
-import {AppContext} from '../../contexts/AppContext'
+import { AppContext } from '../../contexts/AppContext';
 import useStyles from './Appbar.styles';
 
 export default function Appbar() {
   const classes = useStyles();
-  const {user} = useContext(AppContext)
+  const { user } = useContext(AppContext);
 
   return (
     <div className={classes.root}>
