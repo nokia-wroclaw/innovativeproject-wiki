@@ -23,7 +23,8 @@ function App() {
             <Route exact path="/about" component={About} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/:fileName" component={FilePage} />
+            <Route exact path="/editor" component={FilePage} />
+            <Route exact path="/editor/:fileName" component={FilePage} />
           </Switch>
         </div>
       </Router>

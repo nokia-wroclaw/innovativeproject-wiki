@@ -133,7 +133,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           {props.item.children && !open && <ExpandMore />}
         </ListItem>
       ) : (
-        <Link to={`/${props.item.text}`} className={classes.fileItem}>
+        <Link to={`/editor/${props.item.text}`} className={classes.fileItem}>
           <ListItem
             button
             selected={props.selectedNode?.text === props.item.text}

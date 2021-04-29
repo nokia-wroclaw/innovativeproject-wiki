@@ -29,14 +29,10 @@ export default function FilePage({ match }: { match: any }) {
   const { fileName } = match.params;
 
   return (
-    <div>
-      <Button color="primary" to="/" component={Link}>
-        {fileName}
-      </Button>
-      <div className={classes.editPageContainer}>
-        <div className={classes.editor}>
-          <TextEditor fileName={fileName} />
-        </div>
+    <div className={classes.editPageContainer}>
+      <Sidebar />
+      <div className={classes.editor}>
+        <TextEditor fileName={fileName} />
       </div>
     </div>
   );

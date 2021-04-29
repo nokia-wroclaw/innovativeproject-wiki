@@ -22,6 +22,14 @@ export default function Appbar() {
           >
             InnoDocs
           </Typography>
+          <Button
+            color="inherit"
+            to="/editor"
+            component={Link}
+            style={{ marginLeft: 500 }}
+          >
+            Editor
+          </Button>
           <Container className={classes.buttons}>
             <Button color="inherit" to="/login" component={Link}>
               Login

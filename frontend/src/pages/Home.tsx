@@ -31,9 +31,7 @@ export default function Home() {
   return (
     <div>
       <div className={classes.editPageContainer}>
-        <div className={classes.sidebar}>
-          <Sidebar />
-        </div>
+        <h1>Home</h1>
       </div>
     </div>
   );
