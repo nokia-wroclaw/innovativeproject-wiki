@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
       workspacesContainer: {
         display: 'flex',
-        marginLeft: -935,
+        marginLeft: -1035,
         marginTop: 80,
       },
 
@@ -45,13 +45,43 @@ const useStyles = makeStyles((theme: Theme) =>
       },
 
       lastUpdateWorkspace: {
-        marginLeft: 410,
+        marginLeft: 415,
       },
 
       pages: {
-          marginLeft: -620,
+          marginLeft: -710,
           marginTop: 550,
-      }
+      },
+
+      deleteContainer: {
+          marginLeft: 540,
+          marginTop: -615,
+      },
+
+      deleteButton: {
+          background: '#B00020',
+          color: 'white'
+      },
+
+      button2: {
+        marginTop: 4,
+      },
+
+      button3: {
+        marginTop: 5,
+      },
+
+      button4: {
+        marginTop: 3,
+      },
+
+      button5: {
+        marginTop: 4,
+      },
+
+      button6: {
+        marginTop: 5,
+      },
 
 }));
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Grid, Paper, Box} from '@material-ui/core';
+import { Grid, Paper, IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import useStyles from './Workspaces.style';
 
 export default function Home() {
@@ -25,7 +25,6 @@ export default function Home() {
         <h4 className={classes.nameTitle}> Name </h4>
         <h4 className={classes.lastUpdateTitle}> Last Update </h4>
         
-        <div>
         <Grid
             container
             direction="column"
@@ -33,7 +32,7 @@ export default function Home() {
             spacing={1}
             className={classes.workspacesContainer}
         >
-            <Grid item>
+            <Grid item direction="column">
                 <Paper elevation={3} className={classes.workspaces}>
                     <div className={classes.nameWorkspace}>
                         {workspaces[0].name}
@@ -43,6 +42,7 @@ export default function Home() {
                     </div>
                 </Paper>
             </Grid>
+            
 
             <Grid item>
                 <Paper elevation={3}  className={classes.workspaces}>
@@ -100,15 +100,58 @@ export default function Home() {
             </Grid>
 
         </Grid>
-        </div>
 
-        <div className={classes.pages}>
-            <h4>
-             1 2 3 4 5 ... 99
-            </h4>
-        </div>
+        <Grid className={classes.pages}>
+            <h4> 1 2 3 4 5 ... 99 </h4>
+        </Grid>
 
       </Paper>
+
+
+      <Grid 
+       container 
+       alignItems="center" 
+       direction="column" 
+       spacing={4} 
+       className={classes.deleteContainer}>
+
+        <Grid item>  
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+        <Grid item className={classes.button2}> 
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+        <Grid item className={classes.button3}> 
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+        <Grid item className={classes.button4}> 
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+        <Grid item className={classes.button5}> 
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+        <Grid item className={classes.button6}> 
+            <IconButton className={classes.deleteButton}>
+                <DeleteIcon />
+            </IconButton>
+        </Grid> 
+
+      </Grid>
 
     </div>
     
