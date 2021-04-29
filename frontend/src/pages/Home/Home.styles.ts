@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     margin: '30px auto',
     fontWeight: 'bold',
     fontSize: 40,
-    background: 'rgba(52, 52, 52, 0.05)' ,
+    background: 'rgba(52, 52, 52, 0.05)',
     borderRadius: 20,
   },
 
@@ -45,25 +45,24 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -10,
   },
 
-  demoEditorButton:  {
+  demoEditorButton: {
     marginTop: 70,
   },
 
-  demoLastAcitivityButton:  {
-    marginTop: 70,
-    marginLeft: 10,
-  },
-
-  demoWorkspacesButton:  {
+  demoLastAcitivityButton: {
     marginTop: 70,
     marginLeft: 10,
   },
 
-  demoProfileButton:  {
+  demoWorkspacesButton: {
     marginTop: 70,
     marginLeft: 10,
   },
 
+  demoProfileButton: {
+    marginTop: 70,
+    marginLeft: 10,
+  },
 }));
 
 export default useStyles;
