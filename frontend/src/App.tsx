@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Appbar from './components/Appbar/Appbar';
-import Home from './pages/Home';
-import About from './pages/About';
+import Workspaces from './pages/Workspaces/Workspaces';
+import Home from './pages/Home/Home';
+import Editor from './pages/Editor';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import FilePage from './pages/FilePage/FilePage';
@@ -19,7 +20,7 @@ function App() {
           </div>
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/about" component={About} />
+            <Route exact path="/editor" component={Editor} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/editor" component={FilePage} />

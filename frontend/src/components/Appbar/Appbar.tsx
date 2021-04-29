@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
+import {AppContext} from '../../contexts/AppContext'
 import useStyles from './Appbar.styles';
 
 export default function Appbar() {
   const classes = useStyles();
+  const {user} = useContext(AppContext)
 
   return (
     <div className={classes.root}>
@@ -19,6 +21,7 @@ export default function Appbar() {
             className={classes.title}
             to="/"
             component={Link}
+            align="left"
           >
             InnoDocs
           </Typography>
