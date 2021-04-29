@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Appbar from './components/Appbar/Appbar';
+import Workspaces from './pages/Workspaces/Workspaces';
 import Home from './pages/Home/Home';
 import Editor from './pages/Editor';
 import Login from './pages/Login/Login';
@@ -25,6 +26,7 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/lastActivity" component={LastActivity} />
+            <Route exact path="/workspaces" component={Workspaces} />
           </Switch>
         </div>
       </Router>
