@@ -7,6 +7,7 @@ import Editor from './pages/Editor';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import LastActivity from './pages/LastActivity/LastActivity';
+import UserData from './pages/UserData/UserData';
 import ContextProvider from './contexts/AppContext';
 import './App.css';
 
@@ -26,7 +27,11 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/lastActivity" component={LastActivity} />
+<<<<<<< HEAD
             <Route exact path="/workspaces" component={Workspaces} />
+=======
+            <Route exact path="/UserData" component={UserData} />
+>>>>>>> ae3b47d... Add user page
           </Switch>
         </div>
       </Router>

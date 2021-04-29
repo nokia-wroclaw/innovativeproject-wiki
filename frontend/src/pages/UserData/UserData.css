@@ -1,0 +1,74 @@
+.shadow1{
+    /* border: 1px solid; */
+    padding: 10px;
+    box-shadow: 5px 10px 18px #888888;
+}
+
+#title{
+    float:left;
+    margin-top: 15px;
+    margin-left: 15px;
+    font-size: 25px;
+}
+
+#dataContainer{
+    margin-top: 80px;
+    width: 800px;
+    height: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#ppContainer{
+    width: 350px;
+    height: 325px;
+    margin-left: 33px;
+    /*background-color: darkgrey;*/
+    float: left;
+    
+}
+
+#infoContainer{
+    width: 350px;
+    height: 325px;
+    margin-left: 33px;
+    float: left;
+    /*background-color: darkgrey;*/
+}
+
+#passwordContainer{
+    width: 700px;
+    height: 60px;
+    /*background-color: antiquewhite;*/
+    margin-top: 20px;
+    margin-left: 50px;
+}
+
+#newPassInput{
+    float:left;
+    color: black;
+}
+
+#saveButton{
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#imageContainer{
+    width: 200px;
+    height: 200px;
+    margin-left: 75px;
+    margin-bottom: 20px;
+    margin-top: 30px;
+    /*background-color: darkcyan;*/
+    box-shadow: 5px 10px 18px #888888;
+    border-radius: 80px;
+    background-image: url('test-img/pic1.jpg');
+    background-position: center;
+    background-size: cover; 
+}
+
+#uploadButton{
+    background-color: #b4aeae;
+}
