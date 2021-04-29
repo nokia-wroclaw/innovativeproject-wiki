@@ -7,48 +7,48 @@ import type { Node } from './Sidebar.types';
 
 const initialList: Node[] = [
   {
-    text: 'Item 1',
+    text: 'Item1',
     level: 0,
     open: true,
     children: [
       {
-        text: 'Item 1.1',
+        text: 'Item1.1',
         level: 1,
       },
       {
-        text: 'Item 1.2',
+        text: 'Item1.2',
         level: 1,
         open: false,
         children: [
           {
-            text: 'Item 1.2.1',
+            text: 'Item1.2.1',
             level: 2,
           },
         ],
       },
       {
-        text: 'Item 1.3',
+        text: 'Item1.3',
         level: 1,
       },
     ],
   },
   {
-    text: 'Item 2',
+    text: 'Item2',
     level: 0,
   },
   {
-    text: 'Item 3',
+    text: 'Item3',
     level: 0,
     open: true,
     children: [
       {
-        text: 'Item 3.1',
+        text: 'Item3.1',
         level: 1,
       },
     ],
   },
   {
-    text: 'Item 4',
+    text: 'Item4',
     level: 0,
   },
 ];
@@ -58,11 +58,36 @@ const Sidebar: React.FC = () => {
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
 
+  const postItem = async (itemName: string, itemPath: string) => {
+    try {
+      const workspaceName = 'nalesniki';
+      console.log(
+        `/workspace/new/${workspaceName}/${itemName}?virtual_path=${itemPath}`
+      );
+      await fetch(
+        `/workspace/new/${workspaceName}/${itemName}?virtual_path=${itemPath}`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        }
+      ).then((res) => console.log(res));
+    } catch {
+      console.error('Error');
+    }
+  };
+
+  let path = '';
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
-
+    path += `${parentItem.text}#`;
     if (foundItem) {
       parentItem.children?.push(item);
+      postItem(item.text, path);
+      path = '';
       return;
     }
 

@@ -11,6 +11,7 @@ import Collapse from '@material-ui/core/Collapse';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import { Link } from 'react-router-dom';
 import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
 
@@ -114,22 +115,43 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       style={{ cursor: 'context-menu', paddingLeft: 20 }}
       onContextMenu={(event) => event.preventDefault()}
     >
-      <ListItem
-        button
-        selected={props.selectedNode?.text === props.item.text}
-        onClick={(event) => {
-          props.setSelectedNode(props.item);
-          setOpen(!open);
-        }}
-        onContextMenu={handleRightClick}
-      >
-        <ListItemIcon>
-          {childNodes ? <FolderIcon /> : <DescriptionIcon />}
-        </ListItemIcon>
-        <ListItemText primary={props.item.text} />
-        {props.item.children && open && <ExpandLess />}
-        {props.item.children && !open && <ExpandMore />}
-      </ListItem>
+      {childNodes ? (
+        <ListItem
+          button
+          selected={props.selectedNode?.text === props.item.text}
+          onClick={(event) => {
+            props.setSelectedNode(props.item);
+            setOpen(!open);
+          }}
+          onContextMenu={handleRightClick}
+        >
+          <ListItemIcon>
+            {childNodes ? <FolderIcon /> : <DescriptionIcon />}
+          </ListItemIcon>
+          <ListItemText primary={props.item.text} />
+          {props.item.children && open && <ExpandLess />}
+          {props.item.children && !open && <ExpandMore />}
+        </ListItem>
+      ) : (
+        <Link to={`/editor/${props.item.text}`} className={classes.fileItem}>
+          <ListItem
+            button
+            selected={props.selectedNode?.text === props.item.text}
+            onClick={(event) => {
+              props.setSelectedNode(props.item);
+              setOpen(!open);
+            }}
+            onContextMenu={handleRightClick}
+          >
+            <ListItemIcon>
+              {childNodes ? <FolderIcon /> : <DescriptionIcon />}
+            </ListItemIcon>
+            <ListItemText primary={props.item.text} />
+            {props.item.children && open && <ExpandLess />}
+            {props.item.children && !open && <ExpandMore />}
+          </ListItem>
+        </Link>
+      )}
       {addOpen ? (
         <ListItem className={classes.nested}>
           <TextField

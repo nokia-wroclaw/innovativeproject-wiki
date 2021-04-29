@@ -3,8 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Brightness2Icon from '@material-ui/icons/Brightness2';
+import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import {AppContext} from '../../contexts/AppContext'
 import useStyles from './Appbar.styles';
@@ -20,20 +19,28 @@ export default function Appbar() {
           <Typography
             variant="h6"
             className={classes.title}
-            to="/"  
+            to="/"
             component={Link}
             align="left"
           >
             InnoDocs
           </Typography>
-
-          <Button color="inherit" to="/login" component={Link}>
-            Login
+          <Button
+            color="inherit"
+            to="/editor"
+            component={Link}
+            style={{ marginLeft: 100 }}
+          >
+            Editor
           </Button>
-          <Button color="inherit" to="/register" component={Link}>
-            Register
-          </Button>
-          
+          <Container className={classes.buttons}>
+            <Button color="inherit" to="/login" component={Link}>
+              Login
+            </Button>
+            <Button color="inherit" to="/register" component={Link}>
+              Register
+            </Button>
+          </Container>
         </Toolbar>
       </AppBar>
     </div>

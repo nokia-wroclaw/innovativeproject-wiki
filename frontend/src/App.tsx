@@ -6,12 +6,9 @@ import Home from './pages/Home/Home';
 import Editor from './pages/Editor';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
-import LastActivity from './pages/LastActivity/LastActivity';
-import UserData from './pages/UserData/UserData';
+import FilePage from './pages/FilePage/FilePage';
 import ContextProvider from './contexts/AppContext';
 import './App.css';
-
-
 
 function App() {
   return (
@@ -26,9 +23,8 @@ function App() {
             <Route exact path="/editor" component={Editor} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/lastActivity" component={LastActivity} />
-            <Route exact path="/workspaces" component={Workspaces} />
-            <Route exact path="/UserData" component={UserData} />
+            <Route exact path="/editor" component={FilePage} />
+            <Route exact path="/editor/:fileName" component={FilePage} />
           </Switch>
         </div>
       </Router>

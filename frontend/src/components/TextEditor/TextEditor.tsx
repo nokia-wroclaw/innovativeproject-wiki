@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import isHotkey from 'is-hotkey';
 import {
   Editable,
@@ -48,20 +49,36 @@ const HOTKEYS: Record<string, string> = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const TextEditor = () => {
-  const [value, setValue] = useState<Descendant[]>(initialValue);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   const classes = useStyles();
 
+  const [value, setValue] = useState<Descendant[]>([]);
+
+  useEffect(() => {
+    const initialValue: Descendant[] = [
+      {
+        type: 'paragraph',
+        children: [{ text: `${props.fileName}` }],
+      },
+    ];
+    setValue(initialValue);
+  }, [props.fileName]);
+
   return (
     <div className={classes.slate}>
       <Slate
         editor={editor}
         value={value}
-        onChange={(newValue) => setValue(newValue)}
+        onChange={(newValue) => {
+          setValue(newValue);
+          const content = JSON.stringify(newValue);
+          localStorage.setItem(`content`, content);
+        }}
       >
         <Toolbar className={classes.toolbar}>
           <MarkButton format="bold" icon="format_bold" />
@@ -216,12 +233,5 @@ const MarkButton = ({ format, icon }: any) => {
     </Button>
   );
 };
-
-const initialValue: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [{ text: 'This is InnoDocs editor ' }],
-  },
-];
 
 export default TextEditor;
