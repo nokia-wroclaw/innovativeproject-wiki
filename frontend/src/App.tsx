@@ -27,11 +27,8 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/lastActivity" component={LastActivity} />
-<<<<<<< HEAD
             <Route exact path="/workspaces" component={Workspaces} />
-=======
             <Route exact path="/UserData" component={UserData} />
->>>>>>> ae3b47d... Add user page
           </Switch>
         </div>
       </Router>
