@@ -55,13 +55,43 @@ export default function Home() {
       </Grid>
 
       <Button
-        className={classes.demoButton}
+        className={classes.demoEditorButton}
         variant="contained"
         color="primary"
         to="/editor"component={Link}
         endIcon={<BuildIcon/>}
       >
         Go to Editor Demo Page
+      </Button>
+
+      <Button
+        className={classes.demoLastAcitivityButton}
+        variant="contained"
+        color="primary"
+        to="/lastActivity"component={Link}
+        endIcon={<BuildIcon/>}
+      >
+        Go to Last Activity Demo Page
+      </Button>
+
+      <Button
+        className={classes.demoWorkspacesButton}
+        variant="contained"
+        color="primary"
+        to="/workspaces"component={Link}
+        endIcon={<BuildIcon/>}
+      >
+        Go to Workspaces Demo Page
+      </Button>
+
+      <Button
+        className={classes.demoProfileButton}
+        variant="contained"
+        color="primary"
+        to="/userData"component={Link}
+        endIcon={<BuildIcon/>}
+      >
+        Go to Profile Demo Page
       </Button>
 
     </div>

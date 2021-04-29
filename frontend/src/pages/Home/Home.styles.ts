@@ -45,8 +45,23 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -10,
   },
 
-  demoButton:  {
+  demoEditorButton:  {
     marginTop: 70,
+  },
+
+  demoLastAcitivityButton:  {
+    marginTop: 70,
+    marginLeft: 10,
+  },
+
+  demoWorkspacesButton:  {
+    marginTop: 70,
+    marginLeft: 10,
+  },
+
+  demoProfileButton:  {
+    marginTop: 70,
+    marginLeft: 10,
   },
 
 }));
