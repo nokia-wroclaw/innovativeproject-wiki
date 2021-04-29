@@ -26,7 +26,7 @@ export default function Appbar() {
             color="inherit"
             to="/editor"
             component={Link}
-            style={{ marginLeft: 500 }}
+            style={{ marginLeft: 100 }}
           >
             Editor
           </Button>

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import isHotkey from 'is-hotkey';
 import {
   Editable,
@@ -57,14 +57,17 @@ const TextEditor = (props: any) => {
 
   const classes = useStyles();
 
-  const initialValue: Descendant[] = [
-    {
-      type: 'paragraph',
-      children: [{ text: `${props.fileName}` }],
-    },
-  ];
+  const [value, setValue] = useState<Descendant[]>([]);
 
-  const [value, setValue] = useState<Descendant[]>(initialValue);
+  useEffect(() => {
+    const initialValue: Descendant[] = [
+      {
+        type: 'paragraph',
+        children: [{ text: `${props.fileName}` }],
+      },
+    ];
+    setValue(initialValue);
+  }, [props.fileName]);
 
   return (
     <div className={classes.slate}>

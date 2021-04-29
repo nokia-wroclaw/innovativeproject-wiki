@@ -9,11 +9,10 @@ const useStyles = makeStyles((theme) => ({
   editPageContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignContent: 'space-between',
     height: '80vh ',
-    // alignItems: 'flex-start',
   },
   sidebar: {
+    marginTop: 20,
     marginLeft: 20,
   },
   editor: {
@@ -30,7 +29,9 @@ export default function FilePage({ match }: { match: any }) {
 
   return (
     <div className={classes.editPageContainer}>
-      <Sidebar />
+      <div className={classes.sidebar}>
+        <Sidebar />
+      </div>
       <div className={classes.editor}>
         <TextEditor fileName={fileName} />
       </div>

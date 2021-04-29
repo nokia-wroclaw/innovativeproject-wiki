@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
-import Sidebar from './components/Sidebar/Sidebar';
 import FilePage from './pages/FilePage/FilePage';
 import ContextProvider from './contexts/AppContext';
 import './App.css';
