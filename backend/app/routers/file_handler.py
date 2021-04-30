@@ -6,7 +6,7 @@ import os
 from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import FileResponse
 
-from app.routers.workspace_manager import get_doc_img_path, get_doc_atch_path
+from app.routers.workspace_manager import get_image_path, get_attachment_path
 from app.dependencies import random_filename
 from app.utils.message import Message, MsgStatus
 
@@ -45,7 +45,7 @@ async def upload_img(workspace_id: str, doc_id: str, file: UploadFile = File(...
     TODO function docstring
     """
 
-    path = get_doc_img_path(workspace_id, doc_id) / random_filename_with_ext(
+    path = get_image_path(workspace_id, doc_id) / random_filename_with_ext(
         file.filename
     )
     return await upload_file(file, path.absolute())
@@ -57,7 +57,7 @@ async def upload_atch(workspace_id: str, doc_id: str, file: UploadFile = File(..
     TODO function docstring
     """
 
-    path = get_doc_atch_path(workspace_id, doc_id) / random_filename_with_ext(
+    path = get_attachment_path(workspace_id, doc_id) / random_filename_with_ext(
         file.filename
     )
     return await upload_file(file, path.absolute())
@@ -69,7 +69,7 @@ async def get_img(workspace_id: str, doc_id: str, img_id: str):
     TODO function docstring
     """
 
-    path = get_doc_img_path(workspace_id, doc_id, img_id)
+    path = get_image_path(workspace_id, doc_id, img_id)
     return FileResponse(path.absolute())
 
 
@@ -79,5 +79,5 @@ async def get_atch(workspace_id: str, doc_id: str, atch_id: str):
     TODO function docstring
     """
 
-    path = get_doc_atch_path(workspace_id, doc_id, atch_id)
+    path = get_attachment_path(workspace_id, doc_id, atch_id)
     return FileResponse(path.absolute())

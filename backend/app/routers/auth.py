@@ -126,9 +126,7 @@ async def create_user(form: OAuth2PasswordRequestForm = Depends()):
         )
 
     email = form.scopes[0]
-    return user_db.add_user(
-        form.username, hash_password(form.password), email
-    )
+    return user_db.add_user(form.username, hash_password(form.password), email)
 
 
 @router.get("/me", response_model=dict)
