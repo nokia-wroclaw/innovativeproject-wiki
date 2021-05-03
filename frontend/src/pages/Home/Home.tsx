@@ -1,100 +1,98 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Grid, Paper, Box } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import SettingsIcon from '@material-ui/icons/Settings';
-import SearchIcon from '@material-ui/icons/Search';
+import { Button, Grid, Paper, Box, Typography } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 import useStyles from './Home.styles';
+import UndrawDocs from '../../images/UndrawDocs.svg';
+import UndrawCloud from '../../images/UndrawCloud.svg';
+import UndrawPersonal from '../../images/UndrawPersonal.svg';
+import UndrawDocuments from '../../images/UndrawDocuments.svg';
+import UndrawMyFiles from '../../images/UndrawMyFiles.svg';
 
 export default function Home() {
   const classes = useStyles();
 
   return (
     <div>
-    
-      <Paper elevation={2} className={classes.homeTitlePaper}>
-        <Grid
-          container
-          direction="row"
-          justify="space-around"
-          alignItems="center"
-        > 
-          InnoDocs        
-        </Grid>
-      </Paper>
+      <Typography variant="h2" className={classes.homepage__title}>
+        InnoDocs
+      </Typography>
+      <Typography variant="h6" className={classes.homepage__subtitle}>
+        Free and Open Source web app perfect for making documentation intended
+        for use in small to moderate sized teams
+      </Typography>
 
-      <Grid 
-        container
-        justify="center"
-        spacing={5}
+      <div className={classes.homepage__cards}>
+        <div className={classes.homepage__card}>
+          <img
+            src={UndrawMyFiles}
+            alt="UndrawMyFiles"
+            className={classes.homepage__undraw}
+          />
+          <Typography variant="h3">EASY-TO-USE</Typography>
+        </div>
+        <div className={classes.homepage__card}>
+          <Typography variant="h3">CONFIGURABLE</Typography>
+          <img
+            src={UndrawCloud}
+            alt="UndrawCloud"
+            className={classes.homepage__undraw}
+          />
+        </div>
+        <div className={classes.homepage__card}>
+          <img
+            src={UndrawPersonal}
+            alt="UndrawPersonal"
+            className={classes.homepage__undraw}
+          />
+          <Typography variant="h3">SEARCHABLE</Typography>
+        </div>
+      </div>
+      <div className={classes.homepage__buttons}>
+        <Button
+          variant="contained"
+          color="primary"
+          to="/editor"
+          component={Link}
+          endIcon={<BuildIcon />}
+          className={classes.homepage__button}
         >
+          Editor
+        </Button>
 
-        <Grid item> 
-          <Paper elevation={2} className={classes.featurePaper}>
-            <CreateIcon className={classes.penIcon}/>
-              EASY-TO-USE
-          </Paper>
-        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          to="/lastActivity"
+          component={Link}
+          endIcon={<BuildIcon />}
+          className={classes.homepage__button}
+        >
+          Last Activity
+        </Button>
 
-        <Grid item >
-          <Paper elevation={2} className={classes.featurePaper}>
-            <SearchIcon className={classes.searchIcon}/>
-              SEARCHEABLE
-          </Paper>
-        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          to="/workspaces"
+          component={Link}
+          endIcon={<BuildIcon />}
+          className={classes.homepage__button}
+        >
+          Workspaces
+        </Button>
 
-        <Grid item>
-          <Paper elevation={2} className={classes.featurePaper}>
-            <SettingsIcon className={classes.settingsIcon}/>  
-              CONFIGURABLE
-
-          </Paper>
-        </Grid>
-
-      </Grid>
-
-      <Button
-        className={classes.demoEditorButton}
-        variant="contained"
-        color="primary"
-        to="/editor"component={Link}
-        endIcon={<BuildIcon/>}
-      >
-        Go to Editor Demo Page
-      </Button>
-
-      <Button
-        className={classes.demoLastAcitivityButton}
-        variant="contained"
-        color="primary"
-        to="/lastActivity"component={Link}
-        endIcon={<BuildIcon/>}
-      >
-        Go to Last Activity Demo Page
-      </Button>
-
-      <Button
-        className={classes.demoWorkspacesButton}
-        variant="contained"
-        color="primary"
-        to="/workspaces"component={Link}
-        endIcon={<BuildIcon/>}
-      >
-        Go to Workspaces Demo Page
-      </Button>
-
-      <Button
-        className={classes.demoProfileButton}
-        variant="contained"
-        color="primary"
-        to="/userData"component={Link}
-        endIcon={<BuildIcon/>}
-      >
-        Go to Profile Demo Page
-      </Button>
-
+        <Button
+          variant="contained"
+          color="primary"
+          to="/userData"
+          component={Link}
+          endIcon={<BuildIcon />}
+          className={classes.homepage__button}
+        >
+          Profile
+        </Button>
+      </div>
     </div>
-    
   );
 }
