@@ -126,3 +126,4 @@ dmypy.json
 
 # logs
 logs/
+data/workspaces/

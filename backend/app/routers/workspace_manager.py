@@ -24,7 +24,7 @@ INFO_FILE = "info.json"
 DOCUMENT_FILE = "document.json"
 
 
-def get_workspace_path(workspace_name: str = ""):
+def get_workspace_path(workspace_name: str = "") -> Path:
     """
     Returns path to directory of workspace with given name.
     If no argument is given - returns path to workspaces collective directory.
@@ -55,7 +55,7 @@ def get_workspace_path(workspace_name: str = ""):
     return path
 
 
-def get_document_path(workspace_name: str, doc_name: str = ""):
+def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
     """
     Returns path to directory of document with given name.
     If no argument is given - returns path to documents collective directory.
@@ -83,13 +83,14 @@ def get_document_path(workspace_name: str, doc_name: str = ""):
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Document with name <<{doc_name}>> doesn't exist in workspace <<{workspace_name}>>",
+            detail=f"Document with name <<{doc_name}>>" +
+                   f" doesn't exist in workspace <<{workspace_name}>>",
         )
 
     return path
 
 
-def get_image_path(workspace_name: str, document_name: str, img: str = ""):
+def get_image_path(workspace_name: str, document_name: str, img: str = "") -> Path:
     """
     Returns path to image file with given name.
     If no argument is given - returns path to images collective directory.
@@ -124,7 +125,7 @@ def get_image_path(workspace_name: str, document_name: str, img: str = ""):
     return path
 
 
-def get_attachment_path(workspace_name: str, document_name: str, atch: str = ""):
+def get_attachment_path(workspace_name: str, document_name: str, atch: str = "") -> Path:
     """
     Returns path to attachment file with given name.
     If no argument is given - returns path to attachments collective directory.
@@ -153,15 +154,16 @@ def get_attachment_path(workspace_name: str, document_name: str, atch: str = "")
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Attachment with name <<{atch}>> doesn't exist in workspace <<{workspace_name}>>",
+            detail=f"Attachment with name <<{atch}>>" +
+                   f" doesn't exist in workspace <<{workspace_name}>>",
         )
 
     return path
 
 
 async def update_virtual_structure(
-    workspace_name: str, document_name: str, virtual_path: str
-):
+        workspace_name: str, document_name: str, virtual_path: str
+) -> Message:
     """TODO function docstring"""
 
     path = get_workspace_path(workspace_name) / CONFIG_FILE
@@ -169,7 +171,7 @@ async def update_virtual_structure(
         raise HTTPException(
             status_code=404, detail=f"Can't find config file at {path.absolute()}"
         )
-    
+
     with open(path, "r") as config_file:
         config_data = json.load(config_file)
 
@@ -186,9 +188,106 @@ async def update_virtual_structure(
         json.dump(config_data, config_file, indent=4)
 
     return Message(
-        status=MsgStatus.INFO, 
-        detail=f"<<{workspace_name}>> virtual structure updated successfuly"
+        status=MsgStatus.INFO,
+        detail=f"<<{workspace_name}>> virtual structure updated successfully"
     )
+
+
+def _add_new_folder(folder: dict, new_folder_name: str, level: int) -> (dict, int):
+    """
+    Helper function for creating folders in frontend sidebar.
+
+    Parameters:
+        folder (dict): folder to be added to
+        new_folder_name (str): name of the folder to add
+        level (int): how nested the new folder is
+
+    Returns:
+        (dict, int): newly created folder (or existing one if it already existed)
+         and increased nesting level
+    """
+    # check if the folder already exists
+    for child in folder["children"]:
+        if child["text"] == new_folder_name:
+            return child, level + 1
+
+    new_folder = {
+        "text": new_folder_name,
+        "level": level,
+        "open": False,
+        "children": []
+    }
+    folder["children"].append(new_folder)
+    return new_folder, level + 1
+
+
+@router.get("/translate/{workspace_name}")
+async def translate_workspace_virtual_structure_to_frontend(workspace_name: str) -> json:
+    """
+    Translates the virtual structure of a given workspace (folders and files)
+    in a way that frontend app understands.
+
+    Parameters:
+        workspace_name (str): name of the workspace that needs to be translated
+
+    Returns:
+        json: a json structured in a way that frontend can use
+
+    Raises:
+        HTTPException [404]: if the config file of a workspace cannot be found
+    """
+
+    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    if not path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"Can't find config file at {path.absolute()}"
+        )
+
+    with open(path, "r") as config_file:
+        config_data = json.load(config_file)
+
+    virtual_structure = config_data["virtual_structure"]
+
+    nodes = []
+
+    for document in virtual_structure:
+        name = document['name']
+        virtual_path = document['virtual_path'].split('/')[1:]
+        if len(virtual_path) == 1 and virtual_path[0] == '':  # root
+            nodes.append(
+                {
+                    "text": name,
+                    "level": 0
+                }
+            )
+        else:
+            folder = None
+            # check if the folder already exists
+            for child in nodes:
+                if child["text"] == virtual_path[0]:
+                    folder = child
+                    break
+
+            if folder is None:
+                first_folder = {
+                    "text": virtual_path[0],
+                    "level": 0,
+                    "open": False,
+                    "children": []
+                }
+                nodes.append(first_folder)
+                folder = first_folder
+
+            level = 1
+            for i in range(1, len(virtual_path)):
+                folder, level = _add_new_folder(folder, virtual_path[i], level)
+            folder["children"].append(
+                {
+                    "text": name,
+                    "level": level
+                }
+            )
+    return json.dumps(nodes)
 
 
 def clear_directory(path: Path):
@@ -204,13 +303,15 @@ def clear_directory(path: Path):
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
 async def create_new_workspace(
-    workspace_name: str, private: bool, creator: str = Depends(get_current_user)
-):
+        workspace_name: str, private: bool, creator: str = Depends(get_current_user)
+) -> Message:
     """
     Create a new workspace and its subdirectories
 
     Parameters:
         workspace_name (str): name of the new workspace
+        private (bool): todo
+        creator (str): todo
 
     Returns:
         Message: details about result of operation
@@ -249,7 +350,7 @@ async def create_new_workspace(
 
     return Message(
         status=MsgStatus.INFO,
-        detail="Workspace created successfuly",
+        detail="Workspace created successfully",
         values={"workspace_name": workspace_name},
     )
 
@@ -258,45 +359,47 @@ async def create_new_workspace(
     "/remove/{workspace_name}", response_model=Message, status_code=200
 )
 async def remove_workspace(
-    workspace_name: str,
-    user: str = Depends(get_current_user)
-):
+        workspace_name: str,
+        user: str = Depends(get_current_user)
+) -> Message:
     """TODO function docstring"""
 
     path = get_workspace_path(workspace_name)
 
     with open(path / INFO_FILE, "r") as info_file:
         info_data = json.load(info_file)
-    
+
     if user["username"] != info_data["creator"]:
         raise HTTPException(
             status_code=401,
             detail=f"Only creator of the workspace - {info_data['creator']}, can delete it"
         )
-    
+
     clear_directory(path)
 
     return Message(
         status=MsgStatus.INFO,
-        detail="Workspace removed successfuly"
+        detail="Workspace removed successfully"
     )
 
-    
+
 @router.post(
     "/new/{workspace_name}/{document_name}", response_model=Message, status_code=201
 )
 async def create_new_document(
-    workspace_name: str,
-    document_name: str,
-    virtual_path: str,
-    creator: str = Depends(get_current_user)
-):
+        workspace_name: str,
+        document_name: str,
+        virtual_path: str,
+        creator: str = Depends(get_current_user)
+) -> Message:
     """
     Create a new document in given workspace
 
     Parameters:
         workspace_name (str): name of the workspace that contains the document
         document_name (str): name of the new document
+        virtual_path (str): todo
+        creator (str): todo
 
     Returns:
         Message: details about result of operation
@@ -325,7 +428,7 @@ async def create_new_document(
 
     return Message(
         status=MsgStatus.INFO,
-        detail="Document created successfuly",
+        detail="Document created successfully",
         values={"document_name": document_name},
     )
 
@@ -334,21 +437,21 @@ async def create_new_document(
     "/remove/{workspace_name}/{document_name}", response_model=Message, status_code=200
 )
 async def remove_document(
-    workspace_name: str,
-    document_name: str,
-    user: str = Depends(get_current_user)
-):
+        workspace_name: str,
+        document_name: str,
+        user: str = Depends(get_current_user)
+) -> Message:
     """TODO function docstring"""
-    
+
     # with open(path / INFO_FILE, "r") as info_file:
     #     info_data = json.load(info_file)
-    
+
     # if user["username"] != info_data["creator"]:
     #     raise HTTPException(
     #         status_code=401,
     #         detail="Only creator of the workspace can delete it"
     #     )
-    
+
     path = get_workspace_path(workspace_name) / CONFIG_FILE
     with open(path, "r") as config_file:
         config_data = json.load(config_file)
@@ -365,12 +468,12 @@ async def remove_document(
 
     return Message(
         status=MsgStatus.INFO,
-        detail="Document removed successfuly"
+        detail="Document removed successfully"
     )
 
 
 @router.get("/{workspace_name}/{document_name}")
-async def load_document_content(workspace_name: str, document_name: str,):
+async def load_document_content(workspace_name: str, document_name: str, ) -> json:
     """TODO function docstring"""
 
     path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
@@ -382,7 +485,11 @@ async def load_document_content(workspace_name: str, document_name: str,):
 
 
 @router.post("/{workspace_name}/{document_name}")
-async def save_document_content(workspace_name: str, document_name: str, document_data: dict):
+async def save_document_content(
+        workspace_name: str,
+        document_name: str,
+        document_data: dict
+) -> Message:
     """TODO function docstring"""
 
     path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
@@ -392,5 +499,5 @@ async def save_document_content(workspace_name: str, document_name: str, documen
 
     return Message(
         status=MsgStatus.INFO,
-        detail="Document content updated successfuly"
+        detail="Document content updated successfully"
     )
