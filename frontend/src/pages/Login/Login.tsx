@@ -55,7 +55,7 @@ const Login: React.FC = () => {
       const token = data.access_token;
       console.log('Success', data);
       // TODO change redirect? - workaround for now
-      document.cookie = 'token='.concat(token);
+      document.cookie = 'token='.concat(token).concat('; SameSite=None; Secure');
       // window.location.replace("/LastActivity"); 
     })
     .catch((error) => {
