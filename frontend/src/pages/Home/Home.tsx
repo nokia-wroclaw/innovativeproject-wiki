@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Grid, Paper, Box, Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import BuildIcon from '@material-ui/icons/Build';
 import useStyles from './Home.styles';
 import UndrawDocs from '../../images/UndrawDocs.svg';
@@ -22,17 +22,6 @@ export default function Home() {
         for use in small to moderate sized teams
       </Typography>
       <div className={classes.homepage__buttons}>
-        <Button
-          variant="contained"
-          color="primary"
-          to="/editor"
-          component={Link}
-          endIcon={<BuildIcon />}
-          className={classes.homepage__button}
-        >
-          Editor
-        </Button>
-
         <Button
           variant="contained"
           color="primary"
