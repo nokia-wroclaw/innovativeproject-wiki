@@ -64,6 +64,7 @@ export default function DataTable() {
         checkboxSelection
         disableSelectionOnClick={true}
         onCellClick={(params, event) => {
+          if (params.field === '__check__') return;
           if (params.field === 'z') {
             removeWorkspace(params.row.id);
             return;
