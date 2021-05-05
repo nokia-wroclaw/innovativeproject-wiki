@@ -79,7 +79,10 @@ const TextEditor = (props: any) => {
           const content = JSON.stringify(newValue);
           localStorage.setItem(`content`, content);
 
-          console.log(content);
+          // console.log(content);
+          const slimContent = content.substring(1, content.length-1); // from JSON -> dict (without [...])
+          // console.log(slimContent);
+
           // make API request for doc save
           if (token) {
           fetch('/workspace/123/1234', {
@@ -88,7 +91,7 @@ const TextEditor = (props: any) => {
               'Authorization': 'Bearer '.concat(token),
               'Content-Type': 'application/json', 
             },
-            body: content
+            body: slimContent
           })
           .then(response => response.json())
           .then(data => {
