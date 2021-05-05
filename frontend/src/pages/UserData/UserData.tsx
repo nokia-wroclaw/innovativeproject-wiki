@@ -56,17 +56,6 @@ export default function UserData() {
           </Button>
         </div>
 
-        <div id="infoContainer">
-          <div style={{ marginTop: '50px' }}>
-            <TextField
-              id="usernameInput"
-              defaultValue="Workata"
-              helperText="Username"
-              fullWidth
-              variant="filled"
-            />
-          </div>
-
           <div id="infoContainer">
               <div style={{marginTop: "50px"}}>
                 <TextField
@@ -89,7 +78,7 @@ export default function UserData() {
                 />
               </div>
           </div>
-        </div>
+        
 
         <div style={{ clear: 'both' }} />
 
@@ -112,15 +101,6 @@ export default function UserData() {
                 variant="filled"
               />
             </div>
-
-          <div style={{ float: 'left', marginLeft: '100px' }}>
-            <TextField
-              id="confirmPassInput"
-              defaultValue="***********"
-              helperText="Confirm password"
-              variant="filled"
-            />
-          </div>
 
           <div style={{ clear: 'both' }} />
         </div>
