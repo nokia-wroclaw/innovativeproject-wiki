@@ -9,12 +9,14 @@ import {
   Link,
 } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
 import useStyles from './Login.styles';
 
 const Login: React.FC = () => {
   const classes = useStyles();
-  const { user, setUser } = useContext(AppContext);
+  const history = useHistory();
+  const { token, setToken } = useContext(AppContext);
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
 
@@ -46,17 +48,19 @@ const Login: React.FC = () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-         username: typedUsername,
-         password: typedPassword
-        })
+        username: typedUsername,
+        password: typedPassword,
+      }),
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:');
-    })
-    .catch((error) => {
-      console.error('Error:');
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        setToken(data.access_token);
+        console.log('Success', data);
+        history.push('/workspaces');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

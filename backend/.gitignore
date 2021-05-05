@@ -126,4 +126,7 @@ dmypy.json
 
 # logs
 logs/
+
 data/workspaces/
+# DB
+data/users/database.json

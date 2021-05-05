@@ -1,54 +1,36 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  homeTitlePaper: {
+  homepage__title: {
+    margin: 20,
+  },
+  homepage__subtitle: {
+    marginBottom: 40,
+  },
+  homepage__cards: {
+    // display: 'flex',
+    // flexDirection: 'row',
+    //     justifyContent: 'space-around',
+  },
+  homepage__card: {
     display: 'flex',
-    padding: 40,
-    height: 200,
-    width: 800,
-    margin: '30px auto',
-    fontSize: 180,
-    background: 'rgba(52, 52, 52, 0.05)',
-    borderRadius: 20,
-    marginTop: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    padding: 50,
   },
-
-  featurePaper: {
+  homepage__undraw: {
+    width: 500,
+  },
+  homepage__buttons: {
     display: 'flex',
-    padding: 40,
-    height: 30,
-    width: 345,
-    margin: '30px auto',
-    fontWeight: 'bold',
-    fontSize: 40,
-    background: 'rgba(52, 52, 52, 0.05)' ,
-    borderRadius: 20,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginTop: 30,
   },
-
-  penIcon: {
-    color: '#0386D0',
-    fontSize: 60,
-    marginLeft: 10,
-    marginTop: -10,
+  homepage__button: {
+    margin: 20,
   },
-
-  searchIcon: {
-    color: 'red',
-    fontSize: 60,
-    marginTop: -10,
-  },
-
-  settingsIcon: {
-    color: 'grey',
-    fontSize: 60,
-    marginLeft: -8,
-    marginTop: -10,
-  },
-
-  demoButton:  {
-    marginTop: 70,
-  },
-
 }));
 
 export default useStyles;

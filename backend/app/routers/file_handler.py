@@ -3,7 +3,7 @@ TODO module docstring
 """
 
 import os
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import FileResponse
 
 from app.routers.workspace_manager import get_image_path, get_attachment_path

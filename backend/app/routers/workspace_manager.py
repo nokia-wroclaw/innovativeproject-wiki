@@ -2,6 +2,7 @@
 TODO module docstring
 #slugify(txt, separator='_', regex_pattern=r'[^-a-z0-9#]+')
 """
+import csv
 import json
 from datetime import datetime
 from pathlib import Path

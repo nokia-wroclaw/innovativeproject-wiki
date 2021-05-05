@@ -2,20 +2,16 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  darkModeButton: {
-    textDecoration: 'none',
-    color: '#fff',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
-    flexGrow: 1,
     color: '#fff',
     textDecoration: 'none',
   },
+  buttons: {},
 }));
 
 export default useStyles;

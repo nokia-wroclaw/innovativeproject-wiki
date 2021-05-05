@@ -66,7 +66,7 @@ def _prepare_message_as_string(message: Message, time: str) -> str:
     if value is None:
         value = ""
 
-    return f"[{message.type.name}] [{time}] [{value}]: {message.detail}\n"
+    return f"[{message.status.name}] [{time}] [{value}]: {message.detail}\n"
 
 
 class LogDestination(Enum):
@@ -155,4 +155,4 @@ def log_to_syslog(message: Message) -> None:
     Returns:
         None
     """
-    syslog.syslog(message.status.values, message.detail)
+    syslog.syslog(message.status.value, message.detail)
