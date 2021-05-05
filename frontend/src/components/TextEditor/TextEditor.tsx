@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useContext } from 'react';
 import isHotkey from 'is-hotkey';
 import {
   Editable,
@@ -21,6 +21,7 @@ import { withHistory } from 'slate-history';
 
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { AppContext } from '../../contexts/AppContext';
 
 const useStyles = makeStyles((theme) => ({
   slate: {
@@ -56,6 +57,7 @@ const TextEditor = (props: any) => {
   const classes = useStyles();
 
   const [value, setValue] = useState<Descendant[]>([]);
+  const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
     const initialValue: Descendant[] = [
@@ -76,7 +78,26 @@ const TextEditor = (props: any) => {
           setValue(newValue);
           const content = JSON.stringify(newValue);
           localStorage.setItem(`content`, content);
-        }}
+
+          console.log(content);
+          // make API request for doc save
+          if (token) {
+          fetch('/workspace/123/1234', {
+            method: 'POST', 
+            headers: {
+              'Authorization': 'Bearer '.concat(token),
+              'Content-Type': 'application/json', 
+            },
+            body: content
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Success:');
+          })
+          .catch((error) => {
+            console.error('Error:');
+          });}
+         }}
       >
         <Toolbar className={classes.toolbar}>
           <MarkButton format="bold" icon="format_bold" />

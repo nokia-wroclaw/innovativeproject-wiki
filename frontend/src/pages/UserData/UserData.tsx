@@ -15,7 +15,7 @@ export default function UserData() {
       fetch('/auth/me', {
         method: 'GET',
         headers: {
-          Authorization: 'Bearer '.concat(token),
+          'Authorization': 'Bearer '.concat(token),
           'Content-Type': 'application/json',
         },
       })
