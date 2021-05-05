@@ -5,7 +5,6 @@ TODO module docstring
 import json
 from datetime import datetime
 from pathlib import Path
-from slugify import slugify
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.routers.auth import get_current_user
@@ -429,7 +428,7 @@ async def create_new_document(
     return Message(
         status=MsgStatus.INFO,
         detail="Document created successfully",
-        values={"document_name": document_name},
+        values={"document_name": document_name, "creator": creator},
     )
 
 
@@ -443,14 +442,16 @@ async def remove_document(
 ) -> Message:
     """TODO function docstring"""
 
-    # with open(path / INFO_FILE, "r") as info_file:
-    #     info_data = json.load(info_file)
+    path = get_workspace_path(workspace_name)
 
-    # if user["username"] != info_data["creator"]:
-    #     raise HTTPException(
-    #         status_code=401,
-    #         detail="Only creator of the workspace can delete it"
-    #     )
+    with open(path / INFO_FILE, "r") as info_file:
+        info_data = json.load(info_file)
+
+    if user["username"] != info_data["creator"]:
+        raise HTTPException(
+            status_code=401,
+            detail="Only creator of the workspace can delete it"
+        )
 
     path = get_workspace_path(workspace_name) / CONFIG_FILE
     with open(path, "r") as config_file:
