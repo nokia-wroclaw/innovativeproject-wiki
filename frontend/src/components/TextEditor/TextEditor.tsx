@@ -26,10 +26,8 @@ const useStyles = makeStyles((theme) => ({
   slate: {
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: '100px',
-    marginRight: '100px',
-    width: '800px',
-    marginTop: '20px',
+    width: '21cm',
+    height: '29.7cm',
     boxShadow: '2px 2px 2px 2px lightgray',
     borderRadius: '5px',
   },
