@@ -22,12 +22,21 @@ function App() {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/workspaces" component={Workspaces} />
+            <Route
+              exact
+              path="/workspaces/:workspaceName"
+              component={FilePage}
+            />
+            <Route
+              exact
+              path="/workspaces/:workspaceName/:fileName"
+              component={FilePage}
+            />
+
             <Route exact path="/userData" component={UserData} />
             <Route exact path="/lastActivity" component={LastActivity} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
-            <Route exact path="/editor" component={FilePage} />
-            <Route exact path="/editor/:fileName" component={FilePage} />
           </Switch>
         </div>
       </Router>

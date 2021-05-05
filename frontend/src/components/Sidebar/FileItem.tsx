@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,6 +14,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import { Link } from 'react-router-dom';
 import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
+import { AppContext } from '../../contexts/AppContext';
 
 const initialState = {
   mouseX: null,
@@ -41,6 +42,8 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(props.item.open);
   const [isAddFolder, setIsAddFolder] = useState(false);
+
+  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
 
   const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -133,7 +136,10 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           {props.item.children && !open && <ExpandMore />}
         </ListItem>
       ) : (
-        <Link to={`/editor/${props.item.text}`} className={classes.fileItem}>
+        <Link
+          to={`/workspaces/${selectedWorkspace}/${props.item.text}`}
+          className={classes.fileItem}
+        >
           <ListItem
             button
             selected={props.selectedNode?.text === props.item.text}
