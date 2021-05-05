@@ -9,16 +9,13 @@ const useStyles = makeStyles((theme) => ({
   editPageContainer: {
     display: 'flex',
     flexDirection: 'row',
-    height: '80vh ',
+    justifyContent: 'center',
   },
   sidebar: {
-    marginTop: 20,
-    marginLeft: 20,
+    margin: 40,
   },
   editor: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
+    margin: 40,
   },
 }));
 

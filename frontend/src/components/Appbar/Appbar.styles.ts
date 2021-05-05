@@ -2,18 +2,16 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     color: '#fff',
     textDecoration: 'none',
-    float: 'left',
   },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    paddingRight: 0,
-  },
+  buttons: {},
 }));
 
 export default useStyles;
