@@ -13,9 +13,9 @@ export default function Appbar() {
   const { user } = useContext(AppContext);
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
+    <AppBar position="static">
+      <Toolbar>
+        <div className={classes.root}>
           <Typography
             variant="h6"
             className={classes.title}
@@ -25,24 +25,16 @@ export default function Appbar() {
           >
             InnoDocs
           </Typography>
-          <Button
-            color="inherit"
-            to="/editor"
-            component={Link}
-            style={{ marginLeft: 100 }}
-          >
-            Editor
-          </Button>
-          <Container className={classes.buttons}>
+          <div className={classes.buttons}>
             <Button color="inherit" to="/login" component={Link}>
               Login
             </Button>
             <Button color="inherit" to="/register" component={Link}>
               Register
             </Button>
-          </Container>
-        </Toolbar>
-      </AppBar>
-    </div>
+          </div>
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 }
