@@ -52,9 +52,11 @@ const Login: React.FC = () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success');
+      const token = data.access_token;
+      console.log('Success', data);
       // TODO change redirect? - workaround for now
-      window.location.replace("/LastActivity"); 
+      document.cookie = 'token='.concat(token);
+      // window.location.replace("/LastActivity"); 
     })
     .catch((error) => {
       console.error('Error:');

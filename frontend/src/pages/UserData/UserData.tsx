@@ -1,10 +1,33 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { Button, TextField } from '@material-ui/core';
 import './UserData.css';
 import useStyles from './UserData.styles';
 
 export default function UserData() {
+
+  useEffect(() =>{
+    // This is similar to componentDidMount
+    // Call back-end api here
+    // console.log(document.cookie.replace('token=', ''));
+    const token = document.cookie.replace('token=', '')
+    fetch('/auth/me', {
+      method: 'GET', // or 'PUT'
+      headers: {
+        'Authorization': 'Bearer '.concat(token),
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success: ', data);
+    })
+    .catch((error) => {
+      console.error('Error: ', error);
+    });
+    
+  },[])
+
   return (
     <div>
       <div id="dataContainer" className="shadow1">
