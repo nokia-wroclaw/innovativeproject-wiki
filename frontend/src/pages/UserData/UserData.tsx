@@ -1,10 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, TextField } from '@material-ui/core';
 import './UserData.css';
 import useStyles from './UserData.styles';
+import { AppContext } from '../../contexts/AppContext';
 
 export default function UserData() {
+  const [username, setUsername] = useState('Default username');
+  const [mail, setMail] = useState('Default email');
+  const { token, setToken } = useContext(AppContext);
+
+  useEffect(() => {
+    if (token) {
+      fetch('/auth/me', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success: ', data);
+          setUsername(data.username);
+          setMail(data.email);
+          console.log(data.email);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [mail, token, username]);
+
   return (
     <div>
       <div id="dataContainer" className="shadow1">
@@ -30,7 +57,8 @@ export default function UserData() {
           <div style={{ marginTop: '50px' }}>
             <TextField
               id="usernameInput"
-              defaultValue="Workata"
+              // defaultValue = "Workata"
+              value={username}
               helperText="Username"
               fullWidth
               variant="filled"
@@ -39,7 +67,8 @@ export default function UserData() {
           <div style={{ marginTop: '20px' }}>
             <TextField
               id="mailInput"
-              defaultValue="examplemail@gmail.com"
+              // defaultValue = "examplemail@gmail.com"
+              value={mail}
               helperText="Email"
               fullWidth
               variant="filled"
@@ -54,18 +83,20 @@ export default function UserData() {
             <TextField
               id="newPassInput"
               // className={classes.passTextField}
-              defaultValue="***********"
+              // defaultValue=""
               helperText="New password"
               variant="filled"
+              type="password"
             />
           </div>
 
           <div style={{ float: 'left', marginLeft: '100px' }}>
             <TextField
               id="confirmPassInput"
-              defaultValue="***********"
+              // defaultValue=""
               helperText="Confirm password"
               variant="filled"
+              type="password"
             />
           </div>
 
