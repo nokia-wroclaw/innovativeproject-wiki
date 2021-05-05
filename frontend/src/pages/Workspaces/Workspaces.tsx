@@ -46,6 +46,7 @@ export default function DataTable() {
     { id: 'Workspace_4', name: 'Workspace_4', lastUpdate: '05.04.2021' },
     { id: 'Workspace_5', name: 'Workspace_5', lastUpdate: '27.03.2021' },
     { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
+    { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
 
   const removeWorkspace = (id: string) => {

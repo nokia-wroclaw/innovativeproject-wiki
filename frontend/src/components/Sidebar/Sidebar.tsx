@@ -21,7 +21,7 @@ const initialList: Node[] = [
         open: false,
         children: [
           {
-            text: 'Item1.2.1',
+            text: '1234',
             level: 2,
           },
         ],
