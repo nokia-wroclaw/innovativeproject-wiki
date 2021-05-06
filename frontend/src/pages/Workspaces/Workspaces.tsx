@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { DataGrid, GridColDef} from '@material-ui/data-grid';
 import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -66,10 +66,28 @@ export default function DataTable() {
   };
 
   const removeWorkspace = (id: string) => {
-    const foundIndex = workspaces.findIndex((workspace) => workspace.id === id);
-    const updatedWorkspaces = [...workspaces];
-    updatedWorkspaces.splice(foundIndex, 1);
-    setWorkspaces(updatedWorkspaces);
+    const found = workspaces.find((workspace) => workspace.id === id);
+
+    if (token && found) {
+      fetch(`/workspace/delete/${found.name}`, {
+        method: 'DELETE', 
+        headers: {
+          'Authorization': 'Bearer '.concat(token),
+          // 'Content-Type': 'application/json', 
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });}
+    
+
+    // const updatedWorkspaces = [...workspaces];
+    // updatedWorkspaces.splice(foundIndex, 1);
+    // setWorkspaces(updatedWorkspaces);
   };
 
   // TODO checkbox private false/true
@@ -99,6 +117,26 @@ export default function DataTable() {
       handleClose()}
     else {window.alert('The workspace name must be unique!')}
   };
+
+  useEffect(() => {
+    if (token) {
+      fetch('/workspace/get', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success: ', data);
+          // setWorkspaces(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [workspaces]);
 
   return (
 
