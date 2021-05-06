@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
-import { DataGrid, GridColDef } from '@material-ui/data-grid';
-import { IconButton } from '@material-ui/core';
+import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
+
 import useStyles from './Workspaces.style';
 
 const columns: GridColDef[] = [
@@ -32,13 +33,15 @@ const columns: GridColDef[] = [
       </IconButton>
     ),
   },
+  
 ];
 
 export default function DataTable() {
+  const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
-
+  const [ typedWorkspaceName, setTypedWorkspaceName ] = useState("");
   const [workspaces, setWorkspaces] = useState([
     { id: 'Workspace_1', name: 'Workspace_1', lastUpdate: '25.04.2021' },
     { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
@@ -48,6 +51,19 @@ export default function DataTable() {
     { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
     { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
+  const { token, setToken } = useContext(AppContext);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const textFieldClear = () => {
+    setTypedWorkspaceName("");
+  };
 
   const removeWorkspace = (id: string) => {
     const foundIndex = workspaces.findIndex((workspace) => workspace.id === id);
@@ -56,7 +72,71 @@ export default function DataTable() {
     setWorkspaces(updatedWorkspaces);
   };
 
+  // TODO checkbox private false/true
+
+  const addWorkspace = () => {
+    if (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName) {
+      setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }]);
+      textFieldClear();
+
+      if (token) {
+      fetch('/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`), {
+        method: 'POST', 
+        headers: {
+          'Authorization': 'Bearer '.concat(token),
+          'Content-Type': 'application/json', 
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });}
+
+
+      handleClose()}
+    else {window.alert('The workspace name must be unique!')}
+  };
+
   return (
+
+    <div>
+      <div className={classes.add_dialog}>
+        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+          New Workspace
+        </Button>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Workspace Name"
+              value={typedWorkspaceName}
+              fullWidth
+              onChange={({ target: { value } }) => {
+                setTypedWorkspaceName(value);
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button 
+            onClick={() => addWorkspace()}
+            color="primary"
+            >
+              Add
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+
+
     <div className={classes.workspaces__container}>
       <DataGrid
         rows={workspaces}
@@ -75,5 +155,7 @@ export default function DataTable() {
         }}
       />
     </div>
+  </div>
+
   );
 }

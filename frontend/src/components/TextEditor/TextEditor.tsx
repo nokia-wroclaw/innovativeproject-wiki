@@ -229,7 +229,7 @@ const BlockButton = ({ format, icon }: any) => {
   const editor = useSlate();
   return (
     <Button
-      variant={isBlockActive(editor, format) ? 'outlined' : 'text'}
+      variant={isBlockActive(editor, format) ? 'contained' : 'text'}
       onClick={(event) => {
         event.preventDefault();
         toggleBlock(editor, format);
@@ -245,7 +245,7 @@ const MarkButton = ({ format, icon }: any) => {
   const editor = useSlate();
   return (
     <Button
-      variant={isMarkActive(editor, format) ? 'outlined' : 'text'}
+      variant={isMarkActive(editor, format) ? 'contained' : 'text'}
       onClick={(event) => {
         event.preventDefault();
         toggleMark(editor, format);
