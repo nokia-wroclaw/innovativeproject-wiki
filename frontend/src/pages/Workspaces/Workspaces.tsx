@@ -59,6 +59,10 @@ export default function DataTable() {
     setOpen(false);
   };
 
+  const textFieldClear = () => {
+    setTypedWorkspaceName("");
+  };
+
   const removeWorkspace = (id: string) => {
     const foundIndex = workspaces.findIndex((workspace) => workspace.id === id);
     const updatedWorkspaces = [...workspaces];
@@ -67,9 +71,11 @@ export default function DataTable() {
   };
 
   const addWorkspace = () => {
-    { (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName !="") 
-    ? setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }])
-    : window.alert('The workspace name must be unique!')}
+    if (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName !="") {
+      setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }]);
+      textFieldClear();
+      handleClose()}
+    else {window.alert('The workspace name must be unique!')}
   };
 
   return (
