@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react';
 import { DataGrid, GridColDef, nextGridSortDirection } from '@material-ui/data-grid';
 import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
+
 import useStyles from './Workspaces.style';
 
 const columns: GridColDef[] = [
@@ -67,11 +67,10 @@ export default function DataTable() {
   };
 
   const addWorkspace = () => {
-    const wName = typedWorkspaceName;
-    { !(wName in workspaces) ?
-    (setWorkspaces([...workspaces, {id: wName, name: wName, lastUpdate: "hehe"}])) : 
-    (setWorkspaces([...workspaces, {id: "heeh", name: "heeh", lastUpdate: "hehe"}]))}
-  }
+    { (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName !="") 
+    ? setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }])
+    : window.alert('The workspace name must be unique!')}
+  };
 
   return (
 
