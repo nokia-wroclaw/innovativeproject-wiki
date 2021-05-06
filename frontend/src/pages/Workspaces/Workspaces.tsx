@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { DataGrid, GridColDef } from '@material-ui/data-grid';
-import { IconButton } from '@material-ui/core';
+import { DataGrid, GridColDef, nextGridSortDirection } from '@material-ui/data-grid';
+import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
 import useStyles from './Workspaces.style';
@@ -32,13 +33,15 @@ const columns: GridColDef[] = [
       </IconButton>
     ),
   },
+  
 ];
 
 export default function DataTable() {
+  const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
-
+  const [ typedWorkspaceName, setTypedWorkspaceName ] = useState("");
   const [workspaces, setWorkspaces] = useState([
     { id: 'Workspace_1', name: 'Workspace_1', lastUpdate: '25.04.2021' },
     { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
@@ -48,6 +51,14 @@ export default function DataTable() {
     { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
   ]);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const removeWorkspace = (id: string) => {
     const foundIndex = workspaces.findIndex((workspace) => workspace.id === id);
     const updatedWorkspaces = [...workspaces];
@@ -55,7 +66,50 @@ export default function DataTable() {
     setWorkspaces(updatedWorkspaces);
   };
 
+  const addWorkspace = () => {
+    const wName = typedWorkspaceName;
+    { !(wName in workspaces) ?
+    (setWorkspaces([...workspaces, {id: wName, name: wName, lastUpdate: "hehe"}])) : 
+    (setWorkspaces([...workspaces, {id: "heeh", name: "heeh", lastUpdate: "hehe"}]))}
+  }
+
   return (
+
+    <div>
+      <div className={classes.add_dialog}>
+        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+          New Workspace
+        </Button>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+          <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Workspace Name"
+              value={typedWorkspaceName}
+              fullWidth
+              onChange={({ target: { value } }) => {
+                setTypedWorkspaceName(value);
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button 
+            onClick={() => addWorkspace()}
+            color="primary"
+            >
+              Add
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+
+
     <div className={classes.workspaces__container}>
       <DataGrid
         rows={workspaces}
@@ -74,5 +128,7 @@ export default function DataTable() {
         }}
       />
     </div>
+  </div>
+
   );
 }

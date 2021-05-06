@@ -6,7 +6,13 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: 1000,
       height: 600,
       margin: 'auto',
-      marginTop: 50,
+      marginTop: 20,
+    },
+
+    add_dialog: {
+      margin: 'auto',
+      marginTop: 30,
+      marginRight: 40,
     },
   })
 );
