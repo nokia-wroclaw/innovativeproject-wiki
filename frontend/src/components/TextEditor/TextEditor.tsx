@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useMemo, useState, useEffect, useContext } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 import isHotkey from 'is-hotkey';
 import {
   Editable,
@@ -53,6 +59,7 @@ const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
 
   const classes = useStyles();
 
@@ -80,27 +87,28 @@ const TextEditor = (props: any) => {
           localStorage.setItem(`content`, content);
 
           // console.log(content);
-          const slimContent = content.substring(1, content.length-1); // from JSON -> dict (without [...])
+          const slimContent = content.substring(1, content.length - 1); // from JSON -> dict (without [...])
           // console.log(slimContent);
 
           // make API request for doc save
           if (token) {
-          fetch('/workspace/123/1234', {
-            method: 'POST', 
-            headers: {
-              'Authorization': 'Bearer '.concat(token),
-              'Content-Type': 'application/json', 
-            },
-            body: slimContent
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Success:');
-          })
-          .catch((error) => {
-            console.error('Error:');
-          });}
-         }}
+            fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer '.concat(token),
+                'Content-Type': 'application/json',
+              },
+              body: slimContent,
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log('Success:');
+              })
+              .catch((error) => {
+                console.error('Error:');
+              });
+          }
+        }}
       >
         <Toolbar className={classes.toolbar}>
           <MarkButton format="bold" icon="format_bold" />
