@@ -43,13 +43,13 @@ export default function DataTable() {
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [ typedWorkspaceName, setTypedWorkspaceName ] = useState("");
   const [workspaces, setWorkspaces] = useState([
-    { id: 'Workspace_1', name: 'Workspace_1', lastUpdate: '25.04.2021' },
-    { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
-    { id: 'Workspace_3', name: 'Workspace_3', lastUpdate: '10.04.2021' },
-    { id: 'Workspace_4', name: 'Workspace_4', lastUpdate: '05.04.2021' },
-    { id: 'Workspace_5', name: 'Workspace_5', lastUpdate: '27.03.2021' },
-    { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
-    { id: '123', name: '123', lastUpdate: '26.03.2021' },
+    { id: '', name: '', lastUpdate: '' }
+    // { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
+    // { id: 'Workspace_3', name: 'Workspace_3', lastUpdate: '10.04.2021' },
+    // { id: 'Workspace_4', name: 'Workspace_4', lastUpdate: '05.04.2021' },
+    // { id: 'Workspace_5', name: 'Workspace_5', lastUpdate: '27.03.2021' },
+    // { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
+    // { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
   const { token, setToken } = useContext(AppContext);
 
@@ -69,8 +69,8 @@ export default function DataTable() {
     const found = workspaces.find((workspace) => workspace.id === id);
 
     if (token && found) {
-      fetch(`/workspace/delete/${found.name}`, {
-        method: 'DELETE', 
+      fetch(`/workspace/remove/${found.name}`, {
+        method: 'POST', 
         headers: {
           'Authorization': 'Bearer '.concat(token),
           // 'Content-Type': 'application/json', 
@@ -78,6 +78,7 @@ export default function DataTable() {
       })
       .then(response => response.json())
       .then(data => {
+        fetchWorkspaces();
         console.log('Success:', data);
       })
       .catch((error) => {
@@ -118,7 +119,7 @@ export default function DataTable() {
     else {window.alert('The workspace name must be unique!')}
   };
 
-  useEffect(() => {
+  const fetchWorkspaces = () =>{
     if (token) {
       fetch('/workspace/get', {
         method: 'GET',
@@ -130,13 +131,20 @@ export default function DataTable() {
         .then((response) => response.json())
         .then((data) => {
           console.log('Success: ', data);
-          // setWorkspaces(data);
+          const newData = data.map((workspace: { name: string; last_updated: string; }) => 
+          ({id: workspace?.name, name: workspace?.name, lastUpdate: workspace?.last_updated}));
+          setWorkspaces(newData);
         })
         .catch((error) => {
           console.error('Error: ', error);
         });
     }
-  }, [workspaces]);
+
+  } 
+
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
 
   return (
 
