@@ -15,6 +15,7 @@ python-jose = "^3.2.0"
 python-multipart = "^0.0.5"
 aiofiles = "^0.6.0"
 python-slugify = "^4.0.1"
+pandas = "^1.2.4"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.7.4"
