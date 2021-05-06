@@ -475,7 +475,7 @@ async def remove_document(
 
 
 @router.get("/{workspace_name}/{document_name}")
-async def load_document_content(workspace_name: str, document_name: str, ) -> json:
+async def load_document_content(workspace_name: str, document_name: str) -> json:
     """TODO function docstring"""
 
     path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
@@ -490,7 +490,7 @@ async def load_document_content(workspace_name: str, document_name: str, ) -> js
 async def save_document_content(
         workspace_name: str,
         document_name: str,
-        document_data: dict
+        document_data: list
 ) -> Message:
     """TODO function docstring"""
 

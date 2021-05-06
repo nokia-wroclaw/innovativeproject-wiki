@@ -63,17 +63,38 @@ const TextEditor = (props: any) => {
 
   const classes = useStyles();
 
-  const [value, setValue] = useState<Descendant[]>([]);
+  const [value, setValue] = useState<Descendant[]>([
+    {
+      type: 'paragraph',
+      children: [{ text: ' ' }],
+    },
+  ]);
   const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
-    const initialValue: Descendant[] = [
-      {
-        type: 'paragraph',
-        children: [{ text: `${props.fileName}` }],
-      },
-    ];
-    setValue(initialValue);
+    if (token) {
+
+      // console.log('ws', selectedWorkspace);
+      // console.log('fn', props.fileName);
+
+      fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success: ', data);
+          setValue(data);
+
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+
   }, [props.fileName]);
 
   return (
@@ -82,13 +103,11 @@ const TextEditor = (props: any) => {
         editor={editor}
         value={value}
         onChange={(newValue) => {
-          setValue(newValue);
-          const content = JSON.stringify(newValue);
-          localStorage.setItem(`content`, content);
 
-          // console.log(content);
-          const slimContent = content.substring(1, content.length - 1); // from JSON -> dict (without [...])
-          // console.log(slimContent);
+          console.log('dupa', newValue);
+          setValue(newValue);
+          const content = JSON.stringify(newValue);            
+          localStorage.setItem(`content`, content);
 
           // make API request for doc save
           if (token) {
@@ -98,7 +117,7 @@ const TextEditor = (props: any) => {
                 Authorization: 'Bearer '.concat(token),
                 'Content-Type': 'application/json',
               },
-              body: slimContent,
+              body: content, 
             })
               .then((response) => response.json())
               .then((data) => {
