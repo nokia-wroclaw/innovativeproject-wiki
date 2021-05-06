@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { DataGrid, GridColDef, nextGridSortDirection } from '@material-ui/data-grid';
+import { DataGrid, GridColDef} from '@material-ui/data-grid';
 import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
@@ -51,6 +51,7 @@ export default function DataTable() {
     { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
     { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
+  const { token, setToken } = useContext(AppContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -71,10 +72,30 @@ export default function DataTable() {
     setWorkspaces(updatedWorkspaces);
   };
 
+  // TODO checkbox private false/true
+
   const addWorkspace = () => {
-    if (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName !="") {
+    if (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName) {
       setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }]);
       textFieldClear();
+
+      if (token) {
+      fetch('/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`), {
+        method: 'POST', 
+        headers: {
+          'Authorization': 'Bearer '.concat(token),
+          'Content-Type': 'application/json', 
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });}
+
+
       handleClose()}
     else {window.alert('The workspace name must be unique!')}
   };
