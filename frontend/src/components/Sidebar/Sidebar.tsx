@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import useStyles from './Sidebar.styles';
 import FileItem from './FileItem';
+import { AppContext } from '../../contexts/AppContext';
 import type { Node } from './Sidebar.types';
 
 const initialList: Node[] = [
@@ -57,6 +58,28 @@ const Sidebar: React.FC = () => {
   const classes = useStyles();
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
+  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+
+  const fetchFiles = () => {
+    fetch(`/workspace/translate/${selectedWorkspace}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success: ', data);
+        setItemList(data);
+      })
+      .catch((error) => {
+        console.error('Error: ', error);
+      });
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
   const postItem = async (itemName: string, itemPath: string) => {
     try {

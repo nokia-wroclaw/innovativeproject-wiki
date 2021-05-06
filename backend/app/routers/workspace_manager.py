@@ -287,7 +287,7 @@ async def translate_workspace_virtual_structure_to_frontend(workspace_name: str)
                     "level": level
                 }
             )
-    return json.dumps(nodes)
+    return nodes
 
 
 def clear_directory(path: Path):

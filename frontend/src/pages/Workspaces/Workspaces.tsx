@@ -1,6 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
-import { IconButton, Button, Dialog, DialogTitle, TextField, DialogContent, DialogActions } from '@material-ui/core';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
+import {
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogContent,
+  DialogActions,
+} from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
@@ -33,7 +41,6 @@ const columns: GridColDef[] = [
       </IconButton>
     ),
   },
-  
 ];
 
 export default function DataTable() {
@@ -41,9 +48,9 @@ export default function DataTable() {
   const classes = useStyles();
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
-  const [ typedWorkspaceName, setTypedWorkspaceName ] = useState("");
+  const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaces, setWorkspaces] = useState([
-    { id: '', name: '', lastUpdate: '' }
+    { id: '', name: '', lastUpdate: '' },
     // { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
     // { id: 'Workspace_3', name: 'Workspace_3', lastUpdate: '10.04.2021' },
     // { id: 'Workspace_4', name: 'Workspace_4', lastUpdate: '05.04.2021' },
@@ -62,7 +69,7 @@ export default function DataTable() {
   };
 
   const textFieldClear = () => {
-    setTypedWorkspaceName("");
+    setTypedWorkspaceName('');
   };
 
   const removeWorkspace = (id: string) => {
@@ -70,21 +77,21 @@ export default function DataTable() {
 
     if (token && found) {
       fetch(`/workspace/remove/${found.name}`, {
-        method: 'POST', 
+        method: 'POST',
         headers: {
-          'Authorization': 'Bearer '.concat(token),
-          // 'Content-Type': 'application/json', 
-        }
+          Authorization: 'Bearer '.concat(token),
+          // 'Content-Type': 'application/json',
+        },
       })
-      .then(response => response.json())
-      .then(data => {
-        fetchWorkspaces();
-        console.log('Success:', data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });}
-    
+        .then((response) => response.json())
+        .then((data) => {
+          fetchWorkspaces();
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
 
     // const updatedWorkspaces = [...workspaces];
     // updatedWorkspaces.splice(foundIndex, 1);
@@ -94,66 +101,88 @@ export default function DataTable() {
   // TODO checkbox private false/true
 
   const addWorkspace = () => {
-    if (!workspaces.find(workspace => workspace.name === typedWorkspaceName) && typedWorkspaceName) {
-      setWorkspaces([...workspaces, {id: typedWorkspaceName, name: typedWorkspaceName, lastUpdate: "06.05.2021" }]);
+    if (
+      !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
+      typedWorkspaceName
+    ) {
+      setWorkspaces([
+        ...workspaces,
+        {
+          id: typedWorkspaceName,
+          name: typedWorkspaceName,
+          lastUpdate: '06.05.2021',
+        },
+      ]);
       textFieldClear();
 
       if (token) {
-      fetch('/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`), {
-        method: 'POST', 
-        headers: {
-          'Authorization': 'Bearer '.concat(token),
-          'Content-Type': 'application/json', 
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });}
+        fetch(
+          '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('Success:', data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
 
-
-      handleClose()}
-    else {window.alert('The workspace name must be unique!')}
+      handleClose();
+    } else {
+      window.alert('The workspace name must be unique!');
+    }
   };
 
-  const fetchWorkspaces = () =>{
+  const fetchWorkspaces = () => {
     if (token) {
       fetch('/workspace/get', {
         method: 'GET',
         headers: {
-          'Authorization': 'Bearer '.concat(token),
+          Authorization: 'Bearer '.concat(token),
           'Content-Type': 'application/json',
         },
       })
         .then((response) => response.json())
         .then((data) => {
           console.log('Success: ', data);
-          const newData = data.map((workspace: { name: string; last_updated: string; }) => 
-          ({id: workspace?.name, name: workspace?.name, lastUpdate: workspace?.last_updated}));
+          const newData = data.map(
+            (workspace: { name: string; last_updated: string }) => ({
+              id: workspace?.name,
+              name: workspace?.name,
+              lastUpdate: workspace?.last_updated,
+            })
+          );
           setWorkspaces(newData);
         })
         .catch((error) => {
           console.error('Error: ', error);
         });
     }
-
-  } 
+  };
 
   useEffect(() => {
     fetchWorkspaces();
   }, []);
 
   return (
-
     <div>
       <div className={classes.add_dialog}>
         <Button variant="outlined" color="primary" onClick={handleClickOpen}>
           New Workspace
         </Button>
-        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
@@ -169,10 +198,7 @@ export default function DataTable() {
             />
           </DialogContent>
           <DialogActions>
-            <Button 
-            onClick={() => addWorkspace()}
-            color="primary"
-            >
+            <Button onClick={() => addWorkspace()} color="primary">
               Add
             </Button>
             <Button onClick={handleClose} color="primary">
@@ -182,26 +208,24 @@ export default function DataTable() {
         </Dialog>
       </div>
 
-
-    <div className={classes.workspaces__container}>
-      <DataGrid
-        rows={workspaces}
-        columns={columns}
-        pageSize={10}
-        checkboxSelection
-        disableSelectionOnClick={true}
-        onCellClick={(params, event) => {
-          if (params.field === '__check__') return;
-          if (params.field === 'z') {
-            removeWorkspace(params.row.id);
-            return;
-          }
-          setSelectedWorkspace(params.row.name);
-          history.push(`/workspaces/${params.row.name}`);
-        }}
-      />
+      <div className={classes.workspaces__container}>
+        <DataGrid
+          rows={workspaces}
+          columns={columns}
+          pageSize={10}
+          checkboxSelection
+          disableSelectionOnClick={true}
+          onCellClick={(params, event) => {
+            if (params.field === '__check__') return;
+            if (params.field === 'z') {
+              removeWorkspace(params.row.id);
+              return;
+            }
+            setSelectedWorkspace(params.row.name);
+            history.push(`/workspaces/${params.row.name}`);
+          }}
+        />
+      </div>
     </div>
-  </div>
-
   );
 }
