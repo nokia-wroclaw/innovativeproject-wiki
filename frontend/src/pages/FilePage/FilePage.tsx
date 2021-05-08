@@ -41,11 +41,12 @@ export default function FilePage({ match }: { match: any }) {
         <Sidebar />
       </div>
       <div className={classes.editor}>
-        {itemList.length !== 0 ? (
+        {/* {itemList.length !== 0 ? (
           <TextEditor fileName={fileName} />
         ) : (
-          <img src={UndrawWallpost} alt="UndrawWallpost" />
-        )}
+          <TextEditor fileName="dcdc" />
+        )} */}
+        <TextEditor fileName={fileName} />
       </div>
 
       <div className={classes.filePage_buttons}>

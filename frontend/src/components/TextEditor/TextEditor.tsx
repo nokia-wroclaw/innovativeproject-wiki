@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   useContext,
+  useRef,
 } from 'react';
 import isHotkey from 'is-hotkey';
 import {
@@ -58,29 +59,28 @@ const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
-  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  // const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const [editor] = useState(() => withHistory(withReact(createEditor())));
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
 
   const classes = useStyles();
 
-  const [value, setValue] = useState<Descendant[]>([
+  const initialValue = [
     {
       type: 'paragraph',
-      children: [{ text: ' ' }],
+      children: [{ text: '' }],
     },
-  ]);
+  ] as Descendant[];
+
+  const [value, setValue] = useState<Descendant[]>(initialValue);
   const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
     if (token) {
-
-      // console.log('ws', selectedWorkspace);
-      // console.log('fn', props.fileName);
-
       fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
         method: 'GET',
         headers: {
-          'Authorization': 'Bearer '.concat(token),
+          Authorization: 'Bearer '.concat(token),
           'Content-Type': 'application/json',
         },
       })
@@ -88,14 +88,12 @@ const TextEditor = (props: any) => {
         .then((data) => {
           console.log('Success: ', data);
           setValue(data);
-
         })
         .catch((error) => {
           console.error('Error: ', error);
         });
     }
-
-  }, [props.fileName]);
+  }, [props.fileName, selectedWorkspace, token]);
 
   return (
     <div className={classes.slate}>
@@ -103,11 +101,10 @@ const TextEditor = (props: any) => {
         editor={editor}
         value={value}
         onChange={(newValue) => {
-
-          console.log('dupa', newValue);
+          console.log('new value', newValue);
           setValue(newValue);
-          const content = JSON.stringify(newValue);            
-          localStorage.setItem(`content`, content);
+          const content = JSON.stringify(newValue);
+          // localStorage.setItem(`content`, content);
 
           // make API request for doc save
           if (token) {
@@ -117,7 +114,7 @@ const TextEditor = (props: any) => {
                 Authorization: 'Bearer '.concat(token),
                 'Content-Type': 'application/json',
               },
-              body: content, 
+              body: content,
             })
               .then((response) => response.json())
               .then((data) => {
