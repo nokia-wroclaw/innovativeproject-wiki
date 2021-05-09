@@ -5,8 +5,6 @@ type ContextProps = {
   setUser: (user: string | null) => void;
   selectedWorkspace: string | null;
   setSelectedWorkspace: (workspace: string | null) => void;
-  token: string | null;
-  setToken: (token: string | null) => void;
 };
 
 export const AppContext = React.createContext<ContextProps>({
@@ -14,14 +12,11 @@ export const AppContext = React.createContext<ContextProps>({
   setUser: (user: string | null) => {},
   selectedWorkspace: '',
   setSelectedWorkspace: (workspace: string | null) => {},
-  token: '',
-  setToken: (token: string | null) => {},
 });
 
 export default function ContextProvider(props: { children: React.ReactChild }) {
   const [user, setUser] = useState<null | string>('user');
   const [selectedWorkspace, setSelectedWorkspace] = useState<null | string>('');
-  const [token, setToken] = useState<null | string>('');
 
   return (
     <AppContext.Provider
@@ -30,8 +25,6 @@ export default function ContextProvider(props: { children: React.ReactChild }) {
         setUser,
         selectedWorkspace,
         setSelectedWorkspace,
-        token,
-        setToken,
       }}
     >
       {props.children}

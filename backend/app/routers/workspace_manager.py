@@ -3,6 +3,7 @@ TODO module docstring
 #slugify(txt, separator='_', regex_pattern=r'[^-a-z0-9#]+')
 """
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
@@ -286,7 +287,7 @@ async def translate_workspace_virtual_structure_to_frontend(workspace_name: str)
                     "level": level
                 }
             )
-    return json.dumps(nodes)
+    return nodes
 
 
 def clear_directory(path: Path):
@@ -474,7 +475,7 @@ async def remove_document(
 
 
 @router.get("/{workspace_name}/{document_name}")
-async def load_document_content(workspace_name: str, document_name: str, ) -> json:
+async def load_document_content(workspace_name: str, document_name: str) -> json:
     """TODO function docstring"""
 
     path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
@@ -489,7 +490,7 @@ async def load_document_content(workspace_name: str, document_name: str, ) -> js
 async def save_document_content(
         workspace_name: str,
         document_name: str,
-        document_data: dict
+        document_data: list
 ) -> Message:
     """TODO function docstring"""
 
@@ -502,3 +503,20 @@ async def save_document_content(
         status=MsgStatus.INFO,
         detail="Document content updated successfully"
     )
+
+
+@router.get("/get")
+async def get_all_user_workspaces(user: str = Depends(get_current_user)) -> list:
+    """TODO function docstring"""
+
+    user_workspaces = []
+
+    workspaces = [ folder.path for folder in os.scandir(get_workspace_path()) if folder.is_dir() ]
+    for workspace in workspaces:
+        info_path = workspace + "/" + INFO_FILE
+        with open(info_path, "r") as info_file:
+            info_data = json.load(info_file)
+            if info_data["creator"] == user["username"]:
+                user_workspaces.append({"name": info_data["name"], "last_updated": info_data["last_updated"]})
+
+    return user_workspaces

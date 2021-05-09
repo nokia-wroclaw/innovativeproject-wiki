@@ -1,27 +1,26 @@
-import React, { useContext, useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppContext } from '../../contexts/AppContext';
+import { deleteCookie, getCookie } from '../../contexts/Cookies';
 import useStyles from './Appbar.styles';
 
 export default function Appbar() {
   const classes = useStyles();
-  const { token, setToken } = useContext(AppContext);
-  // const token = document.cookie.indexOf('token=');  // workaround
+  const [token, setToken] = useState(getCookie('token'));
 
-  // useEffect(() => {
-  //   // This is similar to componentDidMount
-  //   const tokenValue = document.cookie.replace('token=', '');
-  //   // TODO valdiate token
-  //   // if (tokenValue) setToken(tokenValue);
-  // });
+  useEffect(() => {
+    // setToken(getCookie('token'));
+    window.setInterval(() => {
+      const tempToken = getCookie('token');
+      if (tempToken) setToken(tempToken);
+      else setToken('');
+    }, 100); // run every 100 ms
+  }, []);
 
   // TODO check if user is logged
-  // ! workaround for testing purpose - change this for proper user validation (use Context)
   return (
     <AppBar position="static">
       <Toolbar>
@@ -54,7 +53,7 @@ export default function Appbar() {
                 to="/"
                 component={Link}
                 onClick={() => {
-                  setToken('');
+                  deleteCookie('token', '/');
                 }}
               >
                 Logout

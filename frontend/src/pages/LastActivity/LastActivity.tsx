@@ -21,7 +21,7 @@ export default function LastActivity() {
   return (
     <div>
       <div id="greetings">
-        Hello <span id="userName">Filip</span>!
+        Hello <span id="userName">Workata</span>!
       </div>
       <div id="activitiesContainerTitle">Your last activity:</div>
       <div id="activitiesContainer" className="shadow1">

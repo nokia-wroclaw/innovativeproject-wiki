@@ -1,17 +1,21 @@
-import React, { useState, useContext } from 'react';
-import { Grid, TextField, Button, Paper, Checkbox, Typography, Link } from '@material-ui/core';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { AppContext } from '../../contexts/AppContext';
+import {
+  Button,
+  Grid,
+  Link,
+  Paper,
+  TextField,
+  Typography,
+} from '@material-ui/core';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import useStyles from './Register.styles';
-
 
 const Register: React.FC = () => {
   const classes = useStyles();
-  const { user } = useContext(AppContext);
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
   const [typedEmail, setTypedEmail] = useState('');
-
+  const history = useHistory();
 
   const handleRegisterButton = async () => {
     fetch('/auth/register', {
@@ -20,18 +24,18 @@ const Register: React.FC = () => {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-         username: typedUsername,
-         password: typedPassword, 
-         scope: typedEmail
-        })
+        username: typedUsername,
+        password: typedPassword,
+        scope: typedEmail,
+      }),
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:');
-    })
-    .catch((error) => {
-      console.error('Error:');
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        history.push('/login');
+      })
+      .catch((error) => {
+        console.error('Error:');
+      });
   };
 
   return (

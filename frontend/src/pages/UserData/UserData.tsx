@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, TextField } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { getCookie } from '../../contexts/Cookies';
 import './UserData.css';
-import useStyles from './UserData.styles';
-import { AppContext } from '../../contexts/AppContext';
 
 export default function UserData() {
   const [username, setUsername] = useState('Default username');
   const [mail, setMail] = useState('Default email');
-  const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
+    const token = getCookie('token');
     if (token) {
       fetch('/auth/me', {
         method: 'GET',
@@ -30,7 +28,7 @@ export default function UserData() {
           console.error('Error: ', error);
         });
     }
-  }, [mail, token, username]);
+  }, [mail, username]);
 
   return (
     <div>
@@ -47,7 +45,6 @@ export default function UserData() {
             variant="contained"
             size="small"
             id="uploadButton"
-            onClick={() => console.log('Change profile picture')}
           >
             Upload image
           </Button>

@@ -1,26 +1,28 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
-import isHotkey from 'is-hotkey';
-import {
-  Editable,
-  withReact,
-  useSlate,
-  Slate,
-  RenderLeafProps,
-  RenderElementProps,
-} from 'slate-react';
-import {
-  Editor,
-  Transforms,
-  createEditor,
-  Descendant,
-  Element as SlateElement,
-} from 'slate';
-import { withHistory } from 'slate-history';
-
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import isHotkey from 'is-hotkey';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createEditor,
+  Descendant,
+  Editor,
+  Element as SlateElement,
+  Transforms,
+} from 'slate';
+import { withHistory } from 'slate-history';
+import {
+  Editable,
+  RenderElementProps,
+  RenderLeafProps,
+  Slate,
+  useSlate,
+  withReact,
+} from 'slate-react';
+import { AppContext } from '../../contexts/AppContext';
+import { getCookie } from '../../contexts/Cookies';
 
 const useStyles = makeStyles((theme) => ({
   slate: {
@@ -51,21 +53,41 @@ const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
-  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  // const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const [editor] = useState(() => withHistory(withReact(createEditor())));
+  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
 
   const classes = useStyles();
 
-  const [value, setValue] = useState<Descendant[]>([]);
+  const initialValue = [
+    {
+      type: 'paragraph',
+      children: [{ text: '' }],
+    },
+  ] as Descendant[];
+
+  const [value, setValue] = useState<Descendant[]>(initialValue);
 
   useEffect(() => {
-    const initialValue: Descendant[] = [
-      {
-        type: 'paragraph',
-        children: [{ text: `${props.fileName}` }],
-      },
-    ];
-    setValue(initialValue);
-  }, [props.fileName]);
+    const token = getCookie('token');
+
+    if (token) {
+      fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setValue(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [props.fileName, selectedWorkspace]);
 
   return (
     <div className={classes.slate}>
@@ -75,7 +97,26 @@ const TextEditor = (props: any) => {
         onChange={(newValue) => {
           setValue(newValue);
           const content = JSON.stringify(newValue);
-          localStorage.setItem(`content`, content);
+          // localStorage.setItem(`content`, content);
+
+          // make API request for doc save
+          const token = getCookie('token');
+
+          if (token) {
+            fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer '.concat(token),
+                'Content-Type': 'application/json',
+              },
+              body: content,
+            })
+              .then((response) => response.json())
+              .then((data) => {})
+              .catch((error) => {
+                console.error('Error:');
+              });
+          }
         }}
       >
         <Toolbar className={classes.toolbar}>
