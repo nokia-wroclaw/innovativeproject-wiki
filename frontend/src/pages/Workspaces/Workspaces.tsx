@@ -1,19 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import {
-  IconButton,
   Button,
   Dialog,
-  DialogTitle,
-  TextField,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  TextField,
 } from '@material-ui/core';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import DeleteIcon from '@material-ui/icons/Delete';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
-import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
-
+import { getCookie } from '../../contexts/Cookies';
 import useStyles from './Workspaces.style';
 
 const columns: GridColDef[] = [
@@ -52,12 +51,6 @@ export default function DataTable() {
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaces, setWorkspaces] = useState([
     { id: '', name: '', lastUpdate: '' },
-    // { id: 'Workspace_2', name: 'Workspace_2', lastUpdate: '14.04.2021' },
-    // { id: 'Workspace_3', name: 'Workspace_3', lastUpdate: '10.04.2021' },
-    // { id: 'Workspace_4', name: 'Workspace_4', lastUpdate: '05.04.2021' },
-    // { id: 'Workspace_5', name: 'Workspace_5', lastUpdate: '27.03.2021' },
-    // { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
-    // { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
 
   const handleClickOpen = () => {
@@ -86,7 +79,6 @@ export default function DataTable() {
         .then((response) => response.json())
         .then((data) => {
           fetchWorkspaces();
-          console.log('Success:', data);
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -123,9 +115,7 @@ export default function DataTable() {
           }
         )
           .then((response) => response.json())
-          .then((data) => {
-            console.log('Success:', data);
-          })
+          .then((data) => {})
           .catch((error) => {
             console.error('Error:', error);
           });
@@ -149,7 +139,6 @@ export default function DataTable() {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log('Success: ', data);
           const newData = data.map(
             (workspace: { name: string; last_updated: string }) => ({
               id: workspace?.name,

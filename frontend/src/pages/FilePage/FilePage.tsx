@@ -23,7 +23,6 @@ export default function FilePage({ match }: { match: any }) {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Success: ', data);
         setItemList(data);
       })
       .catch((error) => {

@@ -1,13 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppContext } from '../../contexts/AppContext';
-import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
-
+import { deleteCookie, getCookie } from '../../contexts/Cookies';
 import useStyles from './Appbar.styles';
 
 export default function Appbar() {

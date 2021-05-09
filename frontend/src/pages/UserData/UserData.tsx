@@ -1,10 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, TextField } from '@material-ui/core';
-import './UserData.css';
-import useStyles from './UserData.styles';
-import { AppContext } from '../../contexts/AppContext';
+import React, { useEffect, useState } from 'react';
 import { getCookie } from '../../contexts/Cookies';
+import './UserData.css';
 
 export default function UserData() {
   const [username, setUsername] = useState('Default username');
@@ -48,7 +45,6 @@ export default function UserData() {
             variant="contained"
             size="small"
             id="uploadButton"
-            onClick={() => console.log('Change profile picture')}
           >
             Upload image
           </Button>

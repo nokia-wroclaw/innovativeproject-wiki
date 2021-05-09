@@ -1,22 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react';
 import {
-  List,
-  ListSubheader,
-  IconButton,
   Button,
   Dialog,
-  DialogTitle,
-  TextField,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  List,
+  ListSubheader,
+  TextField,
 } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import FolderIcon from '@material-ui/icons/Folder';
 import DescriptionIcon from '@material-ui/icons/Description';
-import useStyles from './Sidebar.styles';
-import FileItem from './FileItem';
+import FolderIcon from '@material-ui/icons/Folder';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../contexts/AppContext';
-import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
+import { getCookie } from '../../contexts/Cookies';
+import FileItem from './FileItem';
+import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
 
 const initialList: Node[] = [
@@ -99,7 +98,7 @@ const Sidebar: React.FC = () => {
     const token = getCookie('token');
     if (token) {
       try {
-        // console.log(
+        //
         //   `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`
         // );
         await fetch(
@@ -122,7 +121,7 @@ const Sidebar: React.FC = () => {
     const token = getCookie('token');
     if (token) {
       try {
-        // console.log(`/workspace/remove/${selectedWorkspace}/${itemName}`);
+        //
         await fetch(`/workspace/remove/${selectedWorkspace}/${itemName}`, {
           method: 'POST',
           headers: {
@@ -130,7 +129,7 @@ const Sidebar: React.FC = () => {
           },
           body: JSON.stringify({}),
         }).then((res) => {
-          // console.log(res);
+          //
           fetchFiles();
         });
       } catch {

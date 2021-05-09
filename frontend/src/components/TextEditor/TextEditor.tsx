@@ -1,32 +1,26 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
-import React, {
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-} from 'react';
-import isHotkey from 'is-hotkey';
-import {
-  Editable,
-  withReact,
-  useSlate,
-  Slate,
-  RenderLeafProps,
-  RenderElementProps,
-} from 'slate-react';
-import {
-  Editor,
-  Transforms,
-  createEditor,
-  Descendant,
-  Element as SlateElement,
-} from 'slate';
-import { withHistory } from 'slate-history';
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import isHotkey from 'is-hotkey';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createEditor,
+  Descendant,
+  Editor,
+  Element as SlateElement,
+  Transforms,
+} from 'slate';
+import { withHistory } from 'slate-history';
+import {
+  Editable,
+  RenderElementProps,
+  RenderLeafProps,
+  Slate,
+  useSlate,
+  withReact,
+} from 'slate-react';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 
@@ -87,7 +81,6 @@ const TextEditor = (props: any) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log('Success: ', data);
           setValue(data);
         })
         .catch((error) => {
@@ -102,7 +95,6 @@ const TextEditor = (props: any) => {
         editor={editor}
         value={value}
         onChange={(newValue) => {
-          console.log('new value', newValue);
           setValue(newValue);
           const content = JSON.stringify(newValue);
           // localStorage.setItem(`content`, content);
@@ -120,9 +112,7 @@ const TextEditor = (props: any) => {
               body: content,
             })
               .then((response) => response.json())
-              .then((data) => {
-                console.log('Success:');
-              })
+              .then((data) => {})
               .catch((error) => {
                 console.error('Error:');
               });

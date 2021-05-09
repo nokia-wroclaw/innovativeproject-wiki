@@ -1,46 +1,23 @@
-import React, { useState, useContext } from 'react';
 import {
-  Grid,
-  TextField,
   Button,
-  Paper,
   Checkbox,
-  Typography,
+  Grid,
   Link,
+  Paper,
+  TextField,
+  Typography,
 } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { AppContext } from '../../contexts/AppContext';
-import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
+import { setCookie } from '../../contexts/Cookies';
 import useStyles from './Login.styles';
 
 const Login: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { token, setToken } = useContext(AppContext);
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
-
-  const checkLogin = async () => {
-    try {
-      // TODO - change proxy to 5000
-      const response = await fetch(`/user`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: typedUsername,
-          password: typedPassword,
-        }),
-      });
-      const isCorrect: boolean = await response.json();
-      return isCorrect;
-    } catch {
-      return false;
-    }
-  };
 
   const handleLoginButton = async () => {
     fetch('/auth/login', {
@@ -56,7 +33,7 @@ const Login: React.FC = () => {
       .then((response) => response.json())
       .then((data) => {
         setCookie('token', data.access_token);
-        console.log('Success', data);
+
         history.push('/workspaces');
       })
       .catch((error) => {
