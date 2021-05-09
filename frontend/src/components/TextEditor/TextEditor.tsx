@@ -25,10 +25,10 @@ import {
   Element as SlateElement,
 } from 'slate';
 import { withHistory } from 'slate-history';
-
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from '../../contexts/AppContext';
+import { getCookie } from '../../contexts/Cookies';
 
 const useStyles = makeStyles((theme) => ({
   slate: {
@@ -73,9 +73,10 @@ const TextEditor = (props: any) => {
   ] as Descendant[];
 
   const [value, setValue] = useState<Descendant[]>(initialValue);
-  const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
+    const token = getCookie('token');
+
     if (token) {
       fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
         method: 'GET',
@@ -93,7 +94,7 @@ const TextEditor = (props: any) => {
           console.error('Error: ', error);
         });
     }
-  }, [props.fileName, selectedWorkspace, token]);
+  }, [props.fileName, selectedWorkspace]);
 
   return (
     <div className={classes.slate}>
@@ -107,6 +108,8 @@ const TextEditor = (props: any) => {
           // localStorage.setItem(`content`, content);
 
           // make API request for doc save
+          const token = getCookie('token');
+
           if (token) {
             fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
               method: 'POST',

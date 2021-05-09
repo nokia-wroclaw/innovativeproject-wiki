@@ -11,6 +11,7 @@ import {
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
+import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
 import useStyles from './Login.styles';
 
 const Login: React.FC = () => {
@@ -54,7 +55,7 @@ const Login: React.FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setToken(data.access_token);
+        setCookie('token', data.access_token);
         console.log('Success', data);
         history.push('/workspaces');
       })

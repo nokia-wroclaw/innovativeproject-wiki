@@ -4,18 +4,19 @@ import { Button, TextField } from '@material-ui/core';
 import './UserData.css';
 import useStyles from './UserData.styles';
 import { AppContext } from '../../contexts/AppContext';
+import { getCookie } from '../../contexts/Cookies';
 
 export default function UserData() {
   const [username, setUsername] = useState('Default username');
   const [mail, setMail] = useState('Default email');
-  const { token, setToken } = useContext(AppContext);
 
   useEffect(() => {
+    const token = getCookie('token');
     if (token) {
       fetch('/auth/me', {
         method: 'GET',
         headers: {
-          'Authorization': 'Bearer '.concat(token),
+          Authorization: 'Bearer '.concat(token),
           'Content-Type': 'application/json',
         },
       })
@@ -30,7 +31,7 @@ export default function UserData() {
           console.error('Error: ', error);
         });
     }
-  }, [mail, token, username]);
+  }, [mail, username]);
 
   return (
     <div>

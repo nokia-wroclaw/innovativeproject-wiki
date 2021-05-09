@@ -16,6 +16,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import useStyles from './Sidebar.styles';
 import FileItem from './FileItem';
 import { AppContext } from '../../contexts/AppContext';
+import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
 import type { Node } from './Sidebar.types';
 
 const initialList: Node[] = [
@@ -70,7 +71,7 @@ const Sidebar: React.FC = () => {
   const classes = useStyles();
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
-  const { selectedWorkspace, token } = useContext(AppContext);
+  const { selectedWorkspace } = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
 
@@ -95,6 +96,7 @@ const Sidebar: React.FC = () => {
   }, []);
 
   const postItem = async (itemName: string, itemPath: string) => {
+    const token = getCookie('token');
     if (token) {
       try {
         // console.log(
@@ -117,6 +119,7 @@ const Sidebar: React.FC = () => {
   };
 
   const removeItem = async (itemName: string) => {
+    const token = getCookie('token');
     if (token) {
       try {
         // console.log(`/workspace/remove/${selectedWorkspace}/${itemName}`);

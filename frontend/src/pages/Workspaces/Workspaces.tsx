@@ -12,6 +12,7 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
+import { setCookie, getCookie, deleteCookie } from '../../contexts/Cookies';
 
 import useStyles from './Workspaces.style';
 
@@ -58,7 +59,6 @@ export default function DataTable() {
     // { id: 'Workspace_6', name: 'Workspace_6', lastUpdate: '26.03.2021' },
     // { id: '123', name: '123', lastUpdate: '26.03.2021' },
   ]);
-  const { token, setToken } = useContext(AppContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,7 +74,7 @@ export default function DataTable() {
 
   const removeWorkspace = (id: string) => {
     const found = workspaces.find((workspace) => workspace.id === id);
-
+    const token = getCookie('token');
     if (token && found) {
       fetch(`/workspace/remove/${found.name}`, {
         method: 'POST',
@@ -92,10 +92,6 @@ export default function DataTable() {
           console.error('Error:', error);
         });
     }
-
-    // const updatedWorkspaces = [...workspaces];
-    // updatedWorkspaces.splice(foundIndex, 1);
-    // setWorkspaces(updatedWorkspaces);
   };
 
   // TODO checkbox private false/true
@@ -114,7 +110,7 @@ export default function DataTable() {
         },
       ]);
       textFieldClear();
-
+      const token = getCookie('token');
       if (token) {
         fetch(
           '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
@@ -142,6 +138,7 @@ export default function DataTable() {
   };
 
   const fetchWorkspaces = () => {
+    const token = getCookie('token');
     if (token) {
       fetch('/workspace/get', {
         method: 'GET',
