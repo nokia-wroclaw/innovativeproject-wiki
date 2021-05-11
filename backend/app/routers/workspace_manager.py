@@ -161,7 +161,7 @@ def get_attachment_path(workspace_name: str, document_name: str, atch: str = "")
     return path
 
 
-async def update_virtual_structure(
+async def add_document_to_virtual_structure(
         workspace_name: str, document_name: str, virtual_path: str
 ) -> Message:
     """TODO function docstring"""
@@ -175,11 +175,11 @@ async def update_virtual_structure(
     with open(path, "r") as config_file:
         config_data = json.load(config_file)
 
-    value = {"name": document_name, "virtual_path": virtual_path}
+    value = {"name": document_name, "type": "document", "virtual_path": virtual_path}
 
-    for document in config_data["virtual_structure"]:
-        if document["name"] == document_name:
-            document["virtual_path"] = virtual_path
+    for element in config_data["virtual_structure"]:
+        if element["name"] == document_name and element["type"] == "document":
+            element["virtual_path"] = virtual_path
             break
     else:
         config_data["virtual_structure"].append(value)
@@ -193,7 +193,7 @@ async def update_virtual_structure(
     )
 
 
-def _add_new_folder(folder: dict, new_folder_name: str, level: int) -> (dict, int):
+def _add_new_folder(folder: dict, new_folder_name: str, level: int):
     """
     Helper function for creating folders in frontend sidebar.
 
@@ -219,6 +219,50 @@ def _add_new_folder(folder: dict, new_folder_name: str, level: int) -> (dict, in
     }
     folder["children"].append(new_folder)
     return new_folder, level + 1
+
+
+def clear_directory(path: Path):
+    """TODO function docstring"""
+
+    for child in path.glob('*'):
+        if child.is_file():
+            child.unlink()
+        else:
+            clear_directory(child)
+    path.rmdir()
+
+
+@router.post("/{workspace_name}/new_folder/{folder_name}")
+async def add_folder_to_virtual_structure(
+        workspace_name: str, folder_name: str, virtual_path: str
+) -> Message:
+    """TODO function docstring"""
+
+    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    if not path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"Can't find config file at {path.absolute()}"
+        )
+
+    with open(path, "r") as config_file:
+        config_data = json.load(config_file)
+
+    value = {"name": folder_name, "type": "folder", "virtual_path": virtual_path}
+
+    for element in config_data["virtual_structure"]:
+        if element["name"] == folder_name and element["type"] == "folder":
+            element["virtual_path"] = virtual_path
+            break
+    else:
+        config_data["virtual_structure"].append(value)
+
+    with open(path, "w") as config_file:
+        json.dump(config_data, config_file, indent=4)
+
+    return Message(
+        status=MsgStatus.INFO,
+        detail=f"<<{workspace_name}>> virtual structure updated successfully"
+    )
 
 
 @router.get("/translate/{workspace_name}")
@@ -250,16 +294,26 @@ async def translate_workspace_virtual_structure_to_frontend(workspace_name: str)
 
     nodes = []
 
-    for document in virtual_structure:
-        name = document['name']
-        virtual_path = document['virtual_path'].split('/')[1:]
+    for element in virtual_structure:
+        name = element['name']
+        virtual_path = element['virtual_path'].split('/')[1:]
         if len(virtual_path) == 1 and virtual_path[0] == '':  # root
-            nodes.append(
-                {
-                    "text": name,
-                    "level": 0
-                }
-            )
+            if element['type'] == 'folder':
+                nodes.append(
+                    {
+                        "text": name,
+                        "level": 0,
+                        "open": False,
+                        "children": []
+                    }
+                )
+            else:
+                nodes.append(
+                    {
+                        "text": name,
+                        "level": 0
+                    }
+                )
         else:
             folder = None
             # check if the folder already exists
@@ -281,24 +335,24 @@ async def translate_workspace_virtual_structure_to_frontend(workspace_name: str)
             level = 1
             for i in range(1, len(virtual_path)):
                 folder, level = _add_new_folder(folder, virtual_path[i], level)
-            folder["children"].append(
-                {
-                    "text": name,
-                    "level": level
-                }
-            )
+            
+            if element['type'] == 'folder':
+                folder["children"].append(
+                    {
+                        "text": name,
+                        "level": level,
+                        "open": False,
+                        "children": []
+                    }
+                )
+            else:
+                folder["children"].append(
+                    {
+                        "text": name,
+                        "level": level
+                    }
+                )
     return nodes
-
-
-def clear_directory(path: Path):
-    """TODO function docstring"""
-
-    for child in path.glob('*'):
-        if child.is_file():
-            child.unlink()
-        else:
-            clear_directory(child)
-    path.rmdir()
 
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
@@ -421,10 +475,20 @@ async def create_new_document(
     (path / IMAGES_DIR).mkdir()
     (path / ATTACHMENTS_DIR).mkdir()
 
+    empty_document = [
+        {
+            "type": "paragraph",
+            "children": [
+                {
+                    "text": " "
+                }
+            ]
+        }
+    ]
     with open(path / DOCUMENT_FILE, "w") as document_file:
-        document_file.write("")
+        json.dump(empty_document, document_file, indent=4)
 
-    await update_virtual_structure(workspace_name, document_name, virtual_path)
+    await add_document_to_virtual_structure(workspace_name, document_name, virtual_path)
 
     return Message(
         status=MsgStatus.INFO,
