@@ -140,9 +140,6 @@ const Sidebar: React.FC = () => {
     const token = getCookie('token');
     if (token) {
       try {
-        //
-        //   `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`
-        // );
         await fetch(
           `/workspace/${selectedWorkspace}/new_folder/${itemName}?virtual_path=${itemPath}`,
           {
@@ -159,34 +156,29 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  // function getPath(list: Node[], item: Node) {
-  //   if (typeof node.children !== 'undefined' && node.children !== null) {
-  //     for (var index in node.children) {
-  //       var name = getPath(node.children[index], value);
-  //       if (name) {
-  //         return node.name + '.' + name;
-  //       }
-  //     }
-  //   } else {
-  //     if (node.name === value) {
-  //       return node.name;
-  //     }
-  //     return false;
-  //   }
-  // }
+  const removeFolder = async (itemName: string) => {
+    const token = getCookie('token');
+    if (token) {
+      try {
+        await fetch(
+          `/workspace/${selectedWorkspace}/remove_folder/${itemName}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+            },
+            body: JSON.stringify({}),
+          }
+        ).then(() => fetchFiles());
+      } catch {
+        console.error('Error');
+      }
+    }
+  };
 
   let path = '';
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
-    // list.map((node, index) => {
-    //   const name = addNode(item, parentItem);
-    //   if (name) {
-    //     return node.name + '.' + name;
-    //   }
-    // });
-    // console.log(parentItem);
-    // console.log(item);
-    // console.log(list);
 
     path += `/${parentItem.text}`;
     if (foundItem) {
@@ -203,18 +195,7 @@ const Sidebar: React.FC = () => {
   };
 
   const removeNode = (item: Node, list: Node[]) => {
-    // const foundIndex = list.findIndex((node) => node.text === item.text);
-
-    // if (foundIndex >= 0) {
-    //   list.splice(foundIndex, 1);
-    //   return;
-    // }
-
-    // list.forEach((node) => {
-    //   if (node.children) removeNode(item, node.children);
-    // });
-
-    removeItem(item.text);
+    isFolder ? removeFolder(item.text) : removeItem(item.text);
   };
 
   const handleClickOpen = () => {
@@ -223,6 +204,22 @@ const Sidebar: React.FC = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleEnterPress = (event: {
+    key: string;
+    preventDefault: () => void;
+  }) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (typedFileName) {
+        isFolder
+          ? postFolder(typedFileName, '/')
+          : postItem(typedFileName, '/');
+        handleClose();
+        setTypedFileName('');
+      }
+    }
   };
 
   return (
@@ -277,6 +274,7 @@ const Sidebar: React.FC = () => {
         <DialogTitle id="form-dialog-title">Add new File</DialogTitle>
         <DialogContent>
           <TextField
+            onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
             id="name"

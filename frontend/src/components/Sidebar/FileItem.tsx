@@ -200,10 +200,24 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             >
               Add folder
             </MenuItem>
-            <MenuItem onClick={handleRemoveNode}>Remove folder</MenuItem>
+            <MenuItem
+              onClick={() => {
+                props.setIsFolder(true);
+                handleRemoveNode();
+              }}
+            >
+              Remove folder
+            </MenuItem>
           </div>
         ) : (
-          <MenuItem onClick={handleRemoveNode}>Remove file</MenuItem>
+          <MenuItem
+            onClick={() => {
+              props.setIsFolder(false);
+              handleRemoveNode();
+            }}
+          >
+            Remove file
+          </MenuItem>
         )}
       </Menu>
     </div>
