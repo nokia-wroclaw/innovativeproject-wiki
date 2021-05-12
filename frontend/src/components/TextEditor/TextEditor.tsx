@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     height: '29.7cm',
     boxShadow: '2px 2px 2px 2px lightgray',
     borderRadius: '5px',
+    padding: 50,
   },
   toolbar: {
     display: 'flex',
