@@ -66,19 +66,23 @@ const initialList: Node[] = [
   },
 ];
 
-const Sidebar: React.FC = () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Sidebar = (props: any) => {
   const classes = useStyles();
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
-  const { selectedWorkspace } = useContext(AppContext);
+  // const { selectedWorkspace } = useContext(AppContext);
+  const selectedWorkspace = props.workspaceName;
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
   const [isFolder, setIsFolder] = useState(false);
 
+  console.log(selectedWorkspace);
+
   const fetchFiles = useCallback(() => {
     if (selectedWorkspace) {
-      console.log('tralalal');
-      console.log(selectedWorkspace);
+      // console.log('tralalal');
+      // console.log(selectedWorkspace);
       fetch(`/workspace/translate/${selectedWorkspace}`, {
         method: 'GET',
         headers: {

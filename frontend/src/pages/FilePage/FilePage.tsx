@@ -11,34 +11,11 @@ import useStyles from './FilePage.styles';
 export default function FilePage({ match }: { match: any }) {
   const classes = useStyles();
   const { fileName, workspaceName } = match.params;
-  const selectedWorkspace = workspaceName;
-  // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
-  const [itemList, setItemList] = useState([]);
-
-  const fetchFiles = () => {
-    fetch(`/workspace/translate/${selectedWorkspace}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setItemList(data);
-      })
-      .catch((error) => {
-        console.error('Error: ', error);
-      });
-  };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
 
   return (
     <div className={classes.filePageContainer}>
       <div className={classes.sidebar}>
-        <Sidebar />
+        <Sidebar workspaceName={workspaceName} />
       </div>
       <div className={classes.editor}>
         {/* {itemList.length !== 0 ? (

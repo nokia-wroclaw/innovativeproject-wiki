@@ -85,8 +85,9 @@ const TextEditor = (props: any) => {
 
   useEffect(() => {
     const token = getCookie('token');
+    if (token && selectedWorkspace && typeof props.fileName !== 'undefined') {
+      console.log(props.fileName);
 
-    if (token && selectedWorkspace) {
       fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
         method: 'GET',
         headers: {
@@ -122,7 +123,7 @@ const TextEditor = (props: any) => {
           const token = getCookie('token');
 
           if (token) {
-            if (selectedWorkspace) {
+            if (selectedWorkspace && typeof props.fileName !== 'undefined') {
               fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
                 method: 'POST',
                 headers: {
