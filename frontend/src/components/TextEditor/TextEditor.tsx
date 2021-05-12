@@ -4,7 +4,14 @@
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import isHotkey from 'is-hotkey';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+} from 'react';
 import {
   createEditor,
   Descendant,
@@ -20,6 +27,7 @@ import {
   Slate,
   useSlate,
   withReact,
+  ReactEditor,
 } from 'slate-react';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
@@ -53,9 +61,14 @@ const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
-  // const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-  const [editor] = useState(() => withHistory(withReact(createEditor())));
-  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  // const [editor] = useState(() => withHistory(withReact(createEditor())));
+  // const editorRef = useRef<ReactEditor>();
+  // if (!editorRef.current) editorRef.current = withReact(createEditor());
+  // const editor = editorRef.current;
+
+  // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+  const selectedWorkspace = props.workspaceName;
 
   const classes = useStyles();
 
@@ -68,10 +81,12 @@ const TextEditor = (props: any) => {
 
   const [value, setValue] = useState<Descendant[]>(initialValue);
 
+  console.log('tralalal', selectedWorkspace);
+
   useEffect(() => {
     const token = getCookie('token');
 
-    if (token) {
+    if (token && selectedWorkspace) {
       fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
         method: 'GET',
         headers: {
@@ -81,6 +96,10 @@ const TextEditor = (props: any) => {
       })
         .then((response) => response.json())
         .then((data) => {
+          Transforms.select(editor, {
+            anchor: { path: [0, 0], offset: 0 },
+            focus: { path: [1, 0], offset: 2 },
+          });
           setValue(data);
         })
         .catch((error) => {
@@ -103,19 +122,21 @@ const TextEditor = (props: any) => {
           const token = getCookie('token');
 
           if (token) {
-            fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
-              method: 'POST',
-              headers: {
-                Authorization: 'Bearer '.concat(token),
-                'Content-Type': 'application/json',
-              },
-              body: content,
-            })
-              .then((response) => response.json())
-              .then((data) => {})
-              .catch((error) => {
-                console.error('Error:');
-              });
+            if (selectedWorkspace) {
+              fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+                method: 'POST',
+                headers: {
+                  Authorization: 'Bearer '.concat(token),
+                  'Content-Type': 'application/json',
+                },
+                body: content,
+              })
+                .then((response) => response.json())
+                .then((data) => {})
+                .catch((error) => {
+                  console.error('Error:');
+                });
+            }
           }
         }}
       >

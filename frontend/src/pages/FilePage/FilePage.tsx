@@ -10,8 +10,9 @@ import useStyles from './FilePage.styles';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function FilePage({ match }: { match: any }) {
   const classes = useStyles();
-  const { fileName } = match.params;
-  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+  const { fileName, workspaceName } = match.params;
+  const selectedWorkspace = workspaceName;
+  // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [itemList, setItemList] = useState([]);
 
   const fetchFiles = () => {
@@ -45,7 +46,7 @@ export default function FilePage({ match }: { match: any }) {
         ) : (
           <TextEditor fileName="dcdc" />
         )} */}
-        <TextEditor fileName={fileName} />
+        <TextEditor fileName={fileName} workspaceName={workspaceName} />
       </div>
 
       <div className={classes.filePage_buttons}>

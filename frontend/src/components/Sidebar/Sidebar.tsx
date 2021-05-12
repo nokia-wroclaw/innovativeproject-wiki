@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
@@ -75,25 +75,29 @@ const Sidebar: React.FC = () => {
   const [typedFileName, setTypedFileName] = useState('');
   const [isFolder, setIsFolder] = useState(false);
 
-  const fetchFiles = () => {
-    fetch(`/workspace/translate/${selectedWorkspace}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setItemList(data);
+  const fetchFiles = useCallback(() => {
+    if (selectedWorkspace) {
+      console.log('tralalal');
+      console.log(selectedWorkspace);
+      fetch(`/workspace/translate/${selectedWorkspace}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((error) => {
-        console.error('Error: ', error);
-      });
-  };
+        .then((response) => response.json())
+        .then((data) => {
+          setItemList(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [selectedWorkspace]);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   const postItem = async (itemName: string, itemPath: string) => {
     const token = getCookie('token');
