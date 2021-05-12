@@ -265,6 +265,33 @@ async def add_folder_to_virtual_structure(
     )
 
 
+@router.post("/{workspace_name}/remove_folder/{folder_name}")
+async def remove_folder_from_virtual_structure(
+        workspace_name: str, folder_name: str) -> Message:
+    """TODO function docstring"""
+
+    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    if not path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"Can't find config file at {path.absolute()}"
+        )
+
+    with open(path, "r") as config_file:
+        config_data = json.load(config_file)
+
+    for element in config_data["virtual_structure"]:
+        if element["name"] == folder_name and element["type"] == "folder":
+           config_data["virtual_structure"].remove(element)
+
+    with open(path, "w") as config_file:
+        json.dump(config_data, config_file, indent=4)
+
+    return Message(
+        status=MsgStatus.INFO,
+        detail=f"<<{workspace_name}>> virtual structure updated successfully"
+    )
+
+
 @router.get("/translate/{workspace_name}")
 async def translate_workspace_virtual_structure_to_frontend(workspace_name: str) -> json:
     """
