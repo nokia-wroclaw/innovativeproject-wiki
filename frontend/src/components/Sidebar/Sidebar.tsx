@@ -73,6 +73,7 @@ const Sidebar: React.FC = () => {
   const { selectedWorkspace } = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
+  const [isFolder, setIsFolder] = useState(false);
 
   const fetchFiles = () => {
     fetch(`/workspace/translate/${selectedWorkspace}`, {
@@ -98,9 +99,6 @@ const Sidebar: React.FC = () => {
     const token = getCookie('token');
     if (token) {
       try {
-        //
-        //   `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`
-        // );
         await fetch(
           `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`,
           {
@@ -138,13 +136,63 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const postFolder = async (itemName: string, itemPath: string) => {
+    const token = getCookie('token');
+    if (token) {
+      try {
+        //
+        //   `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`
+        // );
+        await fetch(
+          `/workspace/${selectedWorkspace}/new_folder/${itemName}?virtual_path=${itemPath}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+            },
+            body: JSON.stringify({}),
+          }
+        ).then(() => fetchFiles());
+      } catch {
+        console.error('Error');
+      }
+    }
+  };
+
+  // function getPath(list: Node[], item: Node) {
+  //   if (typeof node.children !== 'undefined' && node.children !== null) {
+  //     for (var index in node.children) {
+  //       var name = getPath(node.children[index], value);
+  //       if (name) {
+  //         return node.name + '.' + name;
+  //       }
+  //     }
+  //   } else {
+  //     if (node.name === value) {
+  //       return node.name;
+  //     }
+  //     return false;
+  //   }
+  // }
+
   let path = '';
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
     const foundItem = list.find((node) => node.text === parentItem.text);
+    // list.map((node, index) => {
+    //   const name = addNode(item, parentItem);
+    //   if (name) {
+    //     return node.name + '.' + name;
+    //   }
+    // });
+    // console.log(parentItem);
+    // console.log(item);
+    // console.log(list);
+
     path += `/${parentItem.text}`;
     if (foundItem) {
-      parentItem.children?.push(item);
-      postItem(item.text, path);
+      // parentItem.children?.push(item);
+      // console.log(path);
+      // isFolder ? postFolder(item.text, path) : postItem(item.text, path);
       path = '';
       return;
     }
@@ -185,10 +233,22 @@ const Sidebar: React.FC = () => {
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
             DOCUMENTS
-            <IconButton color="primary" onClick={handleClickOpen}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setIsFolder(false);
+                handleClickOpen();
+              }}
+            >
               <DescriptionIcon fontSize="small" />
             </IconButton>
-            <IconButton color="primary" onClick={handleClickOpen}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setIsFolder(true);
+                handleClickOpen();
+              }}
+            >
               <FolderIcon fontSize="small" />
             </IconButton>
           </ListSubheader>
@@ -205,6 +265,7 @@ const Sidebar: React.FC = () => {
             addNode={addNode}
             removeNode={removeNode}
             setItemList={setItemList}
+            setIsFolder={setIsFolder}
           />
         ))}
       </List>
@@ -230,7 +291,9 @@ const Sidebar: React.FC = () => {
         <DialogActions>
           <Button
             onClick={() => {
-              postItem(typedFileName, '/');
+              isFolder
+                ? postFolder(typedFileName, '/')
+                : postItem(typedFileName, '/');
               handleClose();
               setTypedFileName('');
             }}
