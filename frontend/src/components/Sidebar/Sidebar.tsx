@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
@@ -66,41 +66,64 @@ const initialList: Node[] = [
   },
 ];
 
-const Sidebar: React.FC = () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Sidebar = (props: any) => {
   const classes = useStyles();
   const [itemList, setItemList] = useState(initialList);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
-  const { selectedWorkspace } = useContext(AppContext);
+  // const { selectedWorkspace } = useContext(AppContext);
+  const selectedWorkspace = props.workspaceName;
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
+  const [isFolder, setIsFolder] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [fileStructure, setFileStructure] = useState<any>([]);
 
-  const fetchFiles = () => {
-    fetch(`/workspace/translate/${selectedWorkspace}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setItemList(data);
+  const fetchFiles = useCallback(() => {
+    if (selectedWorkspace) {
+      fetch(`/workspace/structure/tree/${selectedWorkspace}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((error) => {
-        console.error('Error: ', error);
-      });
-  };
+        .then((response) => response.json())
+        .then((data) => {
+          setItemList(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [selectedWorkspace]);
+
+  const fetchFileStructure = useCallback(() => {
+    if (selectedWorkspace) {
+      fetch(`/workspace/structure/raw/${selectedWorkspace}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setFileStructure(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [selectedWorkspace]);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+    fetchFileStructure();
+  }, [fetchFiles, fetchFileStructure]);
 
   const postItem = async (itemName: string, itemPath: string) => {
     const token = getCookie('token');
     if (token) {
       try {
-        //
-        //   `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`
-        // );
         await fetch(
           `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`,
           {
@@ -110,7 +133,10 @@ const Sidebar: React.FC = () => {
             },
             body: JSON.stringify({}),
           }
-        ).then(() => fetchFiles());
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
       } catch {
         console.error('Error');
       }
@@ -128,9 +154,9 @@ const Sidebar: React.FC = () => {
             Authorization: 'Bearer '.concat(token),
           },
           body: JSON.stringify({}),
-        }).then((res) => {
-          //
+        }).then(() => {
           fetchFiles();
+          fetchFileStructure();
         });
       } catch {
         console.error('Error');
@@ -138,35 +164,62 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  let path = '';
-  const addNode = (item: Node, parentItem: Node, list: Node[]) => {
-    const foundItem = list.find((node) => node.text === parentItem.text);
-    path += `/${parentItem.text}`;
-    if (foundItem) {
-      parentItem.children?.push(item);
-      postItem(item.text, path);
-      path = '';
-      return;
+  const postFolder = async (itemName: string, itemPath: string) => {
+    const token = getCookie('token');
+    if (token) {
+      try {
+        await fetch(
+          `/workspace/${selectedWorkspace}/new_folder/${itemName}?virtual_path=${itemPath}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+            },
+            body: JSON.stringify({}),
+          }
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
+      } catch {
+        console.error('Error');
+      }
     }
+  };
 
-    list.forEach((node) => {
-      if (node.children) addNode(item, parentItem, node.children);
-    });
+  const removeFolder = async (itemName: string) => {
+    const token = getCookie('token');
+    if (token) {
+      try {
+        await fetch(
+          `/workspace/${selectedWorkspace}/remove_folder/${itemName}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+            },
+            body: JSON.stringify({}),
+          }
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
+      } catch {
+        console.error('Error');
+      }
+    }
+  };
+
+  const addNode = (item: Node, parentItem: Node, list: Node[]) => {
+    const path = fileStructure?.find(
+      (file: { name: string }) => file.name === parentItem.text
+    ).virtual_path;
+    const fullPath = `${path}/${parentItem.text}`;
+    isFolder ? postFolder(item.text, fullPath) : postItem(item.text, fullPath);
   };
 
   const removeNode = (item: Node, list: Node[]) => {
-    // const foundIndex = list.findIndex((node) => node.text === item.text);
-
-    // if (foundIndex >= 0) {
-    //   list.splice(foundIndex, 1);
-    //   return;
-    // }
-
-    // list.forEach((node) => {
-    //   if (node.children) removeNode(item, node.children);
-    // });
-
-    removeItem(item.text);
+    isFolder ? removeFolder(item.text) : removeItem(item.text);
   };
 
   const handleClickOpen = () => {
@@ -177,6 +230,22 @@ const Sidebar: React.FC = () => {
     setOpen(false);
   };
 
+  const handleEnterPress = (event: {
+    key: string;
+    preventDefault: () => void;
+  }) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (typedFileName) {
+        isFolder
+          ? postFolder(typedFileName, '/')
+          : postItem(typedFileName, '/');
+        handleClose();
+        setTypedFileName('');
+      }
+    }
+  };
+
   return (
     <div>
       <List
@@ -185,10 +254,22 @@ const Sidebar: React.FC = () => {
         subheader={
           <ListSubheader component="div" id="nested-list-subheader">
             DOCUMENTS
-            <IconButton color="primary" onClick={handleClickOpen}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setIsFolder(false);
+                handleClickOpen();
+              }}
+            >
               <DescriptionIcon fontSize="small" />
             </IconButton>
-            <IconButton color="primary" onClick={handleClickOpen}>
+            <IconButton
+              color="primary"
+              onClick={() => {
+                setIsFolder(true);
+                handleClickOpen();
+              }}
+            >
               <FolderIcon fontSize="small" />
             </IconButton>
           </ListSubheader>
@@ -205,6 +286,8 @@ const Sidebar: React.FC = () => {
             addNode={addNode}
             removeNode={removeNode}
             setItemList={setItemList}
+            setIsFolder={setIsFolder}
+            workspaceName={selectedWorkspace}
           />
         ))}
       </List>
@@ -216,6 +299,7 @@ const Sidebar: React.FC = () => {
         <DialogTitle id="form-dialog-title">Add new File</DialogTitle>
         <DialogContent>
           <TextField
+            onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
             id="name"
@@ -230,7 +314,9 @@ const Sidebar: React.FC = () => {
         <DialogActions>
           <Button
             onClick={() => {
-              postItem(typedFileName, '/');
+              isFolder
+                ? postFolder(typedFileName, '/')
+                : postItem(typedFileName, '/');
               handleClose();
               setTypedFileName('');
             }}

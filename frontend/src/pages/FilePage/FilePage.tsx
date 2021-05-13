@@ -10,42 +10,20 @@ import useStyles from './FilePage.styles';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function FilePage({ match }: { match: any }) {
   const classes = useStyles();
-  const { fileName } = match.params;
-  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
-  const [itemList, setItemList] = useState([]);
-
-  const fetchFiles = () => {
-    fetch(`/workspace/translate/${selectedWorkspace}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setItemList(data);
-      })
-      .catch((error) => {
-        console.error('Error: ', error);
-      });
-  };
-
-  useEffect(() => {
-    fetchFiles();
-  }, []);
+  const { fileName, workspaceName } = match.params;
 
   return (
     <div className={classes.filePageContainer}>
       <div className={classes.sidebar}>
-        <Sidebar />
+        <Sidebar workspaceName={workspaceName} />
       </div>
       <div className={classes.editor}>
-        {/* {itemList.length !== 0 ? (
-          <TextEditor fileName={fileName} />
+        {typeof fileName === 'undefined' ? (
+          <img src={UndrawWallpost} alt="UndrawWallpost" />
         ) : (
-          <TextEditor fileName="dcdc" />
-        )} */}
-        <TextEditor fileName={fileName} />
+          <TextEditor fileName={fileName} workspaceName={workspaceName} />
+        )}
+        {/* <TextEditor fileName={fileName} workspaceName={workspaceName} /> */}
       </div>
 
       <div className={classes.filePage_buttons}>
