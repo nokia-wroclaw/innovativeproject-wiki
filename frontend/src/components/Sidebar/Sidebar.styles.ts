@@ -7,6 +7,11 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 250,
       backgroundColor: 'rgba(52, 52, 52, 0.02)',
     },
+    listName: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
     nested: {
       paddingLeft: theme.spacing(4),
     },

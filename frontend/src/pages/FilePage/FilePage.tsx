@@ -19,7 +19,11 @@ export default function FilePage({ match }: { match: any }) {
       </div>
       <div className={classes.editor}>
         {typeof fileName === 'undefined' ? (
-          <img src={UndrawWallpost} alt="UndrawWallpost" />
+          <img
+            src={UndrawWallpost}
+            alt="UndrawWallpost"
+            className={classes.filePage__wallpost}
+          />
         ) : (
           <TextEditor fileName={fileName} workspaceName={workspaceName} />
         )}

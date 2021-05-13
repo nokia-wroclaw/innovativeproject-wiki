@@ -8,6 +8,7 @@ import {
   List,
   ListSubheader,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -28,41 +29,7 @@ const initialList: Node[] = [
         text: 'Item1.1',
         level: 1,
       },
-      {
-        text: 'Item1.2',
-        level: 1,
-        open: false,
-        children: [
-          {
-            text: '1234',
-            level: 2,
-          },
-        ],
-      },
-      {
-        text: 'Item1.3',
-        level: 1,
-      },
     ],
-  },
-  {
-    text: 'Item2',
-    level: 0,
-  },
-  {
-    text: 'Item3',
-    level: 0,
-    open: true,
-    children: [
-      {
-        text: 'Item3.1',
-        level: 1,
-      },
-    ],
-  },
-  {
-    text: 'Item4',
-    level: 0,
   },
 ];
 
@@ -214,7 +181,10 @@ const Sidebar = (props: any) => {
     const path = fileStructure?.find(
       (file: { name: string }) => file.name === parentItem.text
     ).virtual_path;
-    const fullPath = `${path}/${parentItem.text}`;
+    const fullPath =
+      path === '/' ? `${path}${parentItem.text}` : `${path}/${parentItem.text}`;
+    console.log(fullPath);
+
     isFolder ? postFolder(item.text, fullPath) : postItem(item.text, fullPath);
   };
 
@@ -252,26 +222,26 @@ const Sidebar = (props: any) => {
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            DOCUMENTS
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setIsFolder(false);
-                handleClickOpen();
-              }}
-            >
-              <DescriptionIcon fontSize="small" />
-            </IconButton>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setIsFolder(true);
-                handleClickOpen();
-              }}
-            >
-              <FolderIcon fontSize="small" />
-            </IconButton>
+          <ListSubheader component="div" className={classes.listName}>
+            <Typography variant="h5">{selectedWorkspace}</Typography>
+            <div>
+              <IconButton
+                onClick={() => {
+                  setIsFolder(false);
+                  handleClickOpen();
+                }}
+              >
+                <DescriptionIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                onClick={() => {
+                  setIsFolder(true);
+                  handleClickOpen();
+                }}
+              >
+                <FolderIcon fontSize="small" />
+              </IconButton>
+            </div>
           </ListSubheader>
         }
         className={classes.root}
@@ -296,14 +266,16 @@ const Sidebar = (props: any) => {
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Add new File</DialogTitle>
+        <DialogTitle id="form-dialog-title">
+          {isFolder ? 'Add new folder' : 'Add new file'}
+        </DialogTitle>
         <DialogContent>
           <TextField
             onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
             id="name"
-            label="File Name"
+            label={isFolder ? 'Folder name' : 'File name'}
             value={typedFileName}
             fullWidth
             onChange={({ target: { value } }) => {
