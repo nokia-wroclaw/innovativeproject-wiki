@@ -43,12 +43,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     width: '21cm',
     height: '29.7cm',
-    boxShadow: '3px 3px 3px 3px lightgray',
+    boxShadow: '2px 2px 2px 2px lightgray',
     // borderRadius: '5px',
     padding: 40,
     paddingLeft: 80,
     paddingRight: 80,
-    textAlign: 'left',
+    // textAlign: 'left',
   },
   toolbar: {
     display: 'flex',
@@ -205,7 +205,7 @@ const TextEditor = (props: any) => {
         <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
-          placeholder="Enter some rich text…"
+          // placeholder="Enter some rich text…"
           spellCheck
           autoFocus
           onKeyDown={(event) => {
