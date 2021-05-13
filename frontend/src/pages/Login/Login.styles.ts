@@ -10,6 +10,13 @@ const useStyles = makeStyles((theme) => ({
   loginTextField: {
     margin: '15px auto',
   },
+  
+  add_dialog: {
+    margin: 'auto',
+    marginTop: 30,
+    marginRight: 40,
+  },
+
   loginButton: { margin: '30px auto' },
   errorMessage: { marginTop: 20, width: '100%' },
 }));

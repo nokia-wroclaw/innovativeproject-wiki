@@ -1,7 +1,13 @@
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Checkbox,
   Grid,
+  IconButton,
   Link,
   Paper,
   TextField,
@@ -20,6 +26,30 @@ const Login: React.FC = () => {
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
   const [isError, setIsError] = useState(false);
+  const [typedEmail, setTypedEmail] = useState('');
+  const [open, setOpen] = React.useState(false);
+
+  const sendMail = () => {
+      if (typedEmail){
+      textFieldClear();
+      handleClose();
+      window.alert('Mail sent! Check your mail box');
+    } else {
+      window.alert('Email field cannot be blank!');
+    }
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const textFieldClear = () => {
+    setTypedEmail('');
+  };
 
   const handleLoginButton = async () => {
     fetch('/auth/login', {
@@ -90,7 +120,7 @@ const Login: React.FC = () => {
             label="Remember me"
           />
           <Typography>
-            <Link href="#">Forgot password?</Link>
+            <Link onClick={handleClickOpen}>Forgot password?</Link>
           </Typography>
           <Typography>
             {' '}
@@ -109,6 +139,39 @@ const Login: React.FC = () => {
           ) : null}
         </Grid>
       </Paper>
+
+
+      <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please type an e-mail address associated with your account
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Email"
+              value={typedEmail}
+              fullWidth
+              onChange={({ target: { value } }) => {
+                setTypedEmail(value);
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => sendMail()} color="primary">
+              Send
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
     </div>
   );
 };
