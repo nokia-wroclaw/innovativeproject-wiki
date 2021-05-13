@@ -19,7 +19,11 @@ export default function FilePage({ match }: { match: any }) {
       </div>
       <div className={classes.editor}>
         {typeof fileName === 'undefined' ? (
-          <img src={UndrawWallpost} alt="UndrawWallpost" />
+          <img
+            src={UndrawWallpost}
+            alt="UndrawWallpost"
+            className={classes.filePage__wallpost}
+          />
         ) : (
           <TextEditor fileName={fileName} workspaceName={workspaceName} />
         )}
@@ -27,14 +31,15 @@ export default function FilePage({ match }: { match: any }) {
       </div>
 
       <div className={classes.filePage_buttons}>
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           className={classes.filePage_buttons}
           startIcon={<CloudDownloadIcon />}
+          onClick={onExportClick}
         >
           Export
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

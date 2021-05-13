@@ -93,14 +93,6 @@ export default function DataTable() {
       !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
       typedWorkspaceName
     ) {
-      setWorkspaces([
-        ...workspaces,
-        {
-          id: typedWorkspaceName,
-          name: typedWorkspaceName,
-          lastUpdate: '07.05.2021',
-        },
-      ]);
       textFieldClear();
       const token = getCookie('token');
       if (token) {
@@ -115,7 +107,9 @@ export default function DataTable() {
           }
         )
           .then((response) => response.json())
-          .then((data) => {})
+          .then((data) => {
+            fetchWorkspaces();
+          })
           .catch((error) => {
             console.error('Error:', error);
           });
