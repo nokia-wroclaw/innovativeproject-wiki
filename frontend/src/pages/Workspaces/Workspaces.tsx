@@ -43,12 +43,17 @@ const columns: GridColDef[] = [
   },
 ];
 
+
+
 export default function DataTable() {
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
+  
+  
+
   const [workspaces, setWorkspaces] = useState([
     { id: '', name: '', lastUpdate: '' },
   ]);
@@ -125,9 +130,7 @@ export default function DataTable() {
         addPostWorkspaces();
 
         handleClose();
-      } else {
-        window.alert('The workspace name must be unique!');
-      }
+      } 
     }
   };
 
@@ -141,9 +144,7 @@ export default function DataTable() {
       addPostWorkspaces();
 
       handleClose();
-    } else {
-      window.alert('The workspace name must be unique!');
-    }
+    } 
   };
 
   const fetchWorkspaces = () => {
@@ -191,6 +192,8 @@ export default function DataTable() {
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
+              error={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)&&typedWorkspaceName===''}
+              helperText={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)&&typedWorkspaceName ? '' : 'Field cannot be blank and name must be unique!'}
               onKeyPress={handleEnterPress}
               autoFocus
               margin="dense"
