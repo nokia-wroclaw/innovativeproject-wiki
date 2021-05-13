@@ -83,8 +83,8 @@ def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Document with name <<{doc_name}>>" +
-                   f" doesn't exist in workspace <<{workspace_name}>>",
+            detail=f"Document with name <<{doc_name}>>"
+            + f" doesn't exist in workspace <<{workspace_name}>>",
         )
 
     return path
@@ -125,7 +125,9 @@ def get_image_path(workspace_name: str, document_name: str, img: str = "") -> Pa
     return path
 
 
-def get_attachment_path(workspace_name: str, document_name: str, atch: str = "") -> Path:
+def get_attachment_path(
+    workspace_name: str, document_name: str, atch: str = ""
+) -> Path:
     """
     Returns path to attachment file with given name.
     If no argument is given - returns path to attachments collective directory.
@@ -154,15 +156,15 @@ def get_attachment_path(workspace_name: str, document_name: str, atch: str = "")
     if not path.exists():
         raise HTTPException(
             status_code=404,
-            detail=f"Attachment with name <<{atch}>>" +
-                   f" doesn't exist in workspace <<{workspace_name}>>",
+            detail=f"Attachment with name <<{atch}>>"
+            + f" doesn't exist in workspace <<{workspace_name}>>",
         )
 
     return path
 
 
 async def add_document_to_virtual_structure(
-        workspace_name: str, document_name: str, virtual_path: str
+    workspace_name: str, document_name: str, virtual_path: str
 ) -> Message:
     """TODO function docstring"""
 
@@ -189,7 +191,7 @@ async def add_document_to_virtual_structure(
 
     return Message(
         status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully"
+        detail=f"<<{workspace_name}>> virtual structure updated successfully",
     )
 
 
@@ -215,7 +217,7 @@ def _add_new_folder(folder: dict, new_folder_name: str, level: int):
         "text": new_folder_name,
         "level": level,
         "open": False,
-        "children": []
+        "children": [],
     }
     folder["children"].append(new_folder)
     return new_folder, level + 1
@@ -224,7 +226,7 @@ def _add_new_folder(folder: dict, new_folder_name: str, level: int):
 def clear_directory(path: Path):
     """TODO function docstring"""
 
-    for child in path.glob('*'):
+    for child in path.glob("*"):
         if child.is_file():
             child.unlink()
         else:
@@ -234,7 +236,7 @@ def clear_directory(path: Path):
 
 @router.post("/{workspace_name}/new_folder/{folder_name}")
 async def add_folder_to_virtual_structure(
-        workspace_name: str, folder_name: str, virtual_path: str
+    workspace_name: str, folder_name: str, virtual_path: str
 ) -> Message:
     """TODO function docstring"""
 
@@ -261,13 +263,14 @@ async def add_folder_to_virtual_structure(
 
     return Message(
         status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully"
+        detail=f"<<{workspace_name}>> virtual structure updated successfully",
     )
 
 
 @router.post("/{workspace_name}/remove_folder/{folder_name}")
 async def remove_folder_from_virtual_structure(
-        workspace_name: str, folder_name: str) -> Message:
+    workspace_name: str, folder_name: str
+) -> Message:
     """TODO function docstring"""
 
     path = get_workspace_path(workspace_name) / CONFIG_FILE
@@ -281,14 +284,14 @@ async def remove_folder_from_virtual_structure(
 
     for element in config_data["virtual_structure"]:
         if element["name"] == folder_name and element["type"] == "folder":
-           config_data["virtual_structure"].remove(element)
+            config_data["virtual_structure"].remove(element)
 
     with open(path, "w") as config_file:
         json.dump(config_data, config_file, indent=4)
 
     return Message(
         status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully"
+        detail=f"<<{workspace_name}>> virtual structure updated successfully",
     )
 
 
@@ -322,25 +325,13 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
     nodes = []
 
     for element in virtual_structure:
-        name = element['name']
-        virtual_path = element['virtual_path'].split('/')[1:]
-        if len(virtual_path) == 1 and virtual_path[0] == '':  # root
-            if element['type'] == 'folder':
-                nodes.append(
-                    {
-                        "text": name,
-                        "level": 0,
-                        "open": False,
-                        "children": []
-                    }
-                )
+        name = element["name"]
+        virtual_path = element["virtual_path"].split("/")[1:]
+        if len(virtual_path) == 1 and virtual_path[0] == "":  # root
+            if element["type"] == "folder":
+                nodes.append({"text": name, "level": 0, "open": False, "children": []})
             else:
-                nodes.append(
-                    {
-                        "text": name,
-                        "level": 0
-                    }
-                )
+                nodes.append({"text": name, "level": 0})
         else:
             folder = None
             # check if the folder already exists
@@ -354,7 +345,7 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
                     "text": virtual_path[0],
                     "level": 0,
                     "open": False,
-                    "children": []
+                    "children": [],
                 }
                 nodes.append(first_folder)
                 folder = first_folder
@@ -362,28 +353,20 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
             level = 1
             for i in range(1, len(virtual_path)):
                 folder, level = _add_new_folder(folder, virtual_path[i], level)
-            
-            if element['type'] == 'folder':
+
+            if element["type"] == "folder":
                 folder["children"].append(
-                    {
-                        "text": name,
-                        "level": level,
-                        "open": False,
-                        "children": []
-                    }
+                    {"text": name, "level": level, "open": False, "children": []}
                 )
             else:
-                folder["children"].append(
-                    {
-                        "text": name,
-                        "level": level
-                    }
-                )
+                folder["children"].append({"text": name, "level": level})
     return nodes
 
 
 @router.get("/structure/raw/{workspace_name}")
 async def get_workspace_raw_structure(workspace_name: str) -> json:
+    """TODO function docstring"""
+
     path = get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
@@ -398,7 +381,7 @@ async def get_workspace_raw_structure(workspace_name: str) -> json:
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
 async def create_new_workspace(
-        workspace_name: str, private: bool, creator: str = Depends(get_current_user)
+    workspace_name: str, private: bool, creator: str = Depends(get_current_user)
 ) -> Message:
     """
     Create a new workspace and its subdirectories
@@ -450,12 +433,9 @@ async def create_new_workspace(
     )
 
 
-@router.post(
-    "/remove/{workspace_name}", response_model=Message, status_code=200
-)
+@router.post("/remove/{workspace_name}", response_model=Message, status_code=200)
 async def remove_workspace(
-        workspace_name: str,
-        user: str = Depends(get_current_user)
+    workspace_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
@@ -467,25 +447,22 @@ async def remove_workspace(
     if user["username"] != info_data["creator"]:
         raise HTTPException(
             status_code=401,
-            detail=f"Only creator of the workspace - {info_data['creator']}, can delete it"
+            detail=f"Only creator of the workspace - {info_data['creator']}, can delete it",
         )
 
     clear_directory(path)
 
-    return Message(
-        status=MsgStatus.INFO,
-        detail="Workspace removed successfully"
-    )
+    return Message(status=MsgStatus.INFO, detail="Workspace removed successfully")
 
 
 @router.post(
     "/new/{workspace_name}/{document_name}", response_model=Message, status_code=201
 )
 async def create_new_document(
-        workspace_name: str,
-        document_name: str,
-        virtual_path: str,
-        creator: str = Depends(get_current_user)
+    workspace_name: str,
+    document_name: str,
+    virtual_path: str,
+    creator: str = Depends(get_current_user),
 ) -> Message:
     """
     Create a new document in given workspace
@@ -516,16 +493,7 @@ async def create_new_document(
     (path / IMAGES_DIR).mkdir()
     (path / ATTACHMENTS_DIR).mkdir()
 
-    empty_document = [
-        {
-            "type": "paragraph",
-            "children": [
-                {
-                    "text": " "
-                }
-            ]
-        }
-    ]
+    empty_document = [{"type": "paragraph", "children": [{"text": " "}]}]
     with open(path / DOCUMENT_FILE, "w") as document_file:
         json.dump(empty_document, document_file, indent=4)
 
@@ -542,9 +510,7 @@ async def create_new_document(
     "/remove/{workspace_name}/{document_name}", response_model=Message, status_code=200
 )
 async def remove_document(
-        workspace_name: str,
-        document_name: str,
-        user: str = Depends(get_current_user)
+    workspace_name: str, document_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
@@ -555,8 +521,7 @@ async def remove_document(
 
     if user["username"] != info_data["creator"]:
         raise HTTPException(
-            status_code=401,
-            detail="Only creator of the workspace can delete it"
+            status_code=401, detail="Only creator of the workspace can delete it"
         )
 
     path = get_workspace_path(workspace_name) / CONFIG_FILE
@@ -573,10 +538,7 @@ async def remove_document(
     path = get_document_path(workspace_name, document_name)
     clear_directory(path)
 
-    return Message(
-        status=MsgStatus.INFO,
-        detail="Document removed successfully"
-    )
+    return Message(status=MsgStatus.INFO, detail="Document removed successfully")
 
 
 @router.get("/{workspace_name}/{document_name}")
@@ -593,9 +555,7 @@ async def load_document_content(workspace_name: str, document_name: str) -> json
 
 @router.post("/{workspace_name}/{document_name}")
 async def save_document_content(
-        workspace_name: str,
-        document_name: str,
-        document_data: list
+    workspace_name: str, document_name: str, document_data: list
 ) -> Message:
     """TODO function docstring"""
 
@@ -605,8 +565,7 @@ async def save_document_content(
         json.dump(document_data, document_file, indent=4)
 
     return Message(
-        status=MsgStatus.INFO,
-        detail="Document content updated successfully"
+        status=MsgStatus.INFO, detail="Document content updated successfully"
     )
 
 
@@ -616,12 +575,19 @@ async def get_all_user_workspaces(user: str = Depends(get_current_user)) -> list
 
     user_workspaces = []
 
-    workspaces = [ folder.path for folder in os.scandir(get_workspace_path()) if folder.is_dir() ]
+    workspaces = [
+        folder.path for folder in os.scandir(get_workspace_path()) if folder.is_dir()
+    ]
     for workspace in workspaces:
         info_path = workspace + "/" + INFO_FILE
         with open(info_path, "r") as info_file:
             info_data = json.load(info_file)
             if info_data["creator"] == user["username"]:
-                user_workspaces.append({"name": info_data["name"], "last_updated": info_data["last_updated"]})
+                user_workspaces.append(
+                    {
+                        "name": info_data["name"],
+                        "last_updated": info_data["last_updated"],
+                    }
+                )
 
     return user_workspaces
