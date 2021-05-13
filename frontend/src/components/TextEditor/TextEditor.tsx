@@ -1,8 +1,11 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
 import { Button, Icon, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { jsPDF } from 'jspdf';
+import escapeHtml from 'escape-html';
 import isHotkey from 'is-hotkey';
 import React, {
   useCallback,
@@ -18,6 +21,7 @@ import {
   Editor,
   Element as SlateElement,
   Transforms,
+  Text,
 } from 'slate';
 import { withHistory } from 'slate-history';
 import {
@@ -29,6 +33,7 @@ import {
   withReact,
   ReactEditor,
 } from 'slate-react';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 
@@ -38,14 +43,18 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     width: '21cm',
     height: '29.7cm',
-    boxShadow: '2px 2px 2px 2px lightgray',
-    borderRadius: '5px',
-    padding: 50,
+    boxShadow: '3px 3px 3px 3px lightgray',
+    // borderRadius: '5px',
+    padding: 40,
+    paddingLeft: 80,
+    paddingRight: 80,
+    textAlign: 'left',
   },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 50,
   },
 }));
 
@@ -70,6 +79,8 @@ const TextEditor = (props: any) => {
 
   // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const selectedWorkspace = props.workspaceName;
+  // eslint-disable-next-line new-cap
+  const doc = new jsPDF();
 
   const classes = useStyles();
 
@@ -82,7 +93,41 @@ const TextEditor = (props: any) => {
 
   const [value, setValue] = useState<Descendant[]>(initialValue);
 
-  console.log('tralalal', selectedWorkspace);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const serialize = (node: any) => {
+    if (Text.isText(node)) {
+      let string = escapeHtml(node.text);
+      if (node.bold) {
+        string = `<strong>${string}</strong>`;
+      }
+      console.log(string);
+      return string;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const children = node.children.map((n: any) => serialize(n)).join('');
+
+    switch (node.type) {
+      case 'quote':
+        return `<blockquote><p>${children}</p></blockquote>`;
+      case 'paragraph':
+        return `<p>${children}</p>`;
+      case 'link':
+        return `<a href="${escapeHtml(node.url)}">${children}</a>`;
+      default:
+        return children;
+    }
+  };
+
+  const onExportClick = () => {
+    doc.html(serialize(editor), {
+      callback() {
+        doc.save('a4.pdf');
+      },
+      x: 10,
+      y: 10,
+    });
+    console.log(serialize(editor));
+  };
 
   useEffect(() => {
     const token = getCookie('token');
@@ -153,6 +198,9 @@ const TextEditor = (props: any) => {
           <BlockButton format="block-quote" icon="format_quote" />
           <BlockButton format="numbered-list" icon="format_list_numbered" />
           <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+          <Button variant="text" onClick={onExportClick}>
+            <CloudDownloadIcon />
+          </Button>
         </Toolbar>
         <Editable
           renderElement={renderElement}
