@@ -292,8 +292,8 @@ async def remove_folder_from_virtual_structure(
     )
 
 
-@router.get("/translate/{workspace_name}")
-async def translate_workspace_virtual_structure_to_frontend(workspace_name: str) -> json:
+@router.get("/structure/tree/{workspace_name}")
+async def get_workspace_tree_structure(workspace_name: str) -> json:
     """
     Translates the virtual structure of a given workspace (folders and files)
     in a way that frontend app understands.
@@ -380,6 +380,20 @@ async def translate_workspace_virtual_structure_to_frontend(workspace_name: str)
                     }
                 )
     return nodes
+
+
+@router.get("/structure/raw/{workspace_name}")
+async def get_workspace_raw_structure(workspace_name: str) -> json:
+    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    if not path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"Can't find config file at {path.absolute()}"
+        )
+
+    with open(path, "r") as config_file:
+        config_data = json.load(config_file)
+
+    return config_data["virtual_structure"]
 
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
