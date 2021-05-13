@@ -76,14 +76,12 @@ const Sidebar = (props: any) => {
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
   const [isFolder, setIsFolder] = useState(false);
-
-  console.log(selectedWorkspace);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [fileStructure, setFileStructure] = useState<any>([]);
 
   const fetchFiles = useCallback(() => {
     if (selectedWorkspace) {
-      // console.log('tralalal');
-      // console.log(selectedWorkspace);
-      fetch(`/workspace/translate/${selectedWorkspace}`, {
+      fetch(`/workspace/structure/tree/${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -99,9 +97,28 @@ const Sidebar = (props: any) => {
     }
   }, [selectedWorkspace]);
 
+  const fetchFileStructure = useCallback(() => {
+    if (selectedWorkspace) {
+      fetch(`/workspace/structure/raw/${selectedWorkspace}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setFileStructure(data);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  }, [selectedWorkspace]);
+
   useEffect(() => {
     fetchFiles();
-  }, [fetchFiles]);
+    fetchFileStructure();
+  }, [fetchFiles, fetchFileStructure]);
 
   const postItem = async (itemName: string, itemPath: string) => {
     const token = getCookie('token');
@@ -116,7 +133,10 @@ const Sidebar = (props: any) => {
             },
             body: JSON.stringify({}),
           }
-        ).then(() => fetchFiles());
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
       } catch {
         console.error('Error');
       }
@@ -134,9 +154,9 @@ const Sidebar = (props: any) => {
             Authorization: 'Bearer '.concat(token),
           },
           body: JSON.stringify({}),
-        }).then((res) => {
-          //
+        }).then(() => {
           fetchFiles();
+          fetchFileStructure();
         });
       } catch {
         console.error('Error');
@@ -157,7 +177,10 @@ const Sidebar = (props: any) => {
             },
             body: JSON.stringify({}),
           }
-        ).then(() => fetchFiles());
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
       } catch {
         console.error('Error');
       }
@@ -177,29 +200,22 @@ const Sidebar = (props: any) => {
             },
             body: JSON.stringify({}),
           }
-        ).then(() => fetchFiles());
+        ).then(() => {
+          fetchFiles();
+          fetchFileStructure();
+        });
       } catch {
         console.error('Error');
       }
     }
   };
 
-  let path = '';
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
-    const foundItem = list.find((node) => node.text === parentItem.text);
-
-    path += `/${parentItem.text}`;
-    if (foundItem) {
-      // parentItem.children?.push(item);
-      // console.log(path);
-      // isFolder ? postFolder(item.text, path) : postItem(item.text, path);
-      path = '';
-      return;
-    }
-
-    list.forEach((node) => {
-      if (node.children) addNode(item, parentItem, node.children);
-    });
+    const path = fileStructure?.find(
+      (file: { name: string }) => file.name === parentItem.text
+    ).virtual_path;
+    const fullPath = `${path}/${parentItem.text}`;
+    isFolder ? postFolder(item.text, fullPath) : postItem(item.text, fullPath);
   };
 
   const removeNode = (item: Node, list: Node[]) => {
