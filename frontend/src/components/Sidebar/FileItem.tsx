@@ -30,6 +30,7 @@ type FileItemProps = {
   removeNode: (item: Node, list: Node[]) => void;
   setItemList: (itemList: Node[]) => void;
   setIsFolder: (isFolder: boolean) => void;
+  workspaceName: string;
 };
 
 const FileItem: React.FC<FileItemProps> = (props) => {
@@ -43,7 +44,8 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(props.item.open);
 
-  const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+  // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
+  const selectedWorkspace = props.workspaceName;
 
   const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -102,6 +104,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         removeNode={props.removeNode}
         setItemList={props.setItemList}
         setIsFolder={props.setIsFolder}
+        workspaceName={props.workspaceName}
       />
     ));
   }

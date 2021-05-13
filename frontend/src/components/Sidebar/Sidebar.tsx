@@ -271,6 +271,7 @@ const Sidebar = (props: any) => {
             removeNode={removeNode}
             setItemList={setItemList}
             setIsFolder={setIsFolder}
+            workspaceName={selectedWorkspace}
           />
         ))}
       </List>

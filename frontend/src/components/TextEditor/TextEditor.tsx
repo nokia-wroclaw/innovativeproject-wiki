@@ -98,10 +98,11 @@ const TextEditor = (props: any) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          Transforms.select(editor, {
-            anchor: { path: [0, 0], offset: 0 },
-            focus: { path: [1, 0], offset: 2 },
-          });
+          // Transforms.select(editor, {
+          //   anchor: { path: [0, 0], offset: 0 },
+          //   focus: { path: [1, 0], offset: 2 },
+          // });
+          Transforms.select(editor, [0]);
           setValue(data);
         })
         .catch((error) => {
