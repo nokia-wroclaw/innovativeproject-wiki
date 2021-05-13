@@ -88,32 +88,57 @@ export default function DataTable() {
 
   // TODO checkbox private false/true
 
+  const addPostWorkspaces = () => {
+    const token = getCookie('token');
+        if (token) {
+          fetch(
+            '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
+            {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer '.concat(token),
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+            .then((response) => response.json())
+            .then((data) => {fetchWorkspaces()})
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+        }
+  };
+
+
+  const handleEnterPress = (event: {
+    key: string;
+    preventDefault: () => void;
+  }) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (
+        !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
+        typedWorkspaceName
+      ) {
+        textFieldClear();
+      
+        addPostWorkspaces();
+
+        handleClose();
+      } else {
+        window.alert('The workspace name must be unique!');
+      }
+    }
+  };
+
   const addWorkspace = () => {
     if (
       !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
       typedWorkspaceName
-    ) {
+    ) {  
       textFieldClear();
-      const token = getCookie('token');
-      if (token) {
-        fetch(
-          '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
-          {
-            method: 'POST',
-            headers: {
-              Authorization: 'Bearer '.concat(token),
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            fetchWorkspaces();
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
-      }
+      
+      addPostWorkspaces();
 
       handleClose();
     } else {
@@ -166,6 +191,7 @@ export default function DataTable() {
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
+              onKeyPress={handleEnterPress}
               autoFocus
               margin="dense"
               id="name"
