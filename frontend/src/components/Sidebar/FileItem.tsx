@@ -29,6 +29,7 @@ type FileItemProps = {
   addNode: (item: Node, parentItem: Node, list: Node[]) => void;
   removeNode: (item: Node, list: Node[]) => void;
   setItemList: (itemList: Node[]) => void;
+  setIsFolder: (isFolder: boolean) => void;
 };
 
 const FileItem: React.FC<FileItemProps> = (props) => {
@@ -41,7 +42,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(props.item.open);
-  const [isAddFolder, setIsAddFolder] = useState(false);
 
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
 
@@ -63,19 +63,11 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (input) {
-        let node: Node;
-        if (isAddFolder) {
-          node = {
-            text: input,
-            level: props.item.level + 1,
-            children: [],
-          };
-        } else {
-          node = {
-            text: input,
-            level: props.item.level + 1,
-          };
-        }
+        const node = {
+          text: input,
+          level: props.item.level + 1,
+        };
+
         props.addNode(node, props.item, props.itemList);
       }
       setAddOpen(false);
@@ -109,6 +101,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         addNode={props.addNode}
         removeNode={props.removeNode}
         setItemList={props.setItemList}
+        setIsFolder={props.setIsFolder}
       />
     ));
   }
@@ -193,7 +186,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
               onClick={() => {
                 handleClose();
                 setAddOpen(true);
-                setIsAddFolder(false);
+                props.setIsFolder(false);
               }}
             >
               Add file
@@ -202,15 +195,29 @@ const FileItem: React.FC<FileItemProps> = (props) => {
               onClick={() => {
                 handleClose();
                 setAddOpen(true);
-                setIsAddFolder(true);
+                props.setIsFolder(true);
               }}
             >
               Add folder
             </MenuItem>
-            <MenuItem onClick={handleRemoveNode}>Remove folder</MenuItem>
+            <MenuItem
+              onClick={() => {
+                props.setIsFolder(true);
+                handleRemoveNode();
+              }}
+            >
+              Remove folder
+            </MenuItem>
           </div>
         ) : (
-          <MenuItem onClick={handleRemoveNode}>Remove file</MenuItem>
+          <MenuItem
+            onClick={() => {
+              props.setIsFolder(false);
+              handleRemoveNode();
+            }}
+          >
+            Remove file
+          </MenuItem>
         )}
       </Menu>
     </div>

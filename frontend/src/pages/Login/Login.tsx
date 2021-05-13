@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -18,6 +19,7 @@ const Login: React.FC = () => {
   const history = useHistory();
   const [typedUsername, setTypedUsername] = useState('');
   const [typedPassword, setTypedPassword] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const handleLoginButton = async () => {
     fetch('/auth/login', {
@@ -33,11 +35,12 @@ const Login: React.FC = () => {
       .then((response) => response.json())
       .then((data) => {
         setCookie('token', data.access_token);
-
         history.push('/workspaces');
+        setIsError(false);
       })
       .catch((error) => {
         console.error(error);
+        setIsError(true);
       });
   };
 
@@ -77,10 +80,11 @@ const Login: React.FC = () => {
             variant="contained"
             fullWidth
             className={classes.loginButton}
-            onClick={() => handleLoginButton()}
+            onClick={handleLoginButton}
           >
             Sign in
           </Button>
+
           <FormControlLabel
             control={<Checkbox color="primary" />}
             label="Remember me"
@@ -92,6 +96,17 @@ const Login: React.FC = () => {
             {' '}
             Do you have an account?<Link href="/register"> Sign Up</Link>
           </Typography>
+          {isError ? (
+            <Alert
+              severity="error"
+              className={classes.errorMessage}
+              onClose={() => {
+                setIsError(false);
+              }}
+            >
+              Wrong username or password Please try again
+            </Alert>
+          ) : null}
         </Grid>
       </Paper>
     </div>
