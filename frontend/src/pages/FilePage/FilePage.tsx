@@ -18,12 +18,12 @@ export default function FilePage({ match }: { match: any }) {
         <Sidebar workspaceName={workspaceName} />
       </div>
       <div className={classes.editor}>
-        {/* {itemList.length !== 0 ? (
-          <TextEditor fileName={fileName} />
+        {typeof fileName === 'undefined' ? (
+          <img src={UndrawWallpost} alt="UndrawWallpost" />
         ) : (
-          <TextEditor fileName="dcdc" />
-        )} */}
-        <TextEditor fileName={fileName} workspaceName={workspaceName} />
+          <TextEditor fileName={fileName} workspaceName={workspaceName} />
+        )}
+        {/* <TextEditor fileName={fileName} workspaceName={workspaceName} /> */}
       </div>
 
       <div className={classes.filePage_buttons}>
