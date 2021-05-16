@@ -14,6 +14,8 @@ import React, {
   useState,
   useRef,
   useMemo,
+  Dispatch,
+  SetStateAction,
 } from 'react';
 import {
   createEditor,
@@ -33,7 +35,12 @@ import {
   withReact,
   ReactEditor,
 } from 'slate-react';
+import Paper from '@material-ui/core/Paper';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
+import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
+import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
+
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 
@@ -41,20 +48,30 @@ const useStyles = makeStyles((theme) => ({
   slate: {
     display: 'flex',
     flexDirection: 'column',
-    width: '21cm',
-    height: '29.7cm',
-    boxShadow: '2px 2px 2px 2px lightgray',
-    // borderRadius: '5px',
-    padding: 40,
-    paddingLeft: 80,
-    paddingRight: 80,
-    // textAlign: 'left',
   },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 50,
+    marginBottom: 30,
+  },
+  editable: {
+    width: '21cm',
+    height: '29.7cm',
+    // boxShadow: '2px 2px 2px 2px lightgray',
+    // borderRadius: '5px',
+    padding: 40,
+    paddingLeft: 80,
+    paddingRight: 80,
+  },
+  alignLeft: {
+    textAlign: 'left',
+  },
+  alignCenter: {
+    textAlign: 'center',
+  },
+  alignRight: {
+    textAlign: 'right',
   },
 }));
 
@@ -72,13 +89,9 @@ const TextEditor = (props: any) => {
   const renderElement = useCallback((props) => <Element {...props} />, []);
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-  // const [editor] = useState(() => withHistory(withReact(createEditor())));
-  // const editorRef = useRef<ReactEditor>();
-  // if (!editorRef.current) editorRef.current = withReact(createEditor());
-  // const editor = editorRef.current;
-
-  // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const selectedWorkspace = props.workspaceName;
+  const [selectedAlignment, setSelectedAlignment] = useState('left');
+  console.log(String(selectedAlignment).split(',')[0]);
   // eslint-disable-next-line new-cap
   const doc = new jsPDF();
 
@@ -188,37 +201,71 @@ const TextEditor = (props: any) => {
           }
         }}
       >
-        <Toolbar className={classes.toolbar}>
-          <MarkButton format="bold" icon="format_bold" />
-          <MarkButton format="italic" icon="format_italic" />
-          <MarkButton format="underline" icon="format_underlined" />
-          <MarkButton format="code" icon="code" />
-          <BlockButton format="heading-one" icon="looks_one" />
-          <BlockButton format="heading-two" icon="looks_two" />
-          <BlockButton format="block-quote" icon="format_quote" />
-          <BlockButton format="numbered-list" icon="format_list_numbered" />
-          <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-          <Button variant="text" onClick={onExportClick}>
-            <CloudDownloadIcon />
-          </Button>
-        </Toolbar>
-        <Editable
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          // placeholder="Enter some rich text…"
-          spellCheck
-          autoFocus
-          onKeyDown={(event) => {
-            for (const hotkey in HOTKEYS) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              if (isHotkey(hotkey, event as any)) {
-                event.preventDefault();
-                const mark: string = HOTKEYS[hotkey];
-                toggleMark(editor, mark);
-              }
+        <Paper elevation={10} className={classes.toolbar}>
+          <Toolbar>
+            <MarkButton format="bold" icon="format_bold" />
+            <MarkButton format="italic" icon="format_italic" />
+            <MarkButton format="underline" icon="format_underlined" />
+            <MarkButton format="code" icon="code" />
+            <BlockButton format="heading-one" icon="looks_one" />
+            <BlockButton format="heading-two" icon="looks_two" />
+            <BlockButton format="block-quote" icon="format_quote" />
+            <BlockButton format="numbered-list" icon="format_list_numbered" />
+            <BlockButton format="bulleted-list" icon="format_list_bulleted" />
+            <Button variant="text" onClick={() => setSelectedAlignment('left')}>
+              <FormatAlignLeftIcon />
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => setSelectedAlignment('center')}
+            >
+              <FormatAlignCenterIcon />
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => setSelectedAlignment('right')}
+            >
+              <FormatAlignRightIcon />
+            </Button>
+            <Button variant="text" onClick={onExportClick}>
+              <CloudDownloadIcon />
+            </Button>
+          </Toolbar>
+        </Paper>
+        <div
+          className={(() => {
+            switch (String(selectedAlignment).split(',')[0]) {
+              case 'left':
+                return classes.alignLeft;
+              case 'center':
+                return classes.alignCenter;
+              case 'right':
+                return classes.alignRight;
+              default:
+                return classes.alignLeft;
             }
-          }}
-        />
+          })()}
+        >
+          <Paper elevation={10} className={classes.editable}>
+            <Editable
+              renderElement={renderElement}
+              renderLeaf={renderLeaf}
+              // placeholder="Enter some rich text…"
+              spellCheck
+              autoFocus
+              onKeyDown={(event) => {
+                for (const hotkey in HOTKEYS) {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  if (isHotkey(hotkey, event as any)) {
+                    event.preventDefault();
+                    const mark: string = HOTKEYS[hotkey];
+                    toggleMark(editor, mark);
+                  }
+                }
+              }}
+            />
+          </Paper>
+        </div>
       </Slate>
     </div>
   );
