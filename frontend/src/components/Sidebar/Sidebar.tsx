@@ -13,6 +13,7 @@ import {
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DragDropContext } from 'react-beautiful-dnd';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
