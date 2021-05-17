@@ -37,10 +37,6 @@ import {
 } from 'slate-react';
 import Paper from '@material-ui/core/Paper';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
-import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
-import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
-
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 
@@ -57,12 +53,11 @@ const useStyles = makeStyles((theme) => ({
   },
   editable: {
     width: '21cm',
-    height: '29.7cm',
-    // boxShadow: '2px 2px 2px 2px lightgray',
-    // borderRadius: '5px',
+    minHeight: '29.7cm',
     padding: 40,
     paddingLeft: 80,
     paddingRight: 80,
+    textAlign: 'left',
   },
 }));
 
@@ -81,8 +76,6 @@ const TextEditor = (props: any) => {
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
   const selectedWorkspace = props.workspaceName;
-  // eslint-disable-next-line new-cap
-  const doc = new jsPDF();
 
   const classes = useStyles();
 
@@ -99,20 +92,36 @@ const TextEditor = (props: any) => {
   const serialize = (node: any) => {
     if (Text.isText(node)) {
       let string = escapeHtml(node.text);
+      console.log(node);
       if (node.bold) {
         string = `<strong>${string}</strong>`;
       }
-      console.log(string);
+      if (node.italic) {
+        string = `<i>${string}</i>`;
+      }
+      if (node.underline) {
+        string = `<ins>${string}</ins>`;
+      }
+      if (node.code) {
+        string = `<code>${string}</code>`;
+      }
       return string;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const children = node.children.map((n: any) => serialize(n)).join('');
+    console.log(node.type);
 
     switch (node.type) {
-      case 'quote':
-        return `<blockquote><p>${children}</p></blockquote>`;
       case 'paragraph':
         return `<p>${children}</p>`;
+      case 'bulleted-list':
+        return `<ul>${children}</ul>`;
+      case 'numbered-list':
+        return `<ol>${children}</ol>`;
+      case 'list-item':
+        return `<li>${children}</li>`;
+      // case 'align-center':
+      //   return `<p style={{ textAlign: 'center' }}>${children}</p>`;
       case 'link':
         return `<a href="${escapeHtml(node.url)}">${children}</a>`;
       default:
@@ -121,13 +130,15 @@ const TextEditor = (props: any) => {
   };
 
   const onExportClick = () => {
+    // eslint-disable-next-line new-cap
+    const doc = new jsPDF('p', 'pt', 'a4');
+
     doc.html(serialize(editor), {
       callback() {
-        doc.save('a4.pdf');
+        doc.save(`${props.fileName}.pdf`);
       },
-      x: 10,
-      y: 10,
     });
+
     console.log(serialize(editor));
   };
 
@@ -145,10 +156,6 @@ const TextEditor = (props: any) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          // Transforms.select(editor, {
-          //   anchor: { path: [0, 0], offset: 0 },
-          //   focus: { path: [1, 0], offset: 2 },
-          // });
           Transforms.select(editor, [0]);
           setValue(data);
         })
@@ -166,7 +173,6 @@ const TextEditor = (props: any) => {
         onChange={(newValue) => {
           setValue(newValue);
           const content = JSON.stringify(newValue);
-          // localStorage.setItem(`content`, content);
 
           // make API request for doc save
           const token = getCookie('token');
@@ -198,7 +204,6 @@ const TextEditor = (props: any) => {
             <MarkButton format="code" icon="code" />
             <BlockButton format="heading-one" icon="looks_one" />
             <BlockButton format="heading-two" icon="looks_two" />
-            <BlockButton format="block-quote" icon="format_quote" />
             <BlockButton format="numbered-list" icon="format_list_numbered" />
             <BlockButton format="bulleted-list" icon="format_list_bulleted" />
             <BlockButton format="align-left" icon="format_align_left" />
@@ -285,8 +290,6 @@ const isMarkActive = (editor: Editor, format: any) => {
 
 const Element = ({ attributes, children, element }: RenderElementProps) => {
   switch (element.type) {
-    case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>;
     case 'bulleted-list':
       return <ul {...attributes}>{children}</ul>;
     case 'heading-one':
@@ -316,7 +319,11 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
         </p>
       );
     default:
-      return <p {...attributes}>{children}</p>;
+      return (
+        <p {...attributes} style={{ textAlign: 'left' }}>
+          {children}
+        </p>
+      );
   }
 };
 
