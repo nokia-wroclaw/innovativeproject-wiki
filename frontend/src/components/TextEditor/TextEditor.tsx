@@ -64,15 +64,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 80,
     paddingRight: 80,
   },
-  alignLeft: {
-    textAlign: 'left',
-  },
-  alignCenter: {
-    textAlign: 'center',
-  },
-  alignRight: {
-    textAlign: 'right',
-  },
 }));
 
 const HOTKEYS: Record<string, string> = {
@@ -90,8 +81,6 @@ const TextEditor = (props: any) => {
   const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
   const selectedWorkspace = props.workspaceName;
-  const [selectedAlignment, setSelectedAlignment] = useState('left');
-  console.log(String(selectedAlignment).split(',')[0]);
   // eslint-disable-next-line new-cap
   const doc = new jsPDF();
 
@@ -212,60 +201,33 @@ const TextEditor = (props: any) => {
             <BlockButton format="block-quote" icon="format_quote" />
             <BlockButton format="numbered-list" icon="format_list_numbered" />
             <BlockButton format="bulleted-list" icon="format_list_bulleted" />
-            <Button variant="text" onClick={() => setSelectedAlignment('left')}>
-              <FormatAlignLeftIcon />
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => setSelectedAlignment('center')}
-            >
-              <FormatAlignCenterIcon />
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => setSelectedAlignment('right')}
-            >
-              <FormatAlignRightIcon />
-            </Button>
+            <BlockButton format="align-left" icon="format_align_left" />
+            <BlockButton format="align-center" icon="format_align_center" />
+            <BlockButton format="align-right" icon="format_align_right" />
             <Button variant="text" onClick={onExportClick}>
               <CloudDownloadIcon />
             </Button>
           </Toolbar>
         </Paper>
-        <div
-          className={(() => {
-            switch (String(selectedAlignment).split(',')[0]) {
-              case 'left':
-                return classes.alignLeft;
-              case 'center':
-                return classes.alignCenter;
-              case 'right':
-                return classes.alignRight;
-              default:
-                return classes.alignLeft;
-            }
-          })()}
-        >
-          <Paper elevation={10} className={classes.editable}>
-            <Editable
-              renderElement={renderElement}
-              renderLeaf={renderLeaf}
-              // placeholder="Enter some rich text…"
-              spellCheck
-              autoFocus
-              onKeyDown={(event) => {
-                for (const hotkey in HOTKEYS) {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  if (isHotkey(hotkey, event as any)) {
-                    event.preventDefault();
-                    const mark: string = HOTKEYS[hotkey];
-                    toggleMark(editor, mark);
-                  }
+        <Paper elevation={10} className={classes.editable}>
+          <Editable
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+            // placeholder="Enter some rich text…"
+            spellCheck
+            autoFocus
+            onKeyDown={(event) => {
+              for (const hotkey in HOTKEYS) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                if (isHotkey(hotkey, event as any)) {
+                  event.preventDefault();
+                  const mark: string = HOTKEYS[hotkey];
+                  toggleMark(editor, mark);
                 }
-              }}
-            />
-          </Paper>
-        </div>
+              }
+            }}
+          />
+        </Paper>
       </Slate>
     </div>
   );
@@ -335,6 +297,24 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
       return <li {...attributes}>{children}</li>;
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>;
+    case 'align-left':
+      return (
+        <p {...attributes} style={{ textAlign: 'left' }}>
+          {children}
+        </p>
+      );
+    case 'align-center':
+      return (
+        <p {...attributes} style={{ textAlign: 'center' }}>
+          {children}
+        </p>
+      );
+    case 'align-right':
+      return (
+        <p {...attributes} style={{ textAlign: 'right' }}>
+          {children}
+        </p>
+      );
     default:
       return <p {...attributes}>{children}</p>;
   }
