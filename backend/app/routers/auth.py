@@ -1,6 +1,7 @@
 """
 TODO module docstring
 """
+from re import fullmatch
 from typing import Optional
 from datetime import timedelta, datetime
 from jose import JWTError, jwt
@@ -117,15 +118,39 @@ async def create_user(form: OAuth2PasswordRequestForm = Depends()):
     """
     TODO function docstring
     """
+    username = form.username
+    password = form.password
+    email = form.scopes[0]
 
-    if user_db.does_user_exist(form.username):
+    if not fullmatch("[A-Za-z0-9-_]+", username):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Username must contain only upper and lower case characters, "
+                   + "numbers, and symbols - or _ ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Password must be at least 8 characters long.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not fullmatch("^[a-zA-Z0-9]+@[a-zA-Z0-9]+.[A-Za-z]+$", email):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Incorrect e-mail address.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if user_db.does_user_exist(username):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Given user already exists",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    email = form.scopes[0]
     return user_db.add_user(form.username, hash_password(form.password), email)
 
 
