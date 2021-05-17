@@ -28,12 +28,8 @@ const Register: React.FC = () => {
   const history = useHistory();
 
   const handleRegisterButton = async () => {
-    if(!typedUsername || !typedPassword || !typedRepeatPassword || !typedEmail)
-    {
-      console.log('xd');
-      return;
-    }
-
+    // if fields are blank (=not validated) -> return
+    if(!typedUsername || !typedPassword || !typedRepeatPassword || !typedEmail) return;
 
     fetch('/auth/register', {
       method: 'POST', // or 'PUT'
