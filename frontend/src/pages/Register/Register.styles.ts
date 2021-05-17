@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
     registerPaper: {
     padding: 40,
-    height: 480,
+    height: 580,
     width: 300,
     margin: '30px auto',
   },

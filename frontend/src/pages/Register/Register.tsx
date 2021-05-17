@@ -12,12 +12,29 @@ import useStyles from './Register.styles';
 
 const Register: React.FC = () => {
   const classes = useStyles();
+
   const [typedUsername, setTypedUsername] = useState('');
+  const [usernameErrorMsg, setUsernameErrorMsg] = useState('');
+
   const [typedPassword, setTypedPassword] = useState('');
+  const [passErrorMsg, setPassErrorMsg] = useState('');
+
+  const [typedRepeatPassword, setTypedRepeatPassword] = useState('');
+  const [repeatPassErrorMsg, setRepeatPassErrorMsg] = useState('');
+
   const [typedEmail, setTypedEmail] = useState('');
+  const [emailErrorMsg, setEmailErrorMsg] = useState('');
+
   const history = useHistory();
 
   const handleRegisterButton = async () => {
+    if(!typedUsername || !typedPassword || !typedRepeatPassword || !typedEmail)
+    {
+      console.log('xd');
+      return;
+    }
+
+
     fetch('/auth/register', {
       method: 'POST', // or 'PUT'
       headers: {
@@ -38,6 +55,8 @@ const Register: React.FC = () => {
       });
   };
 
+
+
   return (
     <div>
       <Paper elevation={10} className={classes.registerPaper}>
@@ -49,42 +68,85 @@ const Register: React.FC = () => {
         >
           <h2>Sign Up</h2>
           <TextField
+            error={!(!usernameErrorMsg)}
             label="Username"
             placeholder="Enter username"
             fullWidth
+            helperText={usernameErrorMsg}
             className={classes.registerTextField}
             onChange={({ target: { value } }) => {
-              setTypedUsername(value);
+              // username validation
+              if(value == '') setUsernameErrorMsg("");   // reset error msg if blank
+              else if (!/^[a-z0-9]+$/i.test(value)) setUsernameErrorMsg("Username should be alphanumeric");
+              else // validation complete
+              {
+                setTypedUsername(value);
+                setUsernameErrorMsg(""); 
+              }
+              
             }}
           />
+          
           <TextField
+            error={!(!emailErrorMsg)}
             label="Email"
             placeholder="Enter email"
             type="email"
             fullWidth
+            helperText={emailErrorMsg}
             className={classes.registerTextField}
             onChange={({ target: { value } }) => {
-              setTypedEmail(value);
+              // email validation
+              if(value == "") setEmailErrorMsg("");   // reset error msg if blank
+              else if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(value)) setEmailErrorMsg("Input correct email");
+              else
+              {
+                setTypedEmail(value);
+                setEmailErrorMsg("");
+              }
+              
             }}
           />
+          
           <TextField
+            error={!(!passErrorMsg)}
             label="Password"
             placeholder="Enter password"
             type="password"
             fullWidth
+            helperText={passErrorMsg}
             className={classes.registerTextField}
             onChange={({ target: { value } }) => {
-              setTypedPassword(value);
+              // password validation
+              if(value == '') setPassErrorMsg("");   // reset error msg if blank
+              else if (value.length < 8) setPassErrorMsg("Password is too short");
+              else if(value == value.toUpperCase()) setPassErrorMsg("Input at least one small letter");
+              else if(value == value.toLowerCase()) setPassErrorMsg("Input at least one big letter");
+              else // validation complete
+              {
+                setTypedPassword(value);
+                setPassErrorMsg("");
+              }
             }}
           />
+
           <TextField
+            error={!(!repeatPassErrorMsg)}
             label="Password confirmation"
             placeholder="Re-enter password"
             type="password"
             fullWidth
+            helperText={repeatPassErrorMsg}
             className={classes.registerTextField}
             onChange={({ target: { value } }) => {
-              setTypedPassword(value);
+              // re-password validation
+              if(value == '') setRepeatPassErrorMsg("");   // reset error msg if blank
+              else if (value != typedPassword) setRepeatPassErrorMsg("Passwords don't match");
+              else // validation complete
+              {
+                setTypedRepeatPassword(value);
+                setRepeatPassErrorMsg("");
+              }
             }}
           />
           <Button
