@@ -188,11 +188,13 @@ export default function DataTable() {
           open={open}
           onClose={handleClose}
           aria-labelledby="form-dialog-title"
+          fullWidth
+          maxWidth="xs"
         >
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
-              error={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)&&typedWorkspaceName===''}
+              error={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)===false||typedWorkspaceName===''}
               helperText={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)&&typedWorkspaceName ? '' : 'Field cannot be blank and name must be unique!'}
               onKeyPress={handleEnterPress}
               autoFocus
