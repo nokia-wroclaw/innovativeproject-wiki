@@ -24,6 +24,10 @@ const useStyles = makeStyles((theme: Theme) =>
       textDecoration: 'none',
       color: 'black',
     },
+    addDocFolderPopUp: {
+      width: 220,
+      height: 80,
+    },
   })
 );
 

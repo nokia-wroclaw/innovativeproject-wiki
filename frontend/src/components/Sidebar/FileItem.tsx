@@ -42,6 +42,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   const [addOpen, setAddOpen] = useState(false);
   const [input, setInput] = useState('');
+  const [fileNameErrorMsg, setFileNameErrorMsg] = useState('');
   const [open, setOpen] = useState(props.item.open);
 
   // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
@@ -63,6 +64,14 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
+
+      // doc/folder name - data validation
+      if (!/^[a-z0-9_-]+$/i.test(input)) 
+      {
+        setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+        return;
+      }
+
       event.preventDefault();
       if (input) {
         const node = {
@@ -157,9 +166,17 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       {addOpen ? (
         <ListItem className={classes.nested}>
           <TextField
+            error={!(!fileNameErrorMsg)}
             onKeyPress={handleEnterPress}
             value={input}
+            helperText={fileNameErrorMsg}
             onChange={({ target: { value } }) => {
+
+              // doc/folder name - data validation
+              if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
+              else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+              else setFileNameErrorMsg(""); 
+
               setInput(value);
             }}
           />
