@@ -42,6 +42,7 @@ const Sidebar = (props: any) => {
   const selectedWorkspace = props.workspaceName;
   const [open, setOpen] = useState(false);
   const [typedFileName, setTypedFileName] = useState('');
+  const [fileNameErrorMsg, setFileNameErrorMsg] = useState('');
   const [isFolder, setIsFolder] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fileStructure, setFileStructure] = useState<any>([]);
@@ -178,6 +179,7 @@ const Sidebar = (props: any) => {
   };
 
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
+
     const path = fileStructure?.find(
       (file: { name: string }) => file.name === parentItem.text
     ).virtual_path;
@@ -205,6 +207,15 @@ const Sidebar = (props: any) => {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
+
+      // doc/folder name - data validation
+      if (!/^[a-z0-9_-]+$/i.test(typedFileName)) 
+      {
+        setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+        return;
+      }
+
+
       event.preventDefault();
       if (typedFileName) {
         isFolder
@@ -271,21 +282,33 @@ const Sidebar = (props: any) => {
         </DialogTitle>
         <DialogContent>
           <TextField
+            error={!(!fileNameErrorMsg)}
             onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
             id="name"
             label={isFolder ? 'Folder name' : 'File name'}
-            value={typedFileName}
+            // value={typedFileName}
+            helperText={fileNameErrorMsg}
+            className={classes.addDocFolderPopUp}
             fullWidth
             onChange={({ target: { value } }) => {
+              // doc/folder name - data validation
+              if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
+              else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+              else setFileNameErrorMsg(""); 
+
               setTypedFileName(value);
+              
             }}
           />
         </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {
+              // validation before fetch
+              if(!typedFileName || fileNameErrorMsg) return;
+
               isFolder
                 ? postFolder(typedFileName, '/')
                 : postItem(typedFileName, '/');
@@ -296,7 +319,10 @@ const Sidebar = (props: any) => {
           >
             Add
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={ () => {
+            setFileNameErrorMsg("");
+            handleClose();
+            }} color="primary">
             Cancel
           </Button>
         </DialogActions>

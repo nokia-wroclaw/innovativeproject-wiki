@@ -28,8 +28,10 @@ const Register: React.FC = () => {
   const history = useHistory();
 
   const handleRegisterButton = async () => {
-    // if fields are blank (=not validated) -> return
-    if(!typedUsername || !typedPassword || !typedRepeatPassword || !typedEmail) return;
+    // validation before fetch
+    if(!typedUsername || !typedPassword || !typedRepeatPassword || !typedEmail ||
+      usernameErrorMsg || passErrorMsg || repeatPassErrorMsg || emailErrorMsg) 
+    return;
 
     fetch('/auth/register', {
       method: 'POST', // or 'PUT'
@@ -73,7 +75,7 @@ const Register: React.FC = () => {
             onChange={({ target: { value } }) => {
               // username validation
               if(value == '') setUsernameErrorMsg("");   // reset error msg if blank
-              else if (!/^[a-z0-9]+$/i.test(value)) setUsernameErrorMsg("Username should be alphanumeric");
+              else if (!/^[a-z0-9_-]+$/i.test(value)) setUsernameErrorMsg("Username should be alphanumeric");
               else // validation complete
               {
                 setTypedUsername(value);
