@@ -14,6 +14,11 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: 30,
       marginRight: 40,
     },
+
+    addWorkspacePopUp: {
+      width: 300,
+      height: 60,
+    },
   })
 );
 
