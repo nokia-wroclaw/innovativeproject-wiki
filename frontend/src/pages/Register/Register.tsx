@@ -76,11 +76,9 @@ const Register: React.FC = () => {
               // username validation
               if(value == '') setUsernameErrorMsg("");   // reset error msg if blank
               else if (!/^[a-z0-9_-]+$/i.test(value)) setUsernameErrorMsg("Username should be alphanumeric");
-              else // validation complete
-              {
-                setTypedUsername(value);
-                setUsernameErrorMsg(""); 
-              }
+              else setUsernameErrorMsg(""); 
+            
+              setTypedUsername(value);
               
             }}
           />
@@ -97,11 +95,9 @@ const Register: React.FC = () => {
               // email validation
               if(value == "") setEmailErrorMsg("");   // reset error msg if blank
               else if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(value)) setEmailErrorMsg("Input correct email");
-              else
-              {
-                setTypedEmail(value);
-                setEmailErrorMsg("");
-              }
+              else setEmailErrorMsg("");
+              
+              setTypedEmail(value);
               
             }}
           />
@@ -120,11 +116,9 @@ const Register: React.FC = () => {
               else if (value.length < 8) setPassErrorMsg("Password is too short");
               else if(value == value.toUpperCase()) setPassErrorMsg("Input at least one small letter");
               else if(value == value.toLowerCase()) setPassErrorMsg("Input at least one big letter");
-              else // validation complete
-              {
-                setTypedPassword(value);
-                setPassErrorMsg("");
-              }
+              else setPassErrorMsg("");
+
+              setTypedPassword(value);
             }}
           />
 
@@ -140,11 +134,9 @@ const Register: React.FC = () => {
               // re-password validation
               if(value == '') setRepeatPassErrorMsg("");   // reset error msg if blank
               else if (value != typedPassword) setRepeatPassErrorMsg("Passwords don't match");
-              else // validation complete
-              {
-                setTypedRepeatPassword(value);
-                setRepeatPassErrorMsg("");
-              }
+              else setRepeatPassErrorMsg(""); // validation complete
+
+              setTypedRepeatPassword(value);
             }}
           />
           <Button
