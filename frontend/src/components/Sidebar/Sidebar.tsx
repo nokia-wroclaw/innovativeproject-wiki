@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import {
   Button,
   Dialog,
@@ -12,7 +13,8 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
@@ -179,7 +181,6 @@ const Sidebar = (props: any) => {
   };
 
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
-
     const path = fileStructure?.find(
       (file: { name: string }) => file.name === parentItem.text
     ).virtual_path;
@@ -207,20 +208,20 @@ const Sidebar = (props: any) => {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
-
       // doc/folder name - data validation
-      if (!/^[a-z0-9_-]+$/i.test(typedFileName)) 
-      {
-        setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+      if (!/^[a-z0-9_-]+$/i.test(typedFileName)) {
+        setFileNameErrorMsg('Doc/folder name is incorrect'); //  /^[a-z0-9]+$/i
         return;
       }
 
-      if (fileStructure?.find((file: { name: string }) => file.name === typedFileName))
-      {
-        setFileNameErrorMsg("Doc/folder name must be unique!");
+      if (
+        fileStructure?.find(
+          (file: { name: string }) => file.name === typedFileName
+        )
+      ) {
+        setFileNameErrorMsg('Doc/folder name must be unique!');
         return;
       }
-
 
       event.preventDefault();
       if (typedFileName) {
@@ -233,56 +234,73 @@ const Sidebar = (props: any) => {
     }
   };
 
+  // const moveCard = useCallback(
+  //   (dragIndex: number, hoverIndex: number) => {
+  //     const dragCard = cards[dragIndex];
+  //     setCards(
+  //       update(cards, {
+  //         $splice: [
+  //           [dragIndex, 1],
+  //           [hoverIndex, 0, dragCard],
+  //         ],
+  //       })
+  //     );
+  //   },
+  //   [cards]
+  // );
+
   return (
     <div>
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader
-            component="div"
-            disableSticky={true}
-            className={classes.listName}
-          >
-            <Typography variant="h5">{selectedWorkspace}</Typography>
-            <div>
-              <IconButton
-                onClick={() => {
-                  setIsFolder(false);
-                  handleClickOpen();
-                }}
-              >
-                <DescriptionIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setIsFolder(true);
-                  handleClickOpen();
-                }}
-              >
-                <FolderIcon fontSize="small" />
-              </IconButton>
-            </div>
-          </ListSubheader>
-        }
-        className={classes.root}
-      >
-        {itemList?.map((item) => (
-          <FileItem
-            key={`${item.text}-${item.level}`}
-            item={item}
-            selectedNode={selectedNode}
-            setSelectedNode={setSelectedNode}
-            itemList={itemList}
-            addNode={addNode}
-            removeNode={removeNode}
-            setItemList={setItemList}
-            setIsFolder={setIsFolder}
-            workspaceName={selectedWorkspace}
-            fileStructure={fileStructure}
-          />
-        ))}
-      </List>
+      <DndProvider backend={HTML5Backend}>
+        <List
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+          subheader={
+            <ListSubheader
+              component="div"
+              disableSticky={true}
+              className={classes.listName}
+            >
+              <Typography variant="h5">{selectedWorkspace}</Typography>
+              <div>
+                <IconButton
+                  onClick={() => {
+                    setIsFolder(false);
+                    handleClickOpen();
+                  }}
+                >
+                  <DescriptionIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setIsFolder(true);
+                    handleClickOpen();
+                  }}
+                >
+                  <FolderIcon fontSize="small" />
+                </IconButton>
+              </div>
+            </ListSubheader>
+          }
+          className={classes.root}
+        >
+          {itemList?.map((item) => (
+            <FileItem
+              key={`${item.text}-${item.level}`}
+              item={item}
+              selectedNode={selectedNode}
+              setSelectedNode={setSelectedNode}
+              itemList={itemList}
+              addNode={addNode}
+              removeNode={removeNode}
+              setItemList={setItemList}
+              setIsFolder={setIsFolder}
+              workspaceName={selectedWorkspace}
+            />
+          ))}
+        </List>
+      </DndProvider>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -293,7 +311,7 @@ const Sidebar = (props: any) => {
         </DialogTitle>
         <DialogContent>
           <TextField
-            error={!(!fileNameErrorMsg)}
+            error={!!fileNameErrorMsg}
             onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
@@ -305,13 +323,20 @@ const Sidebar = (props: any) => {
             fullWidth
             onChange={({ target: { value } }) => {
               // doc/folder name - data validation
-              if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
-              else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
-              else if (fileStructure?.find((file: { name: string }) => file.name === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
-              else setFileNameErrorMsg(""); 
+              if (value == '') setFileNameErrorMsg('');
+              // reset error msg if blank
+              else if (!/^[a-z0-9_-]+$/i.test(value))
+                setFileNameErrorMsg('Doc/folder name is incorrect');
+              //  /^[a-z0-9]+$/i
+              else if (
+                fileStructure?.find(
+                  (file: { name: string }) => file.name === value
+                )
+              )
+                setFileNameErrorMsg('Doc/folder name must be unique!');
+              else setFileNameErrorMsg('');
 
               setTypedFileName(value);
-              
             }}
           />
         </DialogContent>
@@ -319,7 +344,7 @@ const Sidebar = (props: any) => {
           <Button
             onClick={() => {
               // validation before fetch
-              if(!typedFileName || fileNameErrorMsg) return;
+              if (!typedFileName || fileNameErrorMsg) return;
 
               isFolder
                 ? postFolder(typedFileName, '/')
@@ -331,10 +356,13 @@ const Sidebar = (props: any) => {
           >
             Add
           </Button>
-          <Button onClick={ () => {
-            setFileNameErrorMsg("");
-            handleClose();
-            }} color="primary">
+          <Button
+            onClick={() => {
+              setFileNameErrorMsg('');
+              handleClose();
+            }}
+            color="primary"
+          >
             Cancel
           </Button>
         </DialogActions>
