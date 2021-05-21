@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import {
   Button,
   Dialog,
@@ -12,10 +13,12 @@ import {
 } from '@material-ui/core';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
+
 import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
 
@@ -227,55 +230,73 @@ const Sidebar = (props: any) => {
     }
   };
 
+  // const moveCard = useCallback(
+  //   (dragIndex: number, hoverIndex: number) => {
+  //     const dragCard = cards[dragIndex];
+  //     setCards(
+  //       update(cards, {
+  //         $splice: [
+  //           [dragIndex, 1],
+  //           [hoverIndex, 0, dragCard],
+  //         ],
+  //       })
+  //     );
+  //   },
+  //   [cards]
+  // );
+
   return (
     <div>
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader
-            component="div"
-            disableSticky={true}
-            className={classes.listName}
-          >
-            <Typography variant="h5">{selectedWorkspace}</Typography>
-            <div>
-              <IconButton
-                onClick={() => {
-                  setIsFolder(false);
-                  handleClickOpen();
-                }}
-              >
-                <DescriptionIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setIsFolder(true);
-                  handleClickOpen();
-                }}
-              >
-                <FolderIcon fontSize="small" />
-              </IconButton>
-            </div>
-          </ListSubheader>
-        }
-        className={classes.root}
-      >
-        {itemList?.map((item) => (
-          <FileItem
-            key={`${item.text}-${item.level}`}
-            item={item}
-            selectedNode={selectedNode}
-            setSelectedNode={setSelectedNode}
-            itemList={itemList}
-            addNode={addNode}
-            removeNode={removeNode}
-            setItemList={setItemList}
-            setIsFolder={setIsFolder}
-            workspaceName={selectedWorkspace}
-          />
-        ))}
-      </List>
+      <DndProvider backend={HTML5Backend}>
+        <List
+          component="nav"
+          aria-labelledby="nested-list-subheader"
+          subheader={
+            <ListSubheader
+              component="div"
+              disableSticky={true}
+              className={classes.listName}
+            >
+              <Typography variant="h5">{selectedWorkspace}</Typography>
+              <div>
+                <IconButton
+                  onClick={() => {
+                    setIsFolder(false);
+                    handleClickOpen();
+                  }}
+                >
+                  <DescriptionIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={() => {
+                    setIsFolder(true);
+                    handleClickOpen();
+                  }}
+                >
+                  <FolderIcon fontSize="small" />
+                </IconButton>
+              </div>
+            </ListSubheader>
+          }
+          className={classes.root}
+        >
+          {itemList?.map((item) => (
+            <FileItem
+              key={`${item.text}-${item.level}`}
+              item={item}
+              selectedNode={selectedNode}
+              setSelectedNode={setSelectedNode}
+              itemList={itemList}
+              addNode={addNode}
+              removeNode={removeNode}
+              setItemList={setItemList}
+              setIsFolder={setIsFolder}
+              workspaceName={selectedWorkspace}
+            />
+          ))}
+        </List>
+      </DndProvider>
+
       <Dialog
         open={open}
         onClose={handleClose}
