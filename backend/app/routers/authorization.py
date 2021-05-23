@@ -12,14 +12,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.user_db import UserDB
 from app.utils.message import Message, log
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/authorization", tags=["Authorizations"])
 user_db = UserDB()
 
 SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="authorization/login")
 
 
 def verify_password(plain_password, hashed_password):
@@ -126,7 +126,7 @@ async def create_user(form: OAuth2PasswordRequestForm = Depends()):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Username must contain only upper and lower case characters, "
-                   + "numbers, and symbols - or _ ",
+            + "numbers, and symbols - or _ ",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

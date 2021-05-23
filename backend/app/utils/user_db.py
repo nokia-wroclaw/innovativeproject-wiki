@@ -5,10 +5,6 @@ from pathlib import Path
 from tinydb import TinyDB, where
 from app.utils.message import Message, MsgStatus
 
-# Messages value codes
-SUCCESS = 0
-FAILURE = 1
-
 
 class UserDB:
     """
@@ -49,13 +45,21 @@ class UserDB:
             Message: the result of an attempted user addition (SUCCESS/FAILURE) with additional info
         """
         if not _is_non_empty_string((username, password_hash, email)):
-            return Message("ERROR", "Invalid parameter type detected", FAILURE)
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
 
         if self.does_user_exist(username):
-            return Message("INFO", "Given user already exists", FAILURE)
+            return Message(status=MsgStatus.INFO, detail="Given user already exists")
 
         self.database.insert(
-            {"username": username, "password_hash": password_hash, "email": email}
+            {
+                "username": username,
+                "password_hash": password_hash,
+                "email": email,
+                "profile_picture": None,
+                "active_workspaces": [],
+            }
         )
         return Message(status=MsgStatus.INFO, detail="User added successfully")
 
@@ -71,13 +75,15 @@ class UserDB:
                      with some additional info
         """
         if not _is_non_empty_string(username):
-            return Message("ERROR", "Invalid parameter type detected", FAILURE)
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
 
         if not self.does_user_exist(username):
-            return Message("INFO", "Given user doesn't exists", FAILURE)
+            return Message(status=MsgStatus.INFO, detail="Given user doesn't exists")
 
         self.database.remove(where("username") == username)
-        return Message("INFO", "User removed successfully", SUCCESS)
+        return Message(status=MsgStatus.INFO, detail="User removed successfully")
 
     def get_user_data(self, username: str):
         """
@@ -93,12 +99,14 @@ class UserDB:
             Message: information about the cause of failure
         """
         if not _is_non_empty_string(username):
-            return Message("ERROR", "Invalid parameter type detected", FAILURE)
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
 
         if self.does_user_exist(username):
             return self.database.get(where("username") == username)
 
-        return Message("INFO", "Given user doesn't exists", FAILURE)
+        return Message(status=MsgStatus.INFO, detail="Given user doesn't exists")
 
     def edit_user_data(self, username, edited_field, new_value):
         """
@@ -115,18 +123,25 @@ class UserDB:
                      with some additional info
         """
         if not _is_non_empty_string((username, new_value)):
-            return Message("ERROR", "Invalid parameter type detected", FAILURE)
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
 
         if not self.does_user_exist(username):
-            return Message("INFO", "Given user doesn't exists", FAILURE)
+            return Message(status=MsgStatus.INFO, detail="Given user doesn't exists")
 
-        if edited_field in ("username", "password_hash", "email"):
+        if edited_field in ("password_hash", "username", "email", "profile_picture"):
             self.database.update(
                 {edited_field: new_value}, where("username") == username
             )
-            return Message("INFO", "User data edited successfully", SUCCESS)
+            return Message(
+                status=MsgStatus.INFO, detail="User data edited successfully"
+            )
 
-        return Message("ERROR", "Non-existent field type", FAILURE)
+        return Message(
+            status=MsgStatus.INFO,
+            detail=f"Non-existent field type - {edited_field}",
+        )
 
 
 def _is_non_empty_string(data: list) -> bool:
