@@ -22,14 +22,43 @@
 <!-- GENERAL INFO -->
 ## About the project
 
-The knowledge base application intended for use in a small to moderate sized teams.
+The goal of this project is to crerate the knowledge base application intended for use in a small to moderate sized teams. The app was created for several reasons:
+* No simple document management application in the market (e.g. Confluence)
+* For many apps you have to pay (e.g. Documize)
+* Some apps have a non-intuitive user experience (e.g. Notion)
+
+<div style="text-align:center">
+<img src="images/home-page-app.PNG" alt="HomePage" width="500" height="290" style="border: 1px solid black">
+</div>
 
 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-TODO
+The project is available to everyone at [https://innodocs.tech](https://innodocs.tech).
+
+
+Main functionalities of the application:
+* create a workspace with multiple folders and files
+<div style="text-align:center">
+<img src="images/create-workspace.PNG" alt="Workspace" width="500" height="290" style="border: 1px solid black">
+</div>
+
+* create and edit a document
+
+
+<div style="text-align:center">
+<img src="images/doc-edit.PNG" alt="Docs_and_Catalogs" width="650" height="290" style="border: 1px solid black">
+</div>
+
+
+* export a document to pdf file
+* publish a workspace for selected users to access
+
+
+
+
 _For more examples, please refer to the [Documentation](link)_
 
 
@@ -41,14 +70,15 @@ _For more examples, please refer to the [Documentation](link)_
       Backend
       <ul>
         <li>Python 3.9</li>
-        <li><a href="#">TODO</a></li>
+        <li>FastAPI</li>
+ <!--   <li><a href="#">TODO</a></li> -->
       </ul>
     </li>
     <li>
       Frontend
       <ul>
         <li>React</li>
-        <li>Typecscript</li>
+        <li>TypeScript</li>
       </ul>
     </li>
   </ul>
@@ -67,7 +97,6 @@ TODO
 ### Installation
 
 TODO
-	
 
 
 <!-- AUTHORS -->
