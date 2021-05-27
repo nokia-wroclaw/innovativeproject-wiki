@@ -275,6 +275,7 @@ const Sidebar = (props: any) => {
             setItemList={setItemList}
             setIsFolder={setIsFolder}
             workspaceName={selectedWorkspace}
+            fileStructure={fileStructure}
           />
         ))}
       </List>

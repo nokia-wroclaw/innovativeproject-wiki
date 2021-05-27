@@ -31,6 +31,8 @@ type FileItemProps = {
   setItemList: (itemList: Node[]) => void;
   setIsFolder: (isFolder: boolean) => void;
   workspaceName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fileStructure: any[];
 };
 
 const FileItem: React.FC<FileItemProps> = (props) => {
@@ -72,8 +74,14 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         return;
       }
 
-      if (props.item.children?.find((list: {text: string} )=> list.text === input)
-          || props.itemList?.find((list: {text: string }) => list.text === input))
+      // if (props.item.children?.find((list: {text: string} )=> list.text === input)
+      //    || props.itemList?.find((list: {text: string }) => list.text === input))
+      // {
+      //   setFileNameErrorMsg("Doc/folder name must be unique!");
+      //   return;
+      // }
+
+      if (props.fileStructure?.find((file: { name: string }) => file.name === input))
       {
         setFileNameErrorMsg("Doc/folder name must be unique!");
         return;
@@ -121,6 +129,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         setItemList={props.setItemList}
         setIsFolder={props.setIsFolder}
         workspaceName={props.workspaceName}
+        fileStructure={props.fileStructure}
       />
     ));
   }
@@ -182,8 +191,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
               // doc/folder name - data validation
               if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
               else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
-              else if ((props.item.children?.find((list: {text: string} )=> list.text === value))
-                      || props.itemList?.find((list: {text: string }) => list.text === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
+              else if (props.fileStructure?.find((file: { name: string }) => file.name === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
               else setFileNameErrorMsg(""); 
 
               setInput(value);
