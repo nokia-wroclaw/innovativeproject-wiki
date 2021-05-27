@@ -51,7 +51,7 @@ export default function DataTable() {
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
-  
+  const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
   
 
   const [workspaces, setWorkspaces] = useState([
@@ -64,6 +64,8 @@ export default function DataTable() {
 
   const handleClose = () => {
     setOpen(false);
+    textFieldClear();
+    setWorkspaceNameErrorMsg(""); 
   };
 
   const textFieldClear = () => {
@@ -120,31 +122,50 @@ export default function DataTable() {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
-      event.preventDefault();
-      if (
-        !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
-        typedWorkspaceName
-      ) {
-        textFieldClear();
-      
-        addPostWorkspaces();
 
+      if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) 
+      {
+        setWorkspaceNameErrorMsg("Workspace name is incorrect!")
+        return;
+      }
+
+      if (workspaces.find((workspace) => workspace.name === typedWorkspaceName))
+      {
+        setWorkspaceNameErrorMsg("Workspace name must be unique!");
+        return;
+      }
+
+      event.preventDefault();
+
+      if 
+      ( !workspaces.find((workspace) => workspace.name === typedWorkspaceName) 
+        && typedWorkspaceName) {
+        addPostWorkspaces();
         handleClose();
-      } 
+      }
+      
     }
   };
 
   const addWorkspace = () => {
-    if (
-      !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
-      typedWorkspaceName
-    ) {  
-      textFieldClear();
-      
-      addPostWorkspaces();
 
-      handleClose();
-    } 
+      if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) {
+        setWorkspaceNameErrorMsg("Workspace name is incorrect!")
+        return;
+      }
+
+      if (workspaces.find((workspace) => workspace.name === typedWorkspaceName))
+      {
+        setWorkspaceNameErrorMsg("Workspace name must be unique!");
+        return;
+      }
+
+
+      if ( !workspaces.find((workspace) => workspace.name === typedWorkspaceName) && typedWorkspaceName) {
+        addPostWorkspaces();
+        handleClose();
+      }
+
   };
 
   const fetchWorkspaces = () => {
@@ -192,8 +213,8 @@ export default function DataTable() {
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
-              error={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)===false}
-              helperText={!workspaces.find((workspace)=>workspace.name===typedWorkspaceName)&&typedWorkspaceName ? '' : 'Field cannot be blank and name must be unique!'}
+              error={!(!workspaceNameErrorMsg)}
+              helperText={workspaceNameErrorMsg}
               onKeyPress={handleEnterPress}
               autoFocus
               margin="dense"
@@ -203,6 +224,11 @@ export default function DataTable() {
               className={classes.addWorkspacePopUp}
               fullWidth
               onChange={({ target: { value } }) => {
+                if(value === "") setWorkspaceNameErrorMsg("");
+                else if (!/^[a-z0-9_-]+$/i.test(value)) setWorkspaceNameErrorMsg("Workspace name is incorrect!");
+                else if (workspaces.find((workspace) => workspace.name === value)) setWorkspaceNameErrorMsg("Workspace name must be unique!");
+                else setWorkspaceNameErrorMsg(""); 
+                
                 setTypedWorkspaceName(value);
               }}
             />
