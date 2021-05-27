@@ -215,6 +215,12 @@ const Sidebar = (props: any) => {
         return;
       }
 
+      if (fileStructure?.find((file: { name: string }) => file.name === typedFileName))
+      {
+        setFileNameErrorMsg("Doc/folder name must be unique!");
+        return;
+      }
+
 
       event.preventDefault();
       if (typedFileName) {
@@ -296,6 +302,7 @@ const Sidebar = (props: any) => {
               // doc/folder name - data validation
               if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
               else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+              else if (fileStructure?.find((file: { name: string }) => file.name === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
               else setFileNameErrorMsg(""); 
 
               setTypedFileName(value);

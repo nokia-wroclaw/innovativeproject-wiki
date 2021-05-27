@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useDebugValue } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
@@ -69,6 +69,13 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       if (!/^[a-z0-9_-]+$/i.test(input)) 
       {
         setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+        return;
+      }
+
+      if (props.item.children?.find((list: {text: string} )=> list.text === input)
+          || props.itemList?.find((list: {text: string }) => list.text === input))
+      {
+        setFileNameErrorMsg("Doc/folder name must be unique!");
         return;
       }
 
@@ -175,6 +182,8 @@ const FileItem: React.FC<FileItemProps> = (props) => {
               // doc/folder name - data validation
               if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
               else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+              else if ((props.item.children?.find((list: {text: string} )=> list.text === value))
+                      || props.itemList?.find((list: {text: string }) => list.text === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
               else setFileNameErrorMsg(""); 
 
               setInput(value);
