@@ -28,6 +28,11 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 220,
       height: 80,
     },
+    toggleButton: {
+      width: 10,
+      height: 10,
+      marginLeft: 10,
+    },
   })
 );
 

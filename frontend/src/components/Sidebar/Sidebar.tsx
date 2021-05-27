@@ -11,35 +11,22 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 import DescriptionIcon from '@material-ui/icons/Description';
+import CheckIcon from '@material-ui/icons/Check';
 import FolderIcon from '@material-ui/icons/Folder';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
 import FileItem from './FileItem';
-
 import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
-
-const initialList: Node[] = [
-  {
-    text: 'Item1',
-    level: 0,
-    open: true,
-    children: [
-      {
-        text: 'Item1.1',
-        level: 1,
-      },
-    ],
-  },
-];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Sidebar = (props: any) => {
   const classes = useStyles();
-  const [itemList, setItemList] = useState(initialList);
+  const [itemList, setItemList] = useState<Node[]>([]);
   const [selectedNode, setSelectedNode] = useState<Node>(itemList[0]);
   // const { selectedWorkspace } = useContext(AppContext);
   const selectedWorkspace = props.workspaceName;
@@ -49,6 +36,8 @@ const Sidebar = (props: any) => {
   const [isFolder, setIsFolder] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fileStructure, setFileStructure] = useState<any>([]);
+
+  const [hidden, setHidden] = useState(false);
 
   const fetchFiles = useCallback(() => {
     if (selectedWorkspace) {
@@ -182,7 +171,6 @@ const Sidebar = (props: any) => {
   };
 
   const addNode = (item: Node, parentItem: Node, list: Node[]) => {
-
     const path = fileStructure?.find(
       (file: { name: string }) => file.name === parentItem.text
     ).virtual_path;
@@ -210,14 +198,11 @@ const Sidebar = (props: any) => {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
-
       // doc/folder name - data validation
-      if (!/^[a-z0-9_-]+$/i.test(typedFileName)) 
-      {
-        setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+      if (!/^[a-z0-9_-]+$/i.test(typedFileName)) {
+        setFileNameErrorMsg('Doc/folder name is incorrect'); //  /^[a-z0-9]+$/i
         return;
       }
-
 
       event.preventDefault();
       if (typedFileName) {
@@ -230,20 +215,19 @@ const Sidebar = (props: any) => {
     }
   };
 
-  // const moveCard = useCallback(
-  //   (dragIndex: number, hoverIndex: number) => {
-  //     const dragCard = cards[dragIndex];
-  //     setCards(
-  //       update(cards, {
-  //         $splice: [
-  //           [dragIndex, 1],
-  //           [hoverIndex, 0, dragCard],
-  //         ],
-  //       })
-  //     );
-  //   },
-  //   [cards]
-  // );
+  const hideItems = (item: Node, list: Node[]) => {
+    const found = list.find((node) => node.text === item.text);
+    if (found) {
+      console.log('FOUND!!!!!!!!!!');
+      return;
+    }
+
+    list.forEach((node) => {
+      console.log(node.text);
+      // setHidden blablaba
+      if (node.children) hideItems(item, node.children);
+    });
+  };
 
   return (
     <div>
@@ -257,7 +241,7 @@ const Sidebar = (props: any) => {
               disableSticky={true}
               className={classes.listName}
             >
-              <Typography variant="h5">{selectedWorkspace}</Typography>
+              <Typography variant="h6">{selectedWorkspace}</Typography>
               <div>
                 <IconButton
                   onClick={() => {
@@ -275,12 +259,22 @@ const Sidebar = (props: any) => {
                 >
                   <FolderIcon fontSize="small" />
                 </IconButton>
+                <ToggleButton
+                  className={classes.toggleButton}
+                  value="check"
+                  selected={hidden}
+                  onChange={() => {
+                    setHidden(!hidden);
+                  }}
+                >
+                  <CheckIcon />
+                </ToggleButton>
               </div>
             </ListSubheader>
           }
           className={classes.root}
         >
-          {itemList?.map((item) => (
+          {itemList?.map((item, index) => (
             <FileItem
               key={`${item.text}-${item.level}`}
               item={item}
@@ -292,6 +286,10 @@ const Sidebar = (props: any) => {
               setItemList={setItemList}
               setIsFolder={setIsFolder}
               workspaceName={selectedWorkspace}
+              index={index}
+              fetchFiles={fetchFiles}
+              hidden={hidden}
+              hideItems={hideItems}
             />
           ))}
         </List>
@@ -307,7 +305,7 @@ const Sidebar = (props: any) => {
         </DialogTitle>
         <DialogContent>
           <TextField
-            error={!(!fileNameErrorMsg)}
+            error={!!fileNameErrorMsg}
             onKeyPress={handleEnterPress}
             autoFocus
             margin="dense"
@@ -319,12 +317,14 @@ const Sidebar = (props: any) => {
             fullWidth
             onChange={({ target: { value } }) => {
               // doc/folder name - data validation
-              if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
-              else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
-              else setFileNameErrorMsg(""); 
+              if (value == '') setFileNameErrorMsg('');
+              // reset error msg if blank
+              else if (!/^[a-z0-9_-]+$/i.test(value))
+                setFileNameErrorMsg('Doc/folder name is incorrect');
+              //  /^[a-z0-9]+$/i
+              else setFileNameErrorMsg('');
 
               setTypedFileName(value);
-              
             }}
           />
         </DialogContent>
@@ -332,7 +332,7 @@ const Sidebar = (props: any) => {
           <Button
             onClick={() => {
               // validation before fetch
-              if(!typedFileName || fileNameErrorMsg) return;
+              if (!typedFileName || fileNameErrorMsg) return;
 
               isFolder
                 ? postFolder(typedFileName, '/')
@@ -344,10 +344,13 @@ const Sidebar = (props: any) => {
           >
             Add
           </Button>
-          <Button onClick={ () => {
-            setFileNameErrorMsg("");
-            handleClose();
-            }} color="primary">
+          <Button
+            onClick={() => {
+              setFileNameErrorMsg('');
+              handleClose();
+            }}
+            color="primary"
+          >
             Cancel
           </Button>
         </DialogActions>
