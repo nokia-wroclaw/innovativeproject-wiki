@@ -1,4 +1,5 @@
-import React, { useState, useContext, useDebugValue } from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useState, useContext } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItem from '@material-ui/core/ListItem';
@@ -31,6 +32,11 @@ type FileItemProps = {
   setItemList: (itemList: Node[]) => void;
   setIsFolder: (isFolder: boolean) => void;
   workspaceName: string;
+  index: number;
+  fetchFiles: () => void;
+  hidden: boolean;
+  setHidden?: (hidden: boolean) => void;
+  hideItems: (item: Node, list: Node[]) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fileStructure: any[];
 };
@@ -66,11 +72,9 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
-
       // doc/folder name - data validation
-      if (!/^[a-z0-9_-]+$/i.test(input)) 
-      {
-        setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
+      if (!/^[a-z0-9_-]+$/i.test(input)) {
+        setFileNameErrorMsg('Doc/folder name is incorrect'); //  /^[a-z0-9]+$/i
         return;
       }
 
@@ -81,9 +85,12 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       //   return;
       // }
 
-      if (props.fileStructure?.find((file: { name: string }) => file.name === input))
-      {
-        setFileNameErrorMsg("Doc/folder name must be unique!");
+      if (
+        props.fileStructure?.find(
+          (file: { name: string }) => file.name === input
+        )
+      ) {
+        setFileNameErrorMsg('Doc/folder name must be unique!');
         return;
       }
 
@@ -117,7 +124,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   // the Node component calls itself if there are children
   if (props.item.children) {
-    childNodes = props.item.children.map((childNode: Node) => (
+    childNodes = props.item.children.map((childNode, index) => (
       <FileItem
         key={`${childNode.text}-${childNode.level}`}
         item={childNode}
@@ -129,6 +136,10 @@ const FileItem: React.FC<FileItemProps> = (props) => {
         setItemList={props.setItemList}
         setIsFolder={props.setIsFolder}
         workspaceName={props.workspaceName}
+        index={index}
+        fetchFiles={props.fetchFiles}
+        hidden={props.hidden}
+        hideItems={props.hideItems}
         fileStructure={props.fileStructure}
       />
     ));
@@ -140,22 +151,27 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       onContextMenu={(event) => event.preventDefault()}
     >
       {childNodes ? (
-        <ListItem
-          button
-          selected={props.selectedNode?.text === props.item.text}
-          onClick={(event) => {
-            props.setSelectedNode(props.item);
-            setOpen(!open);
-          }}
-          onContextMenu={handleRightClick}
-        >
-          <ListItemIcon>
-            {childNodes ? <FolderIcon /> : <DescriptionIcon />}
-          </ListItemIcon>
-          <ListItemText primary={props.item.text} />
-          {props.item.children && open && <ExpandLess />}
-          {props.item.children && !open && <ExpandMore />}
-        </ListItem>
+        props.hidden && !open ? null : (
+          <ListItem
+            button
+            selected={props.selectedNode?.text === props.item.text}
+            onClick={(event) => {
+              props.setSelectedNode(props.item);
+              if (open) {
+                props.fetchFiles();
+              }
+              setOpen(!open);
+            }}
+            onContextMenu={handleRightClick}
+          >
+            <ListItemIcon>
+              {childNodes ? <FolderIcon /> : <DescriptionIcon />}
+            </ListItemIcon>
+            <ListItemText primary={props.item.text} />
+            {props.item.children && open && <ExpandLess />}
+            {props.item.children && !open && <ExpandMore />}
+          </ListItem>
+        )
       ) : (
         <Link
           to={`/workspaces/${selectedWorkspace}/${props.item.text}`}
@@ -165,6 +181,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             button
             selected={props.selectedNode?.text === props.item.text}
             onClick={(event) => {
+              console.log(props.itemList);
               props.setSelectedNode(props.item);
               setOpen(!open);
             }}
@@ -182,17 +199,24 @@ const FileItem: React.FC<FileItemProps> = (props) => {
       {addOpen ? (
         <ListItem className={classes.nested}>
           <TextField
-            error={!(!fileNameErrorMsg)}
+            error={!!fileNameErrorMsg}
             onKeyPress={handleEnterPress}
             value={input}
             helperText={fileNameErrorMsg}
             onChange={({ target: { value } }) => {
-
               // doc/folder name - data validation
-              if(value == '') setFileNameErrorMsg("");   // reset error msg if blank
-              else if (!/^[a-z0-9_-]+$/i.test(value)) setFileNameErrorMsg("Doc/folder name is incorrect"); //  /^[a-z0-9]+$/i
-              else if (props.fileStructure?.find((file: { name: string }) => file.name === value)) setFileNameErrorMsg("Doc/folder name must be unique!");
-              else setFileNameErrorMsg(""); 
+              if (value === '') setFileNameErrorMsg('');
+              // reset error msg if blank
+              else if (!/^[a-z0-9_-]+$/i.test(value))
+                setFileNameErrorMsg('Doc/folder name is incorrect');
+              //  /^[a-z0-9]+$/i
+              else if (
+                props.fileStructure?.find(
+                  (file: { name: string }) => file.name === value
+                )
+              )
+                setFileNameErrorMsg('Doc/folder name must be unique!');
+              else setFileNameErrorMsg('');
 
               setInput(value);
             }}
