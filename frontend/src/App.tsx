@@ -9,6 +9,7 @@ import FilePage from './pages/FilePage/FilePage';
 import UserData from './pages/UserData/UserData';
 import LastActivity from './pages/LastActivity/LastActivity';
 import ContextProvider from './contexts/AppContext';
+import UndrawPageNotFound from './images/UndrawPageNotFound.svg';
 import './App.css';
 
 function App() {
@@ -37,6 +38,14 @@ function App() {
             <Route exact path="/lastActivity" component={LastActivity} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
+            <Route>
+               <div 
+                  style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 50}}
+               >
+                  <img src={UndrawPageNotFound} alt="PageNotFound" />
+               </div>  
+            </Route>
+
           </Switch>
         </div>
       </Router>
