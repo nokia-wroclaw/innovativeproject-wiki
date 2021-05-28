@@ -205,6 +205,15 @@ const Sidebar = (props: any) => {
         return;
       }
 
+      if (
+        fileStructure?.find(
+          (file: { name: string }) => file.name === typedFileName
+        )
+      ) {
+        setFileNameErrorMsg('Doc/folder name must be unique!');
+        return;
+      }
+
       event.preventDefault();
       if (typedFileName) {
         isFolder
@@ -215,7 +224,6 @@ const Sidebar = (props: any) => {
       }
     }
   };
-
   const hideItems = (item: Node, list: Node[]) => {
     const found = list.find((node) => node.text === item.text);
     if (found) {
