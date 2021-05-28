@@ -205,11 +205,17 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             helperText={fileNameErrorMsg}
             onChange={({ target: { value } }) => {
               // doc/folder name - data validation
-              if (value == '') setFileNameErrorMsg('');
+              if (value === '') setFileNameErrorMsg('');
               // reset error msg if blank
               else if (!/^[a-z0-9_-]+$/i.test(value))
                 setFileNameErrorMsg('Doc/folder name is incorrect');
               //  /^[a-z0-9]+$/i
+              else if (
+                props.fileStructure?.find(
+                  (file: { name: string }) => file.name === value
+                )
+              )
+                setFileNameErrorMsg('Doc/folder name must be unique!');
               else setFileNameErrorMsg('');
 
               setInput(value);
