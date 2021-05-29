@@ -10,14 +10,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.routers.authorization import get_current_user
 from app.utils.message import Message, MsgStatus
-from app.routers.files import (
-    get_workspace_path,
-    get_document_path,
-    get_image_path,
-    get_attachment_path,
-)
+from app.utils.user_db import UserDB
+from app.routers import files
 
 router = APIRouter(prefix="/workspace", tags=["Workspace Management"])
+user_db = UserDB()
 
 CONFIG_FILE = "config.json"
 INFO_FILE = "info.json"
@@ -29,7 +26,7 @@ async def add_document_to_virtual_structure(
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -81,7 +78,7 @@ async def add_folder_to_virtual_structure(
             + "numbers, and symbols - or _ ",
         )
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -115,7 +112,7 @@ async def remove_folder_from_virtual_structure(
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -182,7 +179,7 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
         HTTPException [404]: if the config file of a workspace cannot be found
     """
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -239,7 +236,7 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
 async def get_workspace_raw_structure(workspace_name: str) -> json:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -280,7 +277,7 @@ async def create_new_workspace(
             + "numbers, and symbols - or _ ",
         )
 
-    path = get_workspace_path() / workspace_name
+    path = files.get_workspace_path() / workspace_name
 
     if path.exists():
         raise HTTPException(
@@ -289,7 +286,7 @@ async def create_new_workspace(
         )
 
     path.mkdir()
-    get_document_path(workspace_name).mkdir()
+    (path / files.DOCUMENTS_DIR).mkdir()
 
     info_data = {
         "name": workspace_name,
@@ -307,6 +304,8 @@ async def create_new_workspace(
     with open(path / CONFIG_FILE, "w") as config_file:
         json.dump(config_data, config_file, indent=4)
 
+    user_db.add_active_workspace(creator["username"], workspace_name)
+
     return Message(
         status=MsgStatus.INFO,
         detail="Workspace created successfully",
@@ -320,7 +319,7 @@ async def remove_workspace(
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name)
+    path = files.get_workspace_path(workspace_name)
 
     with open(path / INFO_FILE, "r") as info_file:
         info_data = json.load(info_file)
@@ -332,12 +331,13 @@ async def remove_workspace(
         )
 
     clear_directory(path)
+    user_db.remove_active_workspace(user["username"], workspace_name)
 
     return Message(status=MsgStatus.INFO, detail="Workspace removed successfully")
 
 
 @router.post(
-    "/new/{workspace_name}/{document_name}", response_model=Message, status_code=201
+    "/{workspace_name}/new_document/{document_name}", response_model=Message, status_code=201
 )
 async def create_new_document(
     workspace_name: str,
@@ -370,7 +370,7 @@ async def create_new_document(
             + "numbers, and symbols - or _ ",
         )
 
-    path = get_document_path(workspace_name) / document_name
+    path = files.get_document_path(workspace_name) / document_name
 
     if path.exists():
         raise HTTPException(
@@ -379,8 +379,8 @@ async def create_new_document(
         )
 
     path.mkdir()
-    get_image_path(workspace_name, document_name).mkdir()
-    get_attachment_path(workspace_name, document_name).mkdir()
+    (path / files.ATTACHMENTS_DIR).mkdir()
+    (path / files.IMAGES_DIR).mkdir()
 
     empty_document = [{"type": "paragraph", "children": [{"text": " "}]}]
     with open(path / DOCUMENT_FILE, "w") as document_file:
@@ -396,14 +396,14 @@ async def create_new_document(
 
 
 @router.post(
-    "/remove/{workspace_name}/{document_name}", response_model=Message, status_code=200
+    "/{workspace_name}/remove_document/{document_name}", response_model=Message, status_code=200
 )
 async def remove_document(
     workspace_name: str, document_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name)
+    path = files.get_workspace_path(workspace_name)
 
     with open(path / INFO_FILE, "r") as info_file:
         info_data = json.load(info_file)
@@ -414,7 +414,7 @@ async def remove_document(
             detail="Only creator of the workspace can delete it",
         )
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     with open(path, "r") as config_file:
         config_data = json.load(config_file)
 
@@ -425,7 +425,7 @@ async def remove_document(
     with open(path, "w") as config_file:
         json.dump(config_data, config_file, indent=4)
 
-    path = get_document_path(workspace_name, document_name)
+    path = files.get_document_path(workspace_name, document_name)
     clear_directory(path)
 
     return Message(status=MsgStatus.INFO, detail="Document removed successfully")

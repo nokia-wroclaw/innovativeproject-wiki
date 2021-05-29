@@ -5,28 +5,13 @@ Main module that runs basic fast api app.
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
 
-from app.routers import authorization, files, workspaces, users
+from app.routers import authorization, files, workspaces, users, documents
 
-tags_metadata = [
-    {
-        "name": "auth",
-        "description": "Operations with authentication. \
-                        The **login** and **register** logic is here.",
-    },
-    {
-        "name": "files",
-        "description": "Manage files.",
-    },
-    {
-        "name": "workspaces",
-        "description": "Manage workspaces and their documents.",
-    },
-]
-
-app = FastAPI(openapi_tags=tags_metadata)
+app = FastAPI()
 app.include_router(authorization.router)
 app.include_router(files.router)
 app.include_router(workspaces.router)
+app.include_router(documents.router)
 app.include_router(users.router)
 
 

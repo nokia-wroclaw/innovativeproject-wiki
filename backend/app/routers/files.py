@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from app.dependencies import random_filename
 from app.utils.message import Message, MsgStatus
 
-router = APIRouter()
+router = APIRouter(prefix="/files", tags=["Files Management"])
 
 DATA_DIR = "data"
 WORKSPACES_DIR = "workspaces"
@@ -21,7 +21,7 @@ ATTACHMENTS_DIR = "atchs"
 PROFILE_PICTURES_DIR = "profile_pictures"
 
 
-async def get_workspace_path(workspace_name: str = "") -> Path:
+def get_workspace_path(workspace_name: str = "") -> Path:
     """
     Returns path to directory of workspace with given name.
     If no argument is given - returns path to workspaces collective directory.
@@ -52,7 +52,7 @@ async def get_workspace_path(workspace_name: str = "") -> Path:
     return path
 
 
-async def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
+def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
     """
     Returns path to directory of document with given name.
     If no argument is given - returns path to documents collective directory.
@@ -87,7 +87,7 @@ async def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
     return path
 
 
-async def get_image_path(
+def get_image_path(
     workspace_name: str, document_name: str, img: str = ""
 ) -> Path:
     """
@@ -124,7 +124,7 @@ async def get_image_path(
     return path
 
 
-async def get_attachment_path(
+def get_attachment_path(
     workspace_name: str, document_name: str, atch: str = ""
 ) -> Path:
     """
@@ -162,7 +162,7 @@ async def get_attachment_path(
     return path
 
 
-async def get_profile_picture_path(profile_picture: str = "") -> Path:
+def get_profile_picture_path(profile_picture: str = "") -> Path:
     """
     Returns path to given profile picture.
     If no argument is given - returns path to profile pictures collective directory.
@@ -176,8 +176,7 @@ async def get_profile_picture_path(profile_picture: str = "") -> Path:
     Parameters:
         profile_picture (str, optional): name of the profile picture to locate (with extension)
 
-    Returns:
-        Path: path to the specified profile picture
+    Returns:#/cified profile picture
 
     Raises:
         HTTPException [404]: if profile picture with given name doesn't exist
@@ -194,7 +193,7 @@ async def get_profile_picture_path(profile_picture: str = "") -> Path:
     return path
 
 
-async def random_filename_with_ext(filename: str):
+def random_filename_with_ext(filename: str):
     """
     TODO function docstring
     """
@@ -209,7 +208,7 @@ async def upload_file(file: UploadFile, path: Path):
     """
 
     contents = await file.read()
-    file.close()
+    await file.close()
     with open(path, "w+b") as new_file:
         new_file.write(contents)
 
@@ -233,7 +232,7 @@ async def remove_file(path: Path):
     return Message(status=MsgStatus.ERROR, detail="No such file at given directory")
 
 
-@router.post("/uploadfile/{workspace_id}/{doc_id}/img", tags=["files"])
+@router.post("/upload/{workspace_id}/{doc_id}/img")
 async def upload_img(workspace_id: str, doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
@@ -245,7 +244,7 @@ async def upload_img(workspace_id: str, doc_id: str, file: UploadFile = File(...
     return await upload_file(file, path.absolute())
 
 
-@router.post("/uploadfile/{workspace_id}/{doc_id}/atch", tags=["files"])
+@router.post("/upload/{workspace_id}/{doc_id}/atch")
 async def upload_atch(workspace_id: str, doc_id: str, file: UploadFile = File(...)):
     """
     TODO function docstring
@@ -257,7 +256,7 @@ async def upload_atch(workspace_id: str, doc_id: str, file: UploadFile = File(..
     return await upload_file(file, path.absolute())
 
 
-@router.get("/files/{workspace_id}/{doc_id}/img/{img_id}", tags=["files"])
+@router.get("/{workspace_id}/{doc_id}/img/{img_id}")
 async def get_img(workspace_id: str, doc_id: str, img_id: str):
     """
     TODO function docstring
@@ -267,7 +266,7 @@ async def get_img(workspace_id: str, doc_id: str, img_id: str):
     return FileResponse(path.absolute())
 
 
-@router.get("/files/{workspace_id}/{doc_id}/atch/{atch_id}", tags=["files"])
+@router.get("/{workspace_id}/{doc_id}/atch/{atch_id}")
 async def get_atch(workspace_id: str, doc_id: str, atch_id: str):
     """
     TODO function docstring

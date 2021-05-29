@@ -108,6 +108,50 @@ class UserDB:
 
         return Message(status=MsgStatus.INFO, detail="Given user doesn't exists")
 
+    def add_active_workspace(self, username: str, workspace: str):
+        """
+        TODO function docstring
+        """
+        if not _is_non_empty_string(username):
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
+        
+        user = self.database.get(where("username") == username)
+        active_workspaces = user["active_workspaces"]
+        active_workspaces.append(workspace)
+
+        self.database.update(
+            {"active_workspaces": active_workspaces}, where("username") == username
+        )
+
+        return Message(
+            status=MsgStatus.INFO, detail="User active workspace updated successfully"
+        )
+
+
+    def remove_active_workspace(self, username: str, workspace: str):
+        """
+        TODO function docstring
+        """
+        if not _is_non_empty_string(username):
+            return Message(
+                status=MsgStatus.ERROR, detail="Invalid parameter type detected"
+            )
+        
+        user = self.database.get(where("username") == username)
+        active_workspaces = user["active_workspaces"]
+        active_workspaces.remove(workspace)
+
+        self.database.update(
+            {"active_workspaces": active_workspaces}, where("username") == username
+        )
+
+        return Message(
+            status=MsgStatus.INFO, detail="User active workspace updated successfully"
+        )
+
+
     def edit_user_data(self, username, edited_field, new_value):
         """
         Removes user from a database (only if user exists).
