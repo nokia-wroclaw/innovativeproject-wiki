@@ -41,7 +41,7 @@ async def change_user_profile_picture(
 ):
     """TODO function docstring"""
 
-    old_filename = user["profile_picture"]
+    old_filename = user["profile_picture"] if user["profile_picture"] is not None else ""
     new_filename = random_filename_with_ext(new_picture.filename)
 
     old_path = get_profile_picture_path(old_filename)
@@ -49,10 +49,10 @@ async def change_user_profile_picture(
 
     user_db.edit_user_data(user["username"], "profile_picture", new_filename)
 
-    if old_filename is not None:
-        remove_file(old_path)
+    if old_filename != "":
+        await remove_file(old_path)
 
-    upload_file(new_path, new_picture)
+    await upload_file(new_picture, new_path)
 
 
 @router.get("/profile_picture")
