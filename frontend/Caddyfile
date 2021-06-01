@@ -3,7 +3,15 @@ https://www.innodocs.tech {
 }
 
 https://innodocs.tech {
+	encode gzip
 	root * /var/www/html
-	file_server
-	try_files {path} /index.html
+
+	handle /api/* {
+		reverse_proxy backend-container:80
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
 }
