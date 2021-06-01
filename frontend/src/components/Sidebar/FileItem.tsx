@@ -15,7 +15,6 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import { Link } from 'react-router-dom';
 import useStyles from './Sidebar.styles';
 import type { Node } from './Sidebar.types';
-import { AppContext } from '../../contexts/AppContext';
 
 const initialState = {
   mouseX: null,
@@ -52,6 +51,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const [input, setInput] = useState('');
   const [fileNameErrorMsg, setFileNameErrorMsg] = useState('');
   const [open, setOpen] = useState(props.item.open);
+  const [pathShown, setPathShown] = useState(false);
 
   // const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const selectedWorkspace = props.workspaceName;
@@ -145,33 +145,56 @@ const FileItem: React.FC<FileItemProps> = (props) => {
     ));
   }
 
-  return (
+  const showPath = () => {
+    const foundItem = props.fileStructure.find(
+      (item) => item.name === props.item.text
+    );
+    const path = foundItem.virtual_path
+      .split('/')
+      .filter((item: string) => item !== '');
+    path.push(props.item.text);
+    const newStructure = path.map((item: string, index: number) => [
+      {
+        text: item,
+        level: index,
+        open: true,
+      },
+    ]);
+
+    for (let i = newStructure.length - 1; i > 0; i--) {
+      newStructure[i - 1][0].children = newStructure[i];
+    }
+    props.setItemList(newStructure[0]);
+    setPathShown(true);
+  };
+
+  return props.hidden &&
+    !open &&
+    props.selectedNode?.text !== props.item.text ? null : (
     <div
       style={{ cursor: 'context-menu', paddingLeft: 20 }}
       onContextMenu={(event) => event.preventDefault()}
     >
       {childNodes ? (
-        props.hidden && !open ? null : (
-          <ListItem
-            button
-            selected={props.selectedNode?.text === props.item.text}
-            onClick={(event) => {
-              props.setSelectedNode(props.item);
-              if (open) {
-                props.fetchFiles();
-              }
-              setOpen(!open);
-            }}
-            onContextMenu={handleRightClick}
-          >
-            <ListItemIcon>
-              {childNodes ? <FolderIcon /> : <DescriptionIcon />}
-            </ListItemIcon>
-            <ListItemText primary={props.item.text} />
-            {props.item.children && open && <ExpandLess />}
-            {props.item.children && !open && <ExpandMore />}
-          </ListItem>
-        )
+        <ListItem
+          button
+          selected={props.selectedNode?.text === props.item.text}
+          onClick={(event) => {
+            props.setSelectedNode(props.item);
+            if (open) {
+              props.fetchFiles();
+            }
+            setOpen(!open);
+          }}
+          onContextMenu={handleRightClick}
+        >
+          <ListItemIcon>
+            {childNodes ? <FolderIcon /> : <DescriptionIcon />}
+          </ListItemIcon>
+          <ListItemText primary={props.item.text} />
+          {props.item.children && open && <ExpandLess />}
+          {props.item.children && !open && <ExpandMore />}
+        </ListItem>
       ) : (
         <Link
           to={`/workspaces/${selectedWorkspace}/${props.item.text}`}
@@ -181,7 +204,6 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             button
             selected={props.selectedNode?.text === props.item.text}
             onClick={(event) => {
-              console.log(props.itemList);
               props.setSelectedNode(props.item);
               setOpen(!open);
             }}
@@ -271,14 +293,28 @@ const FileItem: React.FC<FileItemProps> = (props) => {
             </MenuItem>
           </div>
         ) : (
-          <MenuItem
-            onClick={() => {
-              props.setIsFolder(false);
-              handleRemoveNode();
-            }}
-          >
-            Remove file
-          </MenuItem>
+          <div>
+            <MenuItem
+              onClick={() => {
+                props.setIsFolder(false);
+                handleRemoveNode();
+              }}
+            >
+              Remove file
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                props.setIsFolder(false);
+                if (pathShown) {
+                  props.fetchFiles();
+                  setPathShown(false);
+                } else showPath();
+                handleClose();
+              }}
+            >
+              {pathShown ? 'Hide path' : 'Show path'}
+            </MenuItem>
+          </div>
         )}
       </Menu>
     </div>

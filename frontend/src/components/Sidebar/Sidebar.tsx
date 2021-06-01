@@ -15,6 +15,7 @@ import {
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import CheckIcon from '@material-ui/icons/Check';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
 import FolderIcon from '@material-ui/icons/Folder';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -177,7 +178,7 @@ const Sidebar = (props: any) => {
     ).virtual_path;
     const fullPath =
       path === '/' ? `${path}${parentItem.text}` : `${path}/${parentItem.text}`;
-    console.log(fullPath);
+    // console.log(fullPath);
 
     isFolder ? postFolder(item.text, fullPath) : postItem(item.text, fullPath);
   };
@@ -225,17 +226,16 @@ const Sidebar = (props: any) => {
     }
   };
   const hideItems = (item: Node, list: Node[]) => {
-    const found = list.find((node) => node.text === item.text);
-    if (found) {
-      console.log('FOUND!!!!!!!!!!');
-      return;
-    }
-
-    list.forEach((node) => {
-      console.log(node.text);
-      // setHidden blablaba
-      if (node.children) hideItems(item, node.children);
-    });
+    // const found = list.find((node) => node.text === item.text);
+    // if (found) {
+    //   console.log('FOUND!!!!!!!!!!');
+    //   return;
+    // }
+    // list.forEach((node) => {
+    //   // console.log(node.text);
+    //   // setHidden blablaba
+    //   if (node.children) hideItems(item, node.children);
+    // });
   };
 
   return (
@@ -268,7 +268,7 @@ const Sidebar = (props: any) => {
                 >
                   <FolderIcon fontSize="small" />
                 </IconButton>
-                <ToggleButton
+                {/* <ToggleButton
                   className={classes.toggleButton}
                   value="check"
                   selected={hidden}
@@ -276,8 +276,8 @@ const Sidebar = (props: any) => {
                     setHidden(!hidden);
                   }}
                 >
-                  <CheckIcon />
-                </ToggleButton>
+                  <ClearAllIcon />
+                </ToggleButton> */}
               </div>
             </ListSubheader>
           }
