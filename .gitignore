@@ -3,3 +3,7 @@
 .vscode
 .idea
 caddy-data/
+# backend/data/workspaces/*
+# backend/data/users/profile_pictures/*
+# !backend/data/workspaces/readme
+

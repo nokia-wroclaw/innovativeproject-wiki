@@ -1,16 +1,14 @@
 """
 TODO module docstring
 """
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 
 from app.routers.authorization import get_current_user, hash_password
-from app.routers.files import (
-    random_filename_with_ext,
-    upload_file,
-    remove_file,
-    get_profile_picture_path,
-)
+from app.routers import files
 from app.utils.message import Message, MsgStatus
 from app.utils.user_db import UserDB
 
@@ -42,17 +40,17 @@ async def change_user_profile_picture(
     """TODO function docstring"""
 
     old_filename = user["profile_picture"] if user["profile_picture"] is not None else ""
-    new_filename = random_filename_with_ext(new_picture.filename)
+    new_filename = files.random_filename_with_ext(new_picture.filename)
 
-    old_path = get_profile_picture_path(old_filename)
-    new_path = get_profile_picture_path() / new_filename
+    old_path = files.get_profile_picture_path(old_filename)
+    new_path = files.get_profile_picture_path() / new_filename
 
     user_db.edit_user_data(user["username"], "profile_picture", new_filename)
 
     if old_filename != "":
-        await remove_file(old_path)
+        await files.remove_file(old_path)
 
-    await upload_file(new_picture, new_path)
+    await files.upload_file(new_picture, new_path)
 
 
 @router.get("/profile_picture")
@@ -60,7 +58,7 @@ async def get_user_profile_picture(user: dict = Depends(get_current_user)):
     """TODO function docstring"""
 
     filename = user["profile_picture"]
-    path = get_profile_picture_path(filename)
+    path = files.get_profile_picture_path(filename)
 
     return FileResponse(path.absolute())
 
@@ -69,4 +67,13 @@ async def get_user_profile_picture(user: dict = Depends(get_current_user)):
 async def get_all_user_workspaces(user: dict = Depends(get_current_user)) -> list:
     """TODO function docstring"""
 
-    return user["active_workspaces"]
+    active_workspaces = []
+    for workspace_name in user["active_workspaces"]:
+        path = files.get_workspace_path() / workspace_name / "info.json"
+
+        with open(path, "r") as info_file:
+            info_data = json.load(info_file)
+
+        active_workspaces.append({"name": workspace_name, "last_updated": info_data["last_updated"]})
+
+    return active_workspaces

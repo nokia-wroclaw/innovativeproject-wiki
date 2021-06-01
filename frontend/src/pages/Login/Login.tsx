@@ -30,7 +30,7 @@ const Login: React.FC = () => {
   const [open, setOpen] = React.useState(false);
 
   const sendMail = () => {
-      if (typedEmail){
+    if (typedEmail) {
       textFieldClear();
       handleClose();
       window.alert('Mail sent! Check your mail box');
@@ -52,7 +52,7 @@ const Login: React.FC = () => {
   };
 
   const handleLoginButton = async () => {
-    fetch('/auth/login', {
+    fetch('/authorization/login', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -140,38 +140,37 @@ const Login: React.FC = () => {
         </Grid>
       </Paper>
 
-
       <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Please type an e-mail address associated with your account
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Email"
-              value={typedEmail}
-              fullWidth
-              onChange={({ target: { value } }) => {
-                setTypedEmail(value);
-              }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => sendMail()} color="primary">
-              Send
-            </Button>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Change Password</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please type an e-mail address associated with your account
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email"
+            value={typedEmail}
+            fullWidth
+            onChange={({ target: { value } }) => {
+              setTypedEmail(value);
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => sendMail()} color="primary">
+            Send
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
