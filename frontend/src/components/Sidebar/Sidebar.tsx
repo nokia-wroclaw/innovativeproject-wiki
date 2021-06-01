@@ -43,7 +43,7 @@ const Sidebar = (props: any) => {
 
   const fetchFiles = useCallback(() => {
     if (selectedWorkspace) {
-      fetch(`/workspace/structure/tree/${selectedWorkspace}`, {
+      fetch(`/workspace/tree_structure/${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const Sidebar = (props: any) => {
 
   const fetchFileStructure = useCallback(() => {
     if (selectedWorkspace) {
-      fetch(`/workspace/structure/raw/${selectedWorkspace}`, {
+      fetch(`/workspace/raw_structure/${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,8 @@ const Sidebar = (props: any) => {
     if (token) {
       try {
         await fetch(
-          `/workspace/new/${selectedWorkspace}/${itemName}?virtual_path=${itemPath}`,
+          `/workspace/${selectedWorkspace}/new_document/${itemName}?virtual_path=${itemPath}`,
+
           {
             method: 'POST',
             headers: {
@@ -110,13 +111,16 @@ const Sidebar = (props: any) => {
     if (token) {
       try {
         //
-        await fetch(`/workspace/remove/${selectedWorkspace}/${itemName}`, {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer '.concat(token),
-          },
-          body: JSON.stringify({}),
-        }).then(() => {
+        await fetch(
+          `/workspace/${selectedWorkspace}/remove_document/${itemName}`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer '.concat(token),
+            },
+            body: JSON.stringify({}),
+          }
+        ).then(() => {
           fetchFiles();
           fetchFileStructure();
         });

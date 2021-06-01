@@ -6,28 +6,47 @@ import './UserData.css';
 export default function UserData() {
   const [username, setUsername] = useState('Default username');
   const [mail, setMail] = useState('Default email');
+  const [image, setImage] = useState('');
 
-  useEffect(() => {
-    const token = getCookie('token');
-    if (token) {
-      fetch('/auth/me', {
+  const fetchPhoto = async () => {
+    try {
+      const token = getCookie('token');
+      const response = await fetch('/user/profile_picture', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
           'Content-Type': 'application/json',
         },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Success: ', data);
-          setUsername(data.username);
-          setMail(data.email);
-          console.log(data.email);
-        })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
+      });
+      const data = await response.blob();
+      setImage(URL.createObjectURL(data));
+    } catch (error) {
+      console.error('Error: ', error);
     }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const token = getCookie('token');
+      const response = await fetch('/authorization/me', {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      // console.log(data);
+      setUsername(data.username);
+      setMail(data.email);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+    fetchPhoto();
   }, [mail, username]);
 
   return (
@@ -38,7 +57,7 @@ export default function UserData() {
         <div style={{ clear: 'both' }} />
 
         <div id="ppContainer">
-          <div id="imageContainer" />
+          <img src={image} alt="Italian Trulli" id="imageContainer" />
 
           <Button
             type="submit"

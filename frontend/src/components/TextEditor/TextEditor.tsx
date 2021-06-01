@@ -145,9 +145,10 @@ const TextEditor = (props: any) => {
   useEffect(() => {
     const token = getCookie('token');
     if (token && selectedWorkspace && typeof props.fileName !== 'undefined') {
-      console.log(props.fileName);
-
-      fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
+      console.log(
+        `/document/${props.fileName}?workspace_name=${selectedWorkspace}`
+      );
+      fetch(`/document/${props.fileName}?workspace_name=${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -179,14 +180,17 @@ const TextEditor = (props: any) => {
 
           if (token) {
             if (selectedWorkspace && typeof props.fileName !== 'undefined') {
-              fetch(`/workspace/${selectedWorkspace}/${props.fileName}`, {
-                method: 'POST',
-                headers: {
-                  Authorization: 'Bearer '.concat(token),
-                  'Content-Type': 'application/json',
-                },
-                body: content,
-              })
+              fetch(
+                `/document/${props.fileName}?workspace_name=${selectedWorkspace}`,
+                {
+                  method: 'POST',
+                  headers: {
+                    Authorization: 'Bearer '.concat(token),
+                    'Content-Type': 'application/json',
+                  },
+                  body: content,
+                }
+              )
                 .then((response) => response.json())
                 .then((data) => {})
                 .catch((error) => {

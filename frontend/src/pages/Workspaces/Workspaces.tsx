@@ -43,8 +43,6 @@ const columns: GridColDef[] = [
   },
 ];
 
-
-
 export default function DataTable() {
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
@@ -52,7 +50,6 @@ export default function DataTable() {
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
-  
 
   const [workspaces, setWorkspaces] = useState([
     { id: '', name: '', lastUpdate: '' },
@@ -65,7 +62,7 @@ export default function DataTable() {
   const handleClose = () => {
     setOpen(false);
     textFieldClear();
-    setWorkspaceNameErrorMsg(""); 
+    setWorkspaceNameErrorMsg('');
   };
 
   const textFieldClear = () => {
@@ -97,81 +94,82 @@ export default function DataTable() {
 
   const addPostWorkspaces = () => {
     const token = getCookie('token');
-        if (token) {
-          fetch(
-            '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
-            {
-              method: 'POST',
-              headers: {
-                Authorization: 'Bearer '.concat(token),
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-            .then((response) => response.json())
-            .then((data) => {fetchWorkspaces()})
-            .catch((error) => {
-              console.error('Error:', error);
-            });
+    if (token) {
+      fetch(
+        '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer '.concat(token),
+            'Content-Type': 'application/json',
+          },
         }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          fetchWorkspaces();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
   };
-
 
   const handleEnterPress = (event: {
     key: string;
     preventDefault: () => void;
   }) => {
     if (event.key === 'Enter') {
-
-      if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) 
-      {
-        setWorkspaceNameErrorMsg("Workspace name is incorrect!")
+      if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) {
+        setWorkspaceNameErrorMsg('Workspace name is incorrect!');
         return;
       }
 
-      if (workspaces.find((workspace) => workspace.name === typedWorkspaceName))
-      {
-        setWorkspaceNameErrorMsg("Workspace name must be unique!");
+      if (
+        workspaces.find((workspace) => workspace.name === typedWorkspaceName)
+      ) {
+        setWorkspaceNameErrorMsg('Workspace name must be unique!');
         return;
       }
 
       event.preventDefault();
 
-      if 
-      ( !workspaces.find((workspace) => workspace.name === typedWorkspaceName) 
-        && typedWorkspaceName) {
+      if (
+        !workspaces.find(
+          (workspace) => workspace.name === typedWorkspaceName
+        ) &&
+        typedWorkspaceName
+      ) {
         addPostWorkspaces();
         handleClose();
       }
-      
     }
   };
 
   const addWorkspace = () => {
+    if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) {
+      setWorkspaceNameErrorMsg('Workspace name is incorrect!');
+      return;
+    }
 
-      if (!/^[a-z0-9_-]+$/i.test(typedWorkspaceName)) {
-        setWorkspaceNameErrorMsg("Workspace name is incorrect!")
-        return;
-      }
+    if (workspaces.find((workspace) => workspace.name === typedWorkspaceName)) {
+      setWorkspaceNameErrorMsg('Workspace name must be unique!');
+      return;
+    }
 
-      if (workspaces.find((workspace) => workspace.name === typedWorkspaceName))
-      {
-        setWorkspaceNameErrorMsg("Workspace name must be unique!");
-        return;
-      }
-
-
-      if ( !workspaces.find((workspace) => workspace.name === typedWorkspaceName) && typedWorkspaceName) {
-        addPostWorkspaces();
-        handleClose();
-      }
-
+    if (
+      !workspaces.find((workspace) => workspace.name === typedWorkspaceName) &&
+      typedWorkspaceName
+    ) {
+      addPostWorkspaces();
+      handleClose();
+    }
   };
 
   const fetchWorkspaces = () => {
     const token = getCookie('token');
     if (token) {
-      fetch('/workspace/get', {
+      fetch('/user/active_workspaces', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -180,6 +178,7 @@ export default function DataTable() {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
           const newData = data.map(
             (workspace: { name: string; last_updated: string }) => ({
               id: workspace?.name,
@@ -213,7 +212,7 @@ export default function DataTable() {
           <DialogTitle id="form-dialog-title">Add new Workspace</DialogTitle>
           <DialogContent>
             <TextField
-              error={!(!workspaceNameErrorMsg)}
+              error={!!workspaceNameErrorMsg}
               helperText={workspaceNameErrorMsg}
               onKeyPress={handleEnterPress}
               autoFocus
@@ -224,11 +223,15 @@ export default function DataTable() {
               className={classes.addWorkspacePopUp}
               fullWidth
               onChange={({ target: { value } }) => {
-                if(value === "") setWorkspaceNameErrorMsg("");
-                else if (!/^[a-z0-9_-]+$/i.test(value)) setWorkspaceNameErrorMsg("Workspace name is incorrect!");
-                else if (workspaces.find((workspace) => workspace.name === value)) setWorkspaceNameErrorMsg("Workspace name must be unique!");
-                else setWorkspaceNameErrorMsg(""); 
-                
+                if (value === '') setWorkspaceNameErrorMsg('');
+                else if (!/^[a-z0-9_-]+$/i.test(value))
+                  setWorkspaceNameErrorMsg('Workspace name is incorrect!');
+                else if (
+                  workspaces.find((workspace) => workspace.name === value)
+                )
+                  setWorkspaceNameErrorMsg('Workspace name must be unique!');
+                else setWorkspaceNameErrorMsg('');
+
                 setTypedWorkspaceName(value);
               }}
             />

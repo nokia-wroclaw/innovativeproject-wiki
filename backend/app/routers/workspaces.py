@@ -3,177 +3,34 @@ TODO module docstring
 #slugify(txt, separator='_', regex_pattern=r'[^-a-z0-9#]+')
 """
 import json
-import os
 from datetime import datetime
 from pathlib import Path
 from re import fullmatch
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.routers.auth import get_current_user
+from app.routers.authorization import get_current_user
 from app.utils.message import Message, MsgStatus
+from app.utils.user_db import UserDB
+from app.routers import files
 
-router = APIRouter(prefix="/workspace", tags=["workspaces"])
-
-DATA_DIR = "data"
-WORKSPACES_DIR = "workspaces"
-DOCUMENTS_DIR = "docs"
-IMAGES_DIR = "imgs"
-ATTACHMENTS_DIR = "atchs"
+router = APIRouter(prefix="/workspace", tags=["Workspace Management"])
+user_db = UserDB()
 
 CONFIG_FILE = "config.json"
 INFO_FILE = "info.json"
 DOCUMENT_FILE = "document.json"
 
 
-def get_workspace_path(workspace_name: str = "") -> Path:
-    """
-    Returns path to directory of workspace with given name.
-    If no argument is given - returns path to workspaces collective directory.
-
-    Path schema (when workspace name is specified):
-        /.../workspaces/{workspace_name}
-
-    Path schema (when workspace name is not specified):
-        /.../workspaces
-
-    Parameters:
-        workspace_name (str, optional): name of the workspace to locate
-
-    Returns:
-        Path: path to the specified workspace
-
-    Raises:
-        HTTPException [404]: if workspace with given name doesn't exist
-    """
-
-    path = Path(".") / DATA_DIR / WORKSPACES_DIR / workspace_name
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Workspace with name <<{workspace_name}>> doesn't exist",
-        )
-
-    return path
-
-
-def get_document_path(workspace_name: str, doc_name: str = "") -> Path:
-    """
-    Returns path to directory of document with given name.
-    If no argument is given - returns path to documents collective directory.
-
-    Path schema (when document name is specified):
-        /.../workspaces/{workspace_name}/docs/{doc_name}
-
-    Path schema (when document name is not specified):
-        /.../workspaces/{workspace_name}/docs
-
-    Parameters:
-        workspace_name (str): name of the workspace that contains the document
-        doc_name (str, optional): name of the document to locate
-
-    Returns:
-        Path: path to the specified document
-
-    Raises:
-        HTTPException [404]: if document with given name doesn't exist
-    """
-
-    workspace_path = get_workspace_path(workspace_name)
-
-    path = workspace_path / DOCUMENTS_DIR / doc_name
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Document with name <<{doc_name}>>"
-                   + f" doesn't exist in workspace <<{workspace_name}>>",
-        )
-
-    return path
-
-
-def get_image_path(workspace_name: str, document_name: str, img: str = "") -> Path:
-    """
-    Returns path to image file with given name.
-    If no argument is given - returns path to images collective directory.
-
-    Path schema (when image name is specified):
-        /.../workspaces/{workspace_id}/imgs/{img}
-
-    Path schema (when image name is not specified):
-        /.../workspaces/{workspace_id}/imgs
-
-    Parameters:
-        workspace_name (str): name of the workspace that contains the document
-        document_name (str): name of the document that contains the image file
-        img (str, optional): name of the image file to locate (with extension)
-
-    Returns:
-        Path: path to the specified image file
-
-    Raises:
-        HTTPException [404]: if image with given name doesn't exist
-    """
-
-    document_path = get_document_path(workspace_name, document_name)
-
-    path = document_path / IMAGES_DIR / img
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Image with name <<{img}>> doesn't exist in workspace <<{workspace_name}>>",
-        )
-
-    return path
-
-
-def get_attachment_path(
-        workspace_name: str, document_name: str, atch: str = ""
-) -> Path:
-    """
-    Returns path to attachment file with given name.
-    If no argument is given - returns path to attachments collective directory.
-
-    Path schema (when attachment name is specified):
-        /.../workspaces/{workspace_id}/atchs/{atch}
-
-    Path schema (when attachment name is not specified):
-        /.../workspaces/{workspace_id}/atchs
-
-    Parameters:
-        workspace_name (str): name of the workspace that contains the document
-        document_name (str): name of the document that contains the attachment file
-        atch (str, optional): name of the attachment file to locate (with extension)
-
-    Returns:
-        Path: path to the specified attachment file
-
-    Raises:
-        HTTPException [404]: if attachment with given name doesn't exist
-    """
-
-    document_path = get_document_path(workspace_name, document_name)
-
-    path = document_path / ATTACHMENTS_DIR / atch
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Attachment with name <<{atch}>>"
-                   + f" doesn't exist in workspace <<{workspace_name}>>",
-        )
-
-    return path
-
-
 async def add_document_to_virtual_structure(
-        workspace_name: str, document_name: str, virtual_path: str
+    workspace_name: str, document_name: str, virtual_path: str
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}"
+            detail=f"Can't find config file at {path.absolute()}",
         )
 
     with open(path, "r") as config_file:
@@ -210,7 +67,7 @@ def clear_directory(path: Path):
 
 @router.post("/{workspace_name}/new_folder/{folder_name}")
 async def add_folder_to_virtual_structure(
-        workspace_name: str, folder_name: str, virtual_path: str
+    workspace_name: str, folder_name: str, virtual_path: str
 ) -> Message:
     """TODO function docstring"""
 
@@ -218,14 +75,14 @@ async def add_folder_to_virtual_structure(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Folder name must contain only upper and lower case characters, "
-                   + "numbers, and symbols - or _ ",
+            + "numbers, and symbols - or _ ",
         )
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}"
+            detail=f"Can't find config file at {path.absolute()}",
         )
 
     with open(path, "r") as config_file:
@@ -251,15 +108,15 @@ async def add_folder_to_virtual_structure(
 
 @router.post("/{workspace_name}/remove_folder/{folder_name}")
 async def remove_folder_from_virtual_structure(
-        workspace_name: str, folder_name: str
+    workspace_name: str, folder_name: str
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}"
+            detail=f"Can't find config file at {path.absolute()}",
         )
 
     with open(path, "r") as config_file:
@@ -306,7 +163,7 @@ def _add_new_folder(folder: dict, new_folder_name: str, level: int):
     return new_folder, level + 1
 
 
-@router.get("/structure/tree/{workspace_name}")
+@router.get("/tree_structure/{workspace_name}")
 async def get_workspace_tree_structure(workspace_name: str) -> json:
     """
     Translates the virtual structure of a given workspace (folders and files)
@@ -322,11 +179,11 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
         HTTPException [404]: if the config file of a workspace cannot be found
     """
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}"
+            detail=f"Can't find config file at {path.absolute()}",
         )
 
     with open(path, "r") as config_file:
@@ -375,15 +232,15 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
     return nodes
 
 
-@router.get("/structure/raw/{workspace_name}")
+@router.get("/raw_structure/{workspace_name}")
 async def get_workspace_raw_structure(workspace_name: str) -> json:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     if not path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}"
+            detail=f"Can't find config file at {path.absolute()}",
         )
 
     with open(path, "r") as config_file:
@@ -394,7 +251,7 @@ async def get_workspace_raw_structure(workspace_name: str) -> json:
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
 async def create_new_workspace(
-        workspace_name: str, private: bool, creator: str = Depends(get_current_user)
+    workspace_name: str, private: bool, creator: str = Depends(get_current_user)
 ) -> Message:
     """
     Create a new workspace and its subdirectories
@@ -417,10 +274,10 @@ async def create_new_workspace(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Workspace name must contain only upper and lower case characters, "
-                   + "numbers, and symbols - or _ ",
+            + "numbers, and symbols - or _ ",
         )
 
-    path = get_workspace_path() / workspace_name
+    path = files.get_workspace_path() / workspace_name
 
     if path.exists():
         raise HTTPException(
@@ -429,7 +286,7 @@ async def create_new_workspace(
         )
 
     path.mkdir()
-    (path / DOCUMENTS_DIR).mkdir()
+    (path / files.DOCUMENTS_DIR).mkdir()
 
     info_data = {
         "name": workspace_name,
@@ -447,6 +304,8 @@ async def create_new_workspace(
     with open(path / CONFIG_FILE, "w") as config_file:
         json.dump(config_data, config_file, indent=4)
 
+    user_db.add_active_workspace(creator["username"], workspace_name)
+
     return Message(
         status=MsgStatus.INFO,
         detail="Workspace created successfully",
@@ -456,11 +315,11 @@ async def create_new_workspace(
 
 @router.post("/remove/{workspace_name}", response_model=Message, status_code=200)
 async def remove_workspace(
-        workspace_name: str, user: str = Depends(get_current_user)
+    workspace_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name)
+    path = files.get_workspace_path(workspace_name)
 
     with open(path / INFO_FILE, "r") as info_file:
         info_data = json.load(info_file)
@@ -472,18 +331,19 @@ async def remove_workspace(
         )
 
     clear_directory(path)
+    user_db.remove_active_workspace(user["username"], workspace_name)
 
     return Message(status=MsgStatus.INFO, detail="Workspace removed successfully")
 
 
 @router.post(
-    "/new/{workspace_name}/{document_name}", response_model=Message, status_code=201
+    "/{workspace_name}/new_document/{document_name}", response_model=Message, status_code=201
 )
 async def create_new_document(
-        workspace_name: str,
-        document_name: str,
-        virtual_path: str,
-        creator: str = Depends(get_current_user),
+    workspace_name: str,
+    document_name: str,
+    virtual_path: str,
+    creator: str = Depends(get_current_user),
 ) -> Message:
     """
     Create a new document in given workspace
@@ -507,10 +367,10 @@ async def create_new_document(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Document name must contain only upper and lower case characters, "
-                   + "numbers, and symbols - or _ ",
+            + "numbers, and symbols - or _ ",
         )
 
-    path = get_workspace_path(workspace_name) / DOCUMENTS_DIR / document_name
+    path = files.get_document_path(workspace_name) / document_name
 
     if path.exists():
         raise HTTPException(
@@ -519,8 +379,8 @@ async def create_new_document(
         )
 
     path.mkdir()
-    (path / IMAGES_DIR).mkdir()
-    (path / ATTACHMENTS_DIR).mkdir()
+    (path / files.ATTACHMENTS_DIR).mkdir()
+    (path / files.IMAGES_DIR).mkdir()
 
     empty_document = [{"type": "paragraph", "children": [{"text": " "}]}]
     with open(path / DOCUMENT_FILE, "w") as document_file:
@@ -536,14 +396,14 @@ async def create_new_document(
 
 
 @router.post(
-    "/remove/{workspace_name}/{document_name}", response_model=Message, status_code=200
+    "/{workspace_name}/remove_document/{document_name}", response_model=Message, status_code=200
 )
 async def remove_document(
-        workspace_name: str, document_name: str, user: str = Depends(get_current_user)
+    workspace_name: str, document_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
-    path = get_workspace_path(workspace_name)
+    path = files.get_workspace_path(workspace_name)
 
     with open(path / INFO_FILE, "r") as info_file:
         info_data = json.load(info_file)
@@ -551,10 +411,10 @@ async def remove_document(
     if user["username"] != info_data["creator"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Only creator of the workspace can delete it"
+            detail="Only creator of the workspace can delete it",
         )
 
-    path = get_workspace_path(workspace_name) / CONFIG_FILE
+    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
     with open(path, "r") as config_file:
         config_data = json.load(config_file)
 
@@ -565,59 +425,7 @@ async def remove_document(
     with open(path, "w") as config_file:
         json.dump(config_data, config_file, indent=4)
 
-    path = get_document_path(workspace_name, document_name)
+    path = files.get_document_path(workspace_name, document_name)
     clear_directory(path)
 
     return Message(status=MsgStatus.INFO, detail="Document removed successfully")
-
-
-@router.get("/{workspace_name}/{document_name}")
-async def load_document_content(workspace_name: str, document_name: str) -> json:
-    """TODO function docstring"""
-
-    path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
-
-    with open(path, "r") as document_file:
-        document_data = json.load(document_file)
-
-    return document_data
-
-
-@router.post("/{workspace_name}/{document_name}")
-async def save_document_content(
-        workspace_name: str, document_name: str, document_data: list
-) -> Message:
-    """TODO function docstring"""
-
-    path = get_document_path(workspace_name, document_name) / DOCUMENT_FILE
-
-    with open(path, "w") as document_file:
-        json.dump(document_data, document_file, indent=4)
-
-    return Message(
-        status=MsgStatus.INFO, detail="Document content updated successfully"
-    )
-
-
-@router.get("/get")
-async def get_all_user_workspaces(user: str = Depends(get_current_user)) -> list:
-    """TODO function docstring"""
-
-    user_workspaces = []
-
-    workspaces = [
-        folder.path for folder in os.scandir(get_workspace_path()) if folder.is_dir()
-    ]
-    for workspace in workspaces:
-        info_path = workspace + "/" + INFO_FILE
-        with open(info_path, "r") as info_file:
-            info_data = json.load(info_file)
-            if info_data["creator"] == user["username"]:
-                user_workspaces.append(
-                    {
-                        "name": info_data["name"],
-                        "last_updated": info_data["last_updated"],
-                    }
-                )
-
-    return user_workspaces
