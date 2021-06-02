@@ -43,7 +43,7 @@ const Sidebar = (props: any) => {
 
   const fetchFiles = useCallback(() => {
     if (selectedWorkspace) {
-      fetch(`/api/workspace/tree_structure/${selectedWorkspace}`, {
+      fetch(`/workspace/tree_structure/${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const Sidebar = (props: any) => {
 
   const fetchFileStructure = useCallback(() => {
     if (selectedWorkspace) {
-      fetch(`/api/workspace/raw_structure/${selectedWorkspace}`, {
+      fetch(`/workspace/raw_structure/${selectedWorkspace}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ const Sidebar = (props: any) => {
     if (token) {
       try {
         await fetch(
-          `/api/workspace/${selectedWorkspace}/new_document/${itemName}?virtual_path=${itemPath}`,
+          `/workspace/${selectedWorkspace}/new_document/${itemName}?virtual_path=${itemPath}`,
 
           {
             method: 'POST',
@@ -112,7 +112,7 @@ const Sidebar = (props: any) => {
       try {
         //
         await fetch(
-          `/api/workspace/${selectedWorkspace}/remove_document/${itemName}`,
+          `/workspace/${selectedWorkspace}/remove_document/${itemName}`,
           {
             method: 'POST',
             headers: {
@@ -135,7 +135,7 @@ const Sidebar = (props: any) => {
     if (token) {
       try {
         await fetch(
-          `/api/workspace/${selectedWorkspace}/new_folder/${itemName}?virtual_path=${itemPath}`,
+          `/workspace/${selectedWorkspace}/new_folder/${itemName}?virtual_path=${itemPath}`,
           {
             method: 'POST',
             headers: {
@@ -158,7 +158,7 @@ const Sidebar = (props: any) => {
     if (token) {
       try {
         await fetch(
-          `/api/workspace/${selectedWorkspace}/remove_folder/${itemName}`,
+          `/workspace/${selectedWorkspace}/remove_folder/${itemName}`,
           {
             method: 'POST',
             headers: {
