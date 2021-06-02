@@ -39,11 +39,11 @@ import {
   useSelected,
   useFocused,
 } from 'slate-react';
-import { css } from 'emotion'
 import Paper from '@material-ui/core/Paper';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { AppContext } from '../../contexts/AppContext';
 import { getCookie } from '../../contexts/Cookies';
+import { ImageElement } from './custom-types';
 
 const useStyles = makeStyles((theme) => ({
   slate: {
@@ -87,7 +87,6 @@ const TextEditor = (props: any) => {
   const initialValue = [
     {
       type: 'paragraph',
-      url: '',   // DODANE
       children: [{ text: '' }],
     },
   ] as Descendant[];
@@ -326,6 +325,8 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
           {children}
         </p>
       );
+    case 'image':
+      return <Image {...attributes} {...children} {...element} />
     default:
       return (
         <p {...attributes} style={{ textAlign: 'left' }}>
@@ -390,10 +391,10 @@ const MarkButton = ({ format, icon }: any) => {
 const withImages = (editor: Editor) => {
   const { insertData, isVoid } = editor
 
-  editor.isVoid = element: Editor => {
-    return element.type === 'image' ? true : isVoid(element)
-  }
+  editor.isVoid = element => element.type === 'image' ? true : isVoid(element)
+  
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   editor.insertData = (data: any) => {
     const text = data.getData('text/plain')
     const { files } = data
@@ -405,7 +406,8 @@ const withImages = (editor: Editor) => {
 
         if (mime === 'image') {
           reader.addEventListener('load', () => {
-            const url = reader.result
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const url = reader.result as any
             insertImage(editor, url)
           })
 
@@ -414,9 +416,9 @@ const withImages = (editor: Editor) => {
       }
     } else if (isImageUrl(text)) {
       insertImage(editor, text)
-    } else {
-      insertData(data)
-    }
+    } // else {
+    //  insertData(data)
+    // }
   }
 
   return editor
@@ -435,13 +437,13 @@ const Image = ({ attributes, children, element }: RenderElementProps) => {
     <div {...attributes}>
       <div contentEditable={false}>
         <img
-          src={element.url}
-          className={css`
-            display: block;
-            max-width: 100%;
-            max-height: 20em;
-            box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
-          `}
+          src={element.url as string}
+          // className={css`
+          //   display: block;
+          //   max-width: 100%;
+          //   max-height: 20em;
+          //  box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
+          // `}
         />
       </div>
       {children}
@@ -460,7 +462,7 @@ const InsertImageButton = () => {
           alert('URL is not an image')
           return
         }
-        insertImage(editor, url)
+        if ( url !== null) insertImage(editor, url);
       }}
     >
       <Icon>image</Icon>
@@ -472,7 +474,7 @@ const isImageUrl = (url: string) => {
   if (!url) return false
   if (!isUrl(url)) return false
   const ext = new URL(url).pathname.split('.').pop()
-  return imageExtensions.includes(ext)
+  if (typeof ext !== 'undefined') return imageExtensions.includes(ext);
 }
 
 
