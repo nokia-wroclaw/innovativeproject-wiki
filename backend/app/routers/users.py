@@ -12,7 +12,7 @@ from app.routers import files
 from app.utils.message import Message, MsgStatus
 from app.utils.user_db import UserDB
 
-router = APIRouter(prefix="/user", tags=["User Management"])
+router = APIRouter(prefix="/api/user", tags=["User Management"])
 user_db = UserDB()
 
 

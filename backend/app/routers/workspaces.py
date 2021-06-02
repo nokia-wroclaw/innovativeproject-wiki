@@ -13,7 +13,7 @@ from app.utils.message import Message, MsgStatus
 from app.utils.user_db import UserDB
 from app.routers import files
 
-router = APIRouter(prefix="/workspace", tags=["Workspace Management"])
+router = APIRouter(prefix="/api/workspace", tags=["Workspace Management"])
 user_db = UserDB()
 
 CONFIG_FILE = "config.json"

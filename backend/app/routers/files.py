@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from app.dependencies import random_filename
 from app.utils.message import Message, MsgStatus
 
-router = APIRouter(prefix="/files", tags=["Files Management"])
+router = APIRouter(prefix="/api/files", tags=["Files Management"])
 
 DATA_DIR = "data"
 WORKSPACES_DIR = "workspaces"

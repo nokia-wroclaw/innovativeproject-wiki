@@ -41,7 +41,7 @@ const Register: React.FC = () => {
     )
       return;
 
-    fetch('/authorization/register', {
+    fetch('/api/authorization/register', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
