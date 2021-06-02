@@ -73,7 +73,7 @@ export default function DataTable() {
     const found = workspaces.find((workspace) => workspace.id === id);
     const token = getCookie('token');
     if (token && found) {
-      fetch(`/workspace/remove/${found.name}`, {
+      fetch(`/api/workspace/remove/${found.name}`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -96,7 +96,7 @@ export default function DataTable() {
     const token = getCookie('token');
     if (token) {
       fetch(
-        '/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
+        '/api/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
         {
           method: 'POST',
           headers: {
@@ -169,7 +169,7 @@ export default function DataTable() {
   const fetchWorkspaces = () => {
     const token = getCookie('token');
     if (token) {
-      fetch('/user/active_workspaces', {
+      fetch('/api/user/active_workspaces', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),

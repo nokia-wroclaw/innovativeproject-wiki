@@ -8,7 +8,7 @@ from fastapi import APIRouter
 from app.routers.files import get_document_path
 from app.utils.message import Message, MsgStatus
 
-router = APIRouter(prefix="/document", tags=["Document Management"])
+router = APIRouter(prefix="/api/document", tags=["Document Management"])
 
 DOCUMENT_FILE = "document.json"
 

@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.user_db import UserDB
 from app.utils.message import Message, log
 
-router = APIRouter(prefix="/authorization", tags=["Authorizations"])
+router = APIRouter(prefix="/api/authorization", tags=["Authorizations"])
 user_db = UserDB()
 
 SECRET_KEY = "7505d3e581d01c02fd31667cdc67cdb64173a9d4f715e73bf0a8e196fa02a15c"
