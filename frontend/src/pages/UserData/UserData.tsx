@@ -26,7 +26,7 @@ export default function UserData() {
   const fetchPhoto = async () => {
     try {
       const token = getCookie('token');
-      const response = await fetch('/user/profile_picture', {
+      const response = await fetch('/api/user/profile_picture', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -47,7 +47,7 @@ export default function UserData() {
 
       const formData = new FormData();
       formData.append('new_picture', data);
-      const response = await fetch('/user/profile_picture', {
+      const response = await fetch('/api/user/profile_picture', {
         method: 'POST',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -63,7 +63,7 @@ export default function UserData() {
   const fetchUserData = async () => {
     try {
       const token = getCookie('token');
-      const response = await fetch('/authorization/me', {
+      const response = await fetch('/api/authorization/me', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -92,7 +92,7 @@ export default function UserData() {
 
     try {
       const token = getCookie('token');
-      const response = await fetch('/user/update_data', {
+      const response = await fetch('/api/user/update_data', {
         method: 'POST',
         headers: {
           Authorization: 'Bearer '.concat(token),
