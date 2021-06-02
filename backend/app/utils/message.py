@@ -66,7 +66,7 @@ def _prepare_message_as_string(message: Message, time: str) -> str:
     if value is None:
         value = ""
 
-    return f"[{message.status.name}] [{time}] [{value}]: {message.detail}\n"
+    return f"[{message.status}] [{time}] [{value}]: {message.detail}\n"
 
 
 class LogDestination(Enum):
