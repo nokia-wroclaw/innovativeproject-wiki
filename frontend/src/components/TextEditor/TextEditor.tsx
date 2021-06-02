@@ -7,6 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { jsPDF } from 'jspdf';
 import escapeHtml from 'escape-html';
 import isHotkey from 'is-hotkey';
+import isUrl from 'is-url'
+import imageExtensions from 'image-extensions'
 import React, {
   useCallback,
   useContext,
@@ -34,7 +36,10 @@ import {
   useSlate,
   withReact,
   ReactEditor,
+  useSelected,
+  useFocused,
 } from 'slate-react';
+import { css } from 'emotion'
 import Paper from '@material-ui/core/Paper';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { AppContext } from '../../contexts/AppContext';
@@ -82,6 +87,7 @@ const TextEditor = (props: any) => {
   const initialValue = [
     {
       type: 'paragraph',
+      url: '',   // DODANE
       children: [{ text: '' }],
     },
   ] as Descendant[];
@@ -198,6 +204,7 @@ const TextEditor = (props: any) => {
       >
         <Paper elevation={10} className={classes.toolbar}>
           <Toolbar>
+            <InsertImageButton />
             <MarkButton format="bold" icon="format_bold" />
             <MarkButton format="italic" icon="format_italic" />
             <MarkButton format="underline" icon="format_underlined" />
@@ -378,5 +385,94 @@ const MarkButton = ({ format, icon }: any) => {
     </Button>
   );
 };
+
+const withImages = (editor: Editor) => {
+  const { insertData, isVoid } = editor
+
+  editor.isVoid = element: Editor => {
+    return element.type === 'image' ? true : isVoid(element)
+  }
+
+  editor.insertData = (data: any) => {
+    const text = data.getData('text/plain')
+    const { files } = data
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const reader = new FileReader()
+        const [mime] = file.type.split('/')
+
+        if (mime === 'image') {
+          reader.addEventListener('load', () => {
+            const url = reader.result
+            insertImage(editor, url)
+          })
+
+          reader.readAsDataURL(file)
+        }
+      }
+    } else if (isImageUrl(text)) {
+      insertImage(editor, text)
+    } else {
+      insertData(data)
+    }
+  }
+
+  return editor
+}
+
+const insertImage = (editor: Editor, url: string) => {
+  const text = { text: '' }
+  const image: ImageElement = { type: 'image', url, children: [text] }
+  Transforms.insertNodes(editor, image)
+}
+
+const Image = ({ attributes, children, element }: RenderElementProps) => {
+  const selected = useSelected()
+  const focused = useFocused()
+  return (
+    <div {...attributes}>
+      <div contentEditable={false}>
+        <img
+          src={element.url}
+          className={css`
+            display: block;
+            max-width: 100%;
+            max-height: 20em;
+            box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
+          `}
+        />
+      </div>
+      {children}
+    </div>
+  )
+}
+
+const InsertImageButton = () => {
+  const editor = useSlate()
+  return (
+    <Button
+      onMouseDown={event => {
+        event.preventDefault()
+        const url = window.prompt('Enter the URL of the image:')
+        if (url && !isImageUrl(url)) {
+          alert('URL is not an image')
+          return
+        }
+        insertImage(editor, url)
+      }}
+    >
+      <Icon>image</Icon>
+    </Button>
+  )
+}
+
+const isImageUrl = (url: string) => {
+  if (!url) return false
+  if (!isUrl(url)) return false
+  const ext = new URL(url).pathname.split('.').pop()
+  return imageExtensions.includes(ext)
+}
+
 
 export default TextEditor;
