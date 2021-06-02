@@ -1,12 +1,27 @@
-import { Button, TextField } from '@material-ui/core';
+import {
+  Paper,
+  Button,
+  TextField,
+  Typography,
+  Avatar,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { getCookie } from '../../contexts/Cookies';
-import './UserData.css';
+import useStyles from './UserData.styles';
 
 export default function UserData() {
-  const [username, setUsername] = useState('Default username');
-  const [mail, setMail] = useState('Default email');
+  const classes = useStyles();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [image, setImage] = useState('');
+  const [open, setOpen] = useState(false);
+  const textfieldVariant = 'filled';
 
   const fetchPhoto = async () => {
     try {
@@ -25,6 +40,26 @@ export default function UserData() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const postPhoto = async (data: any) => {
+    try {
+      const token = getCookie('token');
+
+      const formData = new FormData();
+      formData.append('new_picture', data);
+      const response = await fetch('/user/profile_picture', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+        },
+        body: formData,
+      });
+      fetchPhoto();
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
   const fetchUserData = async () => {
     try {
       const token = getCookie('token');
@@ -38,7 +73,35 @@ export default function UserData() {
       const data = await response.json();
       // console.log(data);
       setUsername(data.username);
-      setMail(data.email);
+      setEmail(data.email);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  };
+
+  const postUserData = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body: any = {
+      username,
+      email,
+    };
+    if (password && confirmPassword && password === confirmPassword) {
+      body.password = password;
+      console.log(body);
+    }
+
+    try {
+      const token = getCookie('token');
+      const response = await fetch('/user/update_data', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      fetchUserData();
+      setOpen(true);
     } catch (error) {
       console.error('Error: ', error);
     }
@@ -47,91 +110,108 @@ export default function UserData() {
   useEffect(() => {
     fetchUserData();
     fetchPhoto();
-  }, [mail, username]);
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleCapture = ({ target }: any) => {
+    postPhoto(target.files[0]);
+  };
 
   return (
-    <div>
-      <div id="dataContainer" className="shadow1">
-        <div id="title">My Profile</div>
-
-        <div style={{ clear: 'both' }} />
-
-        <div id="ppContainer">
-          <img src={image} alt="Italian Trulli" id="imageContainer" />
-
-          <Button
-            type="submit"
-            variant="contained"
-            size="small"
-            id="uploadButton"
-          >
-            Upload image
-          </Button>
-        </div>
-
-        <div id="infoContainer">
-          <div style={{ marginTop: '50px' }}>
+    <div className={classes.root}>
+      <Paper elevation={10} className={classes.paper}>
+        <Typography variant="h5">My Profile</Typography>
+        <div className={classes.photoAndDataContainer}>
+          <div className={classes.photoContainer}>
+            <Avatar
+              alt="profile"
+              src={image}
+              className={classes.profilePicture}
+            />
+            <Button
+              variant="contained"
+              component="label"
+              className={classes.button}
+            >
+              Upload Photo
+              <input
+                type="file"
+                accept="image/png, image/jpg, image/jpeg"
+                onChange={handleCapture}
+                hidden
+              />
+            </Button>
+          </div>
+          <div className={classes.dataContainer}>
             <TextField
-              id="usernameInput"
-              // defaultValue = "Workata"
+              variant={textfieldVariant}
+              label="Username"
+              type="username"
+              fullWidth
+              disabled={true}
               value={username}
-              helperText="Username"
-              fullWidth
-              variant="filled"
+              onChange={({ target: { value } }) => {
+                setUsername(value);
+              }}
             />
-          </div>
-          <div style={{ marginTop: '20px' }}>
             <TextField
-              id="mailInput"
-              // defaultValue = "examplemail@gmail.com"
-              value={mail}
-              helperText="Email"
+              variant={textfieldVariant}
+              label="Email"
+              type="email"
               fullWidth
-              variant="filled"
+              value={email}
+              onChange={({ target: { value } }) => {
+                setEmail(value);
+              }}
             />
           </div>
         </div>
-
-        <div style={{ clear: 'both' }} />
-
-        <div id="passwordContainer">
-          <div style={{ float: 'left', marginLeft: '80px' }}>
-            <TextField
-              id="newPassInput"
-              // className={classes.passTextField}
-              // defaultValue=""
-              helperText="New password"
-              variant="filled"
-              type="password"
-            />
-          </div>
-
-          <div style={{ float: 'left', marginLeft: '100px' }}>
-            <TextField
-              id="confirmPassInput"
-              // defaultValue=""
-              helperText="Confirm password"
-              variant="filled"
-              type="password"
-            />
-          </div>
-
-          <div style={{ clear: 'both' }} />
+        <div className={classes.passwordsContainer}>
+          <TextField
+            className={classes.textField}
+            variant={textfieldVariant}
+            label="New password"
+            type="password"
+            value={password}
+            onChange={({ target: { value } }) => {
+              setPassword(value);
+            }}
+          />
+          <TextField
+            className={classes.textField}
+            variant={textfieldVariant}
+            label="Confirm password"
+            type="password"
+            value={confirmPassword}
+            onChange={({ target: { value } }) => {
+              setConfirmPassword(value);
+            }}
+          />
         </div>
-
-        <div style={{ clear: 'both' }} />
-
         <Button
-          type="submit"
           color="primary"
           variant="contained"
-          size="medium"
-          id="saveButton"
-          onClick={() => console.log('Save')}
+          className={classes.button}
+          onClick={postUserData}
         >
           Save
         </Button>
-      </div>
+      </Paper>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogContent>
+          <Typography>Changes saved</Typography>
+        </DialogContent>
+        <DialogActions
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Button onClick={() => setOpen(false)} color="primary">
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
