@@ -10,7 +10,7 @@ export default function App() {
   useEffect(() => {
     window.setInterval(() => {
       const tempToken = getCookie('token');
-      if (tempToken) setToken(tempToken);
+      if (tempToken && typeof tempToken !== 'undefined') setToken(tempToken);
       else setToken('');
     }, 100); // run every 100 ms
   }, []);

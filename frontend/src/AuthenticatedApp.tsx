@@ -35,9 +35,9 @@ export default function AuthenticatedApp() {
             />
 
             <Route exact path="/userData" component={UserData} />
-            <Route exact path="/lastActivity" component={LastActivity} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/register" component={Register} />
+            {/* <Route exact path="/lastActivity" component={LastActivity} /> */}
+            {/* <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} /> */}
             <Route>
               <div
                 style={{

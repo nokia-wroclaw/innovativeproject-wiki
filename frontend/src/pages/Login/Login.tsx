@@ -52,7 +52,7 @@ const Login: React.FC = () => {
   };
 
   const handleLoginButton = async () => {
-    fetch('/authorization/login', {
+    fetch('/api/authorization/login', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -64,9 +64,11 @@ const Login: React.FC = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setCookie('token', data.access_token);
-        history.push('/workspaces');
-        setIsError(false);
+        if (data.access_token && typeof data.access_token !== 'undefined') {
+          setCookie('token', data.access_token);
+          history.push('/');
+          setIsError(false);
+        } else setIsError(true);
       })
       .catch((error) => {
         console.error(error);
