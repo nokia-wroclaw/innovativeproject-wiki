@@ -153,13 +153,16 @@ const TextEditor = (props: any) => {
   useEffect(() => {
     const token = getCookie('token');
     if (token && selectedWorkspace && typeof props.fileName !== 'undefined') {
-      fetch(`/api/document/${props.fileName}?workspace_name=${selectedWorkspace}`, {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer '.concat(token),
-          'Content-Type': 'application/json',
-        },
-      })
+      fetch(
+        `/api/document/${props.fileName}?workspace_name=${selectedWorkspace}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer '.concat(token),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
           Transforms.select(editor, [0]);
@@ -329,7 +332,11 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
         </p>
       );
     case 'image':
-      return <Image {...attributes} {...children} {...element} />;
+      return (
+        <Image attributes={attributes} element={element}>
+          {children}
+        </Image>
+      );
     default:
       return (
         <p {...attributes} style={{ textAlign: 'left' }}>
@@ -438,15 +445,16 @@ const Image = ({ attributes, children, element }: RenderElementProps) => {
   const focused = useFocused();
   return (
     <div {...attributes}>
-      <div contentEditable={false}>
+      <div contentEditable={true}>
         <img
           src={element.url as string}
-          // className={css`
-          //   display: block;
-          //   max-width: 100%;
-          //   max-height: 20em;
-          //  box-shadow: ${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'};
-          // `}
+          alt="a"
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '20em',
+            boxShadow: `${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'}`,
+          }}
         />
       </div>
       {children}

@@ -52,7 +52,7 @@ const Login: React.FC = () => {
   };
 
   const handleLoginButton = async () => {
-    fetch('/authorization/login', {
+    fetch('/api/authorization/login', {
       method: 'POST', // or 'PUT'
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
