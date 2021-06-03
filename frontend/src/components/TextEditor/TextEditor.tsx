@@ -9,16 +9,7 @@ import escapeHtml from 'escape-html';
 import isHotkey from 'is-hotkey';
 import isUrl from 'is-url';
 import imageExtensions from 'image-extensions';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   createEditor,
   Descendant,
