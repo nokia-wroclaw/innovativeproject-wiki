@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Dialog,
@@ -12,11 +13,9 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import ToggleButton from '@material-ui/lab/ToggleButton';
 import DescriptionIcon from '@material-ui/icons/Description';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
 import FolderIcon from '@material-ui/icons/Folder';
+import ArrowBackOutlinedIcon from '@material-ui/icons/ArrowBackOutlined';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppContext } from '../../contexts/AppContext';
@@ -254,6 +253,11 @@ const Sidebar = (props: any) => {
               disableSticky={true}
               className={classes.listName}
             >
+              
+              <IconButton to="/workspaces" component={Link}>
+                  <ArrowBackOutlinedIcon fontSize="small" />
+              </IconButton>  
+              
               <Typography variant="h6">{selectedWorkspace}</Typography>
               <div>
                 <IconButton
