@@ -25,34 +25,12 @@ export default function Home() {
         <Button
           variant="contained"
           color="primary"
-          to="/lastActivity"
-          component={Link}
-          endIcon={<BuildIcon />}
-          className={classes.homepage__button}
-        >
-          Last Activity
-        </Button>
-
-        <Button
-          variant="contained"
-          color="primary"
           to="/workspaces"
           component={Link}
           endIcon={<BuildIcon />}
           className={classes.homepage__button}
         >
           Workspaces
-        </Button>
-
-        <Button
-          variant="contained"
-          color="primary"
-          to="/userData"
-          component={Link}
-          endIcon={<BuildIcon />}
-          className={classes.homepage__button}
-        >
-          Profile
         </Button>
       </div>
       <div className={classes.homepage__cards}>
