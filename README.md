@@ -28,7 +28,7 @@ The goal of this project is to crerate the knowledge base application intended f
 * Some apps have a non-intuitive user experience (e.g. Notion)
 
 <div style="text-align:center">
-<img src="images/home-page-app.PNG" alt="HomePage" width="500" height="290" style="border: 1px solid black">
+<img src="images/HomePage.PNG" alt="HomePage" width="500" height="290" style="border: 1px solid black">
 </div>
 
 
