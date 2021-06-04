@@ -2,12 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Appbar from './components/Appbar/Appbar';
 import Workspaces from './pages/Workspaces/Workspaces';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Register from './pages/Register/Register';
+import LoginHomePage from './pages/LoginHomePage/LoginHomePage';
 import FilePage from './pages/FilePage/FilePage';
 import UserData from './pages/UserData/UserData';
-import LastActivity from './pages/LastActivity/LastActivity';
 import ContextProvider from './contexts/AppContext';
 import UndrawPageNotFound from './images/UndrawPageNotFound.svg';
 import './App.css';
@@ -21,7 +18,7 @@ export default function AuthenticatedApp() {
             <Appbar />
           </div>
           <Switch>
-            <Route exact path="/" component={Home} />
+            <Route exact path="/" component={LoginHomePage} />
             <Route exact path="/workspaces" component={Workspaces} />
             <Route
               exact

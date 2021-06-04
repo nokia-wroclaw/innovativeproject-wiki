@@ -21,8 +21,8 @@ export default function Home() {
         Free and Open Source web app perfect for making documentation intended
         for use in small to moderate sized teams
       </Typography>
-      <div className={classes.homepage__buttons}>
-        <Button
+      {/* <div className={classes.homepage__buttons}>
+         <Button
           variant="contained"
           color="primary"
           to="/workspaces"
@@ -31,8 +31,8 @@ export default function Home() {
           className={classes.homepage__button}
         >
           Workspaces
-        </Button>
-      </div>
+       </Button> 
+      </div> */}
       <div className={classes.homepage__cards}>
         <div className={classes.homepage__card}>
           <img
