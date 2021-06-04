@@ -159,6 +159,7 @@ export default function UserData() {
               label="Email"
               type="email"
               fullWidth
+              disabled={true}
               value={email}
               onChange={({ target: { value } }) => {
                 setEmail(value);
