@@ -49,7 +49,7 @@ Main functionalities of the application:
 
 
 <div style="text-align:center">
-<img src="images/doc-edit.PNG" alt="Docs_and_Catalogs" width="650" height="290" style="border: 1px solid black">
+<img src="images/EditorPage.PNG" alt="Docs_and_Catalogs" width="550" height="290" style="border: 1px solid black">
 </div>
 
 
