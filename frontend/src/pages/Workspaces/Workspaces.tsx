@@ -78,7 +78,7 @@ const columnsSettings: GridColDef[] = [
 ];
 
 export default function DataTable() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const classes = useStyles();
   const history = useHistory();
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
@@ -86,8 +86,9 @@ export default function DataTable() {
   const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
 
   // states for workspace settings
-  const [openSettings, setOpenSettings] = React.useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [currentWorkSettings, setCurrentWorkSettings] = useState('');   // name of workspace that has current settings dialog 
+  const [currentWorkCreator, setCurrentWorkCreator] = useState('');
   const [currentWorkOwners, setCurrentWorkOwners] = useState([
     {id: '', ownerField: ''},
   ]);
@@ -263,11 +264,26 @@ export default function DataTable() {
             (owner: any) => ({
               id: owner.username,
               ownerField: owner.username,
-              // TODO add permission type
+              permission: owner.permission_type
             })
           );
-          console.log("New data: ", newData)
-          setCurrentWorkOwners(newData);
+
+          // newData.forEach((owner : any) => {
+          //   if(owner.permission === 4) delete newData.owner;
+          // });
+          const newerData = newData.map((owner: { permission: number; ownerField: string}) => {
+
+          if(owner.permission === 4) setCurrentWorkCreator(owner.ownerField);
+          else return owner;
+          return
+          
+        
+        });
+
+          // const creator = newData.((owner: { permission: number; }) =>  owner.permission !== 4);
+
+          console.log("New data: ", newerData)
+          setCurrentWorkOwners(newerData);
         })
         .catch((error) => {
           console.error('Error: ', error);
@@ -406,7 +422,7 @@ export default function DataTable() {
         aria-labelledby="form-dialog-title"
         // className={classes.settingsDialog}
       >
-      <DialogTitle id="form-dialog-title">Workspace settings - {currentWorkSettings}</DialogTitle>
+      <DialogTitle id="form-dialog-title">Workspace settings - {currentWorkSettings} by {currentWorkCreator}</DialogTitle>
       <DialogContent>
 
         {/* Text field for username of additional owner */}
