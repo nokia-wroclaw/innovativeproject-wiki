@@ -31,7 +31,10 @@ class WorkspaceDB:
 
     def __init__(self):
         self.database = TinyDB(
-            Path(".") / Directory.DATA / Directory.WORKSPACES / "database.json"
+            Path(".")
+            / Directory.DATA.value
+            / Directory.WORKSPACES.value
+            / "database.json"
         )
 
     def does_workspace_exist(self, workspace_name: str) -> bool:

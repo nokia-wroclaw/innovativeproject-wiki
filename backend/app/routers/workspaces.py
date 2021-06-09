@@ -173,7 +173,9 @@ async def create_new_workspace(
             + "numbers, and symbols - or _ ",
         )
 
-    path = Path(".") / Directory.DATA / Directory.WORKSPACES / workspace_name
+    path = (
+        Path(".") / Directory.DATA.value / Directory.WORKSPACES.value / workspace_name
+    )
 
     if path.exists():
         raise HTTPException(
@@ -194,7 +196,9 @@ async def remove_workspace(
 ) -> Message:
     """TODO function docstring"""
 
-    path = Path(".") / Directory.DATA / Directory.WORKSPACES / workspace_name
+    path = (
+        Path(".") / Directory.DATA.value / Directory.WORKSPACES.value / workspace_name
+    )
 
     workspace_data = workspace_db.get_workspace_data(workspace_name)
     if user["username"] != workspace_data["creator"]:
@@ -247,8 +251,8 @@ async def create_new_document(
 
     path = (
         Path(".")
-        / Directory.DATA
-        / Directory.WORKSPACES
+        / Directory.DATA.value
+        / Directory.WORKSPACES.value
         / workspace_name
         / document_name
     )
@@ -260,8 +264,8 @@ async def create_new_document(
         )
 
     path.mkdir()
-    (path / Directory.IMAGES).mkdir()
-    (path / Directory.ATTACHMENTS).mkdir()
+    (path / Directory.IMAGES.value).mkdir()
+    (path / Directory.ATTACHMENTS.value).mkdir()
 
     empty_document = [{"type": "paragraph", "children": [{"text": " "}]}]
     with open(path / DOCUMENT_FILE, "w") as document_file:

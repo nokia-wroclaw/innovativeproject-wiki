@@ -18,10 +18,13 @@ def check_files_integrity():
     """
 
     paths = [
-        Path(".") / Directory.DATA,
-        Path(".") / Directory.DATA / Directory.USERS,
-        Path(".") / Directory.DATA / Directory.USERS / Directory.PROFILE_PICTURES,
-        Path(".") / Directory.DATA / Directory.WORKSPACES,
+        Path(".") / Directory.DATA.value,
+        Path(".") / Directory.DATA.value / Directory.USERS.value,
+        Path(".")
+        / Directory.DATA.value
+        / Directory.USERS.value
+        / Directory.PROFILE_PICTURES.value,
+        Path(".") / Directory.DATA.value / Directory.WORKSPACES.value,
     ]
 
     for path in paths:
@@ -39,8 +42,8 @@ def get_document_path(workspace_name: str, document_name: str) -> Path:
 
     path = (
         Path(".")
-        / Directory.DATA
-        / Directory.WORKSPACES
+        / Directory.DATA.value
+        / Directory.WORKSPACES.value
         / workspace_name
         / document_name
     )
@@ -61,7 +64,9 @@ def get_image_path(workspace_name: str, document_name: str, image_name: str) -> 
     """
 
     path = (
-        get_document_path(workspace_name, document_name) / Directory.IMAGES / image_name
+        get_document_path(workspace_name, document_name)
+        / Directory.IMAGES.value
+        / image_name
     )
 
     if not path.exists():
@@ -83,7 +88,7 @@ def get_attachment_path(
 
     path = (
         get_document_path(workspace_name, document_name)
-        / Directory.ATTACHMENTS
+        / Directory.ATTACHMENTS.value
         / attachment_name
     )
 
@@ -104,9 +109,9 @@ def get_profile_picture_path(profile_picture: str) -> Path:
 
     path = (
         Path(".")
-        / Directory.DATA
-        / Directory.USERS
-        / Directory.PROFILE_PICTURES
+        / Directory.DATA.value
+        / Directory.USERS.value
+        / Directory.PROFILE_PICTURES.value
         / profile_picture
     )
 
@@ -171,7 +176,7 @@ async def upload_image(
 
     path = (
         get_document_path(workspace_name, document_name)
-        / Directory.IMAGES
+        / Directory.IMAGES.value
         / random_filename_keep_ext(file.filename)
     )
 
@@ -188,7 +193,7 @@ async def upload_attachment(
 
     path = (
         get_document_path(workspace_name, document_name)
-        / Directory.ATTACHMENTS
+        / Directory.ATTACHMENTS.value
         / random_filename_keep_ext(file.filename)
     )
 

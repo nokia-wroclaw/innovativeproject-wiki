@@ -53,9 +53,9 @@ async def change_user_profile_picture(
     old_path = get_profile_picture_path(old_filename)
     new_path = (
         Path(".")
-        / Directory.DATA
-        / Directory.USERS
-        / Directory.PROFILE_PICTURES
+        / Directory.DATA.value
+        / Directory.USERS.value
+        / Directory.PROFILE_PICTURES.value
         / new_filename
     )
 
@@ -88,6 +88,7 @@ async def get_all_user_workspaces(user: dict = Depends(get_current_user)) -> lis
         result.append({"name": workspace_name, "last_updated": "TODO"})
 
     return result
+
 
 @router.get("/me", response_model=dict)
 async def get_user(user: dict = Depends(get_current_user)):
