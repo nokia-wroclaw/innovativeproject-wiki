@@ -4,6 +4,7 @@ TODO module docstring
 from pathlib import Path
 from tinydb import TinyDB, where
 from app.utils.message import Message, MsgStatus
+from app.dependencies import is_non_empty_string
 
 
 class UserDB:
@@ -27,7 +28,7 @@ class UserDB:
         Returns:
             bool: True if a user exists in a database, False otherwise
         """
-        if not _is_non_empty_string(username):
+        if not is_non_empty_string(username):
             return False
 
         return self.database.contains(where("username") == username)
@@ -44,7 +45,7 @@ class UserDB:
         Returns:
             Message: the result of an attempted user addition (SUCCESS/FAILURE) with additional info
         """
-        if not _is_non_empty_string((username, password_hash, email)):
+        if not is_non_empty_string((username, password_hash, email)):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
@@ -74,7 +75,7 @@ class UserDB:
             Message: the result of an attempted user deletion (SUCCESS/FAILURE)
                      with some additional info
         """
-        if not _is_non_empty_string(username):
+        if not is_non_empty_string(username):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
@@ -98,7 +99,7 @@ class UserDB:
         Otherwise:
             Message: information about the cause of failure
         """
-        if not _is_non_empty_string(username):
+        if not is_non_empty_string(username):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
@@ -112,11 +113,11 @@ class UserDB:
         """
         TODO function docstring
         """
-        if not _is_non_empty_string(username):
+        if not is_non_empty_string(username):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
-        
+
         user = self.database.get(where("username") == username)
         active_workspaces = user["active_workspaces"]
         active_workspaces.append(workspace)
@@ -129,16 +130,15 @@ class UserDB:
             status=MsgStatus.INFO, detail="User active workspace updated successfully"
         )
 
-
     def remove_active_workspace(self, username: str, workspace: str):
         """
         TODO function docstring
         """
-        if not _is_non_empty_string(username):
+        if not is_non_empty_string(username):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
-        
+
         user = self.database.get(where("username") == username)
         active_workspaces = user["active_workspaces"]
         active_workspaces.remove(workspace)
@@ -150,7 +150,6 @@ class UserDB:
         return Message(
             status=MsgStatus.INFO, detail="User active workspace updated successfully"
         )
-
 
     def edit_user_data(self, username, edited_field, new_value):
         """
@@ -166,7 +165,7 @@ class UserDB:
             Message: the result of an attempted user data edition (SUCCESS/FAILURE)
                      with some additional info
         """
-        if not _is_non_empty_string((username, new_value)):
+        if not is_non_empty_string((username, new_value)):
             return Message(
                 status=MsgStatus.ERROR, detail="Invalid parameter type detected"
             )
@@ -186,20 +185,3 @@ class UserDB:
             status=MsgStatus.INFO,
             detail=f"Non-existent field type - {edited_field}",
         )
-
-
-def _is_non_empty_string(data: list) -> bool:
-    """
-    Checks if all values in list are non-empty string
-
-    Parameters:
-        data (list): list of values ​​to be checked
-
-    Returns:
-        bool: True if all values are non-empty string, False otherwise
-    """
-    for field in data:
-        if not isinstance(field, str) or not field:
-            return False
-
-    return True
