@@ -354,3 +354,10 @@ async def remove_user(
     user_db.remove_active_workspace(removed_user, workspace_name)
 
     return Message(status=MsgStatus.INFO, detail="User removed successfully")
+
+
+@router.get("/{workspace_name}/get_contributors")
+async def get_all_contributors(workspace_name: str) -> Message:
+    """TODO function docstring"""
+
+    return workspace_db.get_workspace_data(workspace_name)["permissions"]
