@@ -236,7 +236,7 @@ export default function DataTable() {
     const token = getCookie('token');
     const currentWS = currentWorkSettings;
     if (token) {
-      fetch(`/api/workspace/owners/${currentWS}`, {
+      fetch(`/api/workspace/${currentWS}/get_contributors`, {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -245,12 +245,13 @@ export default function DataTable() {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
+          console.log(data);  // [ {username, }, {}, {}, {}, {}]
           const newData = data.map(
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
             (owner: any) => ({
-              id: owner,
-              ownerField: owner,
+              id: owner.username,
+              ownerField: owner.username,
+              // TODO add permission type
             })
           );
           console.log("New data: ", newData)
@@ -266,7 +267,7 @@ export default function DataTable() {
     const token = getCookie('token');
     const currentWS = currentWorkSettings;
     if (token) {
-      fetch(`/api/workspace/owners/${currentWS}/${ownerToAdd}`,
+      fetch(`/api/workspace/${currentWS}/invite_user?invited_user=${ownerToAdd}`,
         {
           method: 'POST',
           headers: {

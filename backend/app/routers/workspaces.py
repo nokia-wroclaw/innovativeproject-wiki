@@ -360,4 +360,13 @@ async def remove_user(
 async def get_all_contributors(workspace_name: str) -> Message:
     """TODO function docstring"""
 
-    return workspace_db.get_workspace_data(workspace_name)["permissions"]
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
+    all_contributors = workspace_data["permissions"]
+    all_contributors.append(
+        {
+            "username": workspace_data["creator"],
+            "permission_type": PermissionType.OWNER.value,
+        }
+    )
+
+    return all_contributors
