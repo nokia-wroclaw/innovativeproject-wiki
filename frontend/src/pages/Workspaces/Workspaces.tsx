@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import DeleteIcon from '@material-ui/icons/Delete';
+import SettingsIcon from '@material-ui/icons/Settings';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { AppContext } from '../../contexts/AppContext';
@@ -26,20 +27,41 @@ const columns: GridColDef[] = [
   {
     field: 'lastUpdate',
     headerName: 'Last Update',
-    width: 380,
+    width: 260,
     disableClickEventBubbling: true,
+  },
+  {
+    field: 'settingsField',
+    headerName: 'Settings',
+    sortable: false,
+    width: 150,
+    disableClickEventBubbling: true,
+    renderCell: (params) => (
+      <IconButton>
+        <SettingsIcon />
+      </IconButton>
+    ),
   },
   {
     field: 'z',
     headerName: 'Delete',
     sortable: false,
-    width: 180,
+    width: 150,
     disableClickEventBubbling: true,
     renderCell: (params) => (
       <IconButton>
         <DeleteIcon />
       </IconButton>
     ),
+  },
+];
+
+const columnsSettings: GridColDef[] = [
+  {
+    field: 'ownerField',
+    headerName: 'Owner',
+    width: 380,
+    disableClickEventBubbling: true,
   },
 ];
 
@@ -51,6 +73,15 @@ export default function DataTable() {
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
 
+  // states for workspace settings
+  const [openSettings, setOpenSettings] = React.useState(false);
+  const [currentWorkSettings, setCurrentWorkSettings] = useState('');   // name of workspace that has current settings dialog 
+  const [currentWorkOwners, setCurrentWorkOwners] = useState([
+    {id: '', ownerField: ''},
+  ]);
+  const [ownerToAdd, setOwnerToAdd] = useState('');
+
+
   const [workspaces, setWorkspaces] = useState([
     { id: '', name: '', lastUpdate: '' },
   ]);
@@ -61,6 +92,7 @@ export default function DataTable() {
 
   const handleClose = () => {
     setOpen(false);
+    setOpenSettings(false);
     textFieldClear();
     setWorkspaceNameErrorMsg('');
   };
@@ -89,6 +121,12 @@ export default function DataTable() {
         });
     }
   };
+
+  const changeWorkspaceSettings = () =>{
+
+  }
+
+
 
   // TODO checkbox private false/true
 
@@ -194,6 +232,60 @@ export default function DataTable() {
     }
   };
 
+  const fetchWorkspaceOwners = () => {
+    const token = getCookie('token');
+    const currentWS = currentWorkSettings;
+    if (token) {
+      fetch(`/api/workspace/owners/${currentWS}`, {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer '.concat(token),
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          const newData = data.map(
+            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+            (owner: any) => ({
+              id: owner,
+              ownerField: owner,
+            })
+          );
+          console.log("New data: ", newData)
+          setCurrentWorkOwners(newData);
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    }
+  };
+
+  const addNewOwner = () => {
+    const token = getCookie('token');
+    const currentWS = currentWorkSettings;
+    if (token) {
+      fetch(`/api/workspace/owners/${currentWS}/${ownerToAdd}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer '.concat(token),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          fetchWorkspaceOwners();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+  };
+
   useEffect(() => {
     fetchWorkspaces();
   }, []);
@@ -260,11 +352,93 @@ export default function DataTable() {
               removeWorkspace(params.row.id);
               return;
             }
+            if (params.field === 'settingsField') {
+              // openWorkspaceSettings(params.row.id);
+              setOpenSettings(true);
+              setCurrentWorkSettings(params.row.id);
+              // setTimeout(() => {  fetchWorkspaceOwners(); }, 1000);
+              fetchWorkspaceOwners();
+              return;
+            }
             setSelectedWorkspace(params.row.name);
             history.push(`/workspaces/${params.row.name}`);
           }}
         />
       </div>
+
+      {/* Dialog window for workspace settings */}
+      <Dialog
+        open={openSettings}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+        // className={classes.settingsDialog}
+      >
+      <DialogTitle id="form-dialog-title">Workspace settings - {currentWorkSettings}</DialogTitle>
+      <DialogContent>
+
+        {/* Text field for username of additional owner */}
+        <TextField
+          // onKeyPress={handleEnterPress}
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Username"
+          // value={oldPassword}
+          fullWidth
+          className={classes.settingsWorkspacePopUp}
+          onChange={({ target: { value } }) => {
+            setOwnerToAdd(value);
+          }}
+        />
+        <div>
+          <Button
+            color="primary"
+            variant="contained"
+            className={classes.buttonAddOwner}
+            onClick={() => addNewOwner()}
+          >
+            Add Owner
+          </Button>
+        </div>
+
+        {/* Table for workspace owners */}
+        <div>
+          <DataGrid
+            rows={currentWorkOwners}
+            columns={columnsSettings}
+            pageSize={10}
+            checkboxSelection
+            className={classes.settingsTable}
+            disableSelectionOnClick={true}
+            onCellClick={(params, event) => {
+              // if (params.field === '__check__') return;
+              // if (params.field === 'z') {
+              //   removeWorkspace(params.row.id);
+              //   return;
+              // }
+              // if (params.field === 'settingsField') {
+              //   // openWorkspaceSettings(params.row.id);
+              //   setOpenSettings(true);
+              //   setCurrentWorkSettings(params.row.id);
+              //   return;
+              // }
+              // setSelectedWorkspace(params.row.name);
+              // history.push(`/workspaces/${params.row.name}`);
+            }}
+          />
+        </div>
+
+      </DialogContent>
+      <DialogActions>
+        {/* <Button onClick={() => changeWorkspaceSettings()} color="primary">
+          Confirm
+        </Button> */}
+        <Button onClick={handleClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+      </Dialog>
+
     </div>
   );
 }
