@@ -187,7 +187,7 @@ async def create_new_workspace(
 
     user_db.add_active_workspace(creator["username"], workspace_name)
 
-    return workspace_name.add_workspace(workspace_name, creator["username"], public)
+    return workspace_db.add_workspace(workspace_name, creator["username"], public)
 
 
 @router.post("/remove/{workspace_name}", response_model=Message, status_code=200)
