@@ -19,6 +19,8 @@ RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
     && poetry install --no-root \
     && apk del .build-deps gcc libc-dev make
 
+RUN pip install aiofiles
+
 # Copy backend files and run app
 COPY . ./
 EXPOSE 80
