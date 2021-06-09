@@ -141,7 +141,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"virtual_structure": virtual_structure},
-            where("username") == workspace_name,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -169,7 +169,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"virtual_structure": virtual_structure},
-            where("username") == workspace_name,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -202,7 +202,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"permissions": permissions},
-            where("username") == username,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -228,7 +228,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"permissions": permissions},
-            where("username") == username,
+            where("name") == workspace_name,
         )
 
         return Message(
