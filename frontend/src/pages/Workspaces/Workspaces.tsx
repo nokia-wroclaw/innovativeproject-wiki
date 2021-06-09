@@ -87,13 +87,12 @@ export default function DataTable() {
 
   // states for workspace settings
   const [openSettings, setOpenSettings] = useState(false);
-  const [currentWorkSettings, setCurrentWorkSettings] = useState('');   // name of workspace that has current settings dialog 
+  const [currentWorkSettings, setCurrentWorkSettings] = useState(''); // name of workspace that has current settings dialog
   const [currentWorkCreator, setCurrentWorkCreator] = useState('');
   const [currentWorkOwners, setCurrentWorkOwners] = useState([
-    {id: '', ownerField: ''},
+    { id: '', ownerField: '' },
   ]);
   const [ownerToAdd, setOwnerToAdd] = useState('');
-
 
   const [workspaces, setWorkspaces] = useState([
     { id: '', name: '', lastUpdate: '' },
@@ -135,11 +134,7 @@ export default function DataTable() {
     }
   };
 
-  const changeWorkspaceSettings = () =>{
-
-  }
-
-
+  const changeWorkspaceSettings = () => {};
 
   // TODO checkbox private false/true
 
@@ -147,7 +142,9 @@ export default function DataTable() {
     const token = getCookie('token');
     if (token) {
       fetch(
-        '/api/workspace/new/'.concat(typedWorkspaceName).concat(`?public=false`),
+        '/api/workspace/new/'
+          .concat(typedWorkspaceName)
+          .concat(`?public=false`),
         {
           method: 'POST',
           headers: {
@@ -258,31 +255,27 @@ export default function DataTable() {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);  
+          console.log(data);
           const newData = data.map(
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
             (owner: any) => ({
               id: owner.username,
               ownerField: owner.username,
-              permission: owner.permission_type
+              permission: owner.permission_type,
             })
           );
 
-          // newData.forEach((owner : any) => {
-          //   if(owner.permission === 4) delete newData.owner;
-          // });
-          const newerData = newData.map((owner: { permission: number; ownerField: string}) => {
+          const newerData = newData.filter(
+            (owner: { permission: number; ownerField: string }) => {
+              if (owner.permission === 4) {
+                setCurrentWorkCreator(owner.ownerField);
+                return false;
+              }
+              return true;
+            }
+          );
 
-          if(owner.permission === 4) setCurrentWorkCreator(owner.ownerField);
-          else return owner;
-          return
-          
-        
-        });
-
-          // const creator = newData.((owner: { permission: number; }) =>  owner.permission !== 4);
-
-          console.log("New data: ", newerData)
+          console.log('New data: ', newerData);
           setCurrentWorkOwners(newerData);
         })
         .catch((error) => {
@@ -294,7 +287,8 @@ export default function DataTable() {
   const addNewOwner = () => {
     const token = getCookie('token');
     if (token) {
-      fetch(`/api/workspace/${currentWorkSettings}/invite_user?invited_user=${ownerToAdd}`,
+      fetch(
+        `/api/workspace/${currentWorkSettings}/invite_user?invited_user=${ownerToAdd}`,
         {
           method: 'POST',
           headers: {
@@ -317,7 +311,8 @@ export default function DataTable() {
   const removeOwner = (owner_name: string) => {
     const token = getCookie('token');
     if (token) {
-      fetch(`/api/workspace/${currentWorkSettings}/remove_user?removed_user=${owner_name}`,
+      fetch(
+        `/api/workspace/${currentWorkSettings}/remove_user?removed_user=${owner_name}`,
         {
           method: 'POST',
           headers: {
@@ -422,63 +417,62 @@ export default function DataTable() {
         aria-labelledby="form-dialog-title"
         // className={classes.settingsDialog}
       >
-      <DialogTitle id="form-dialog-title">Workspace settings - {currentWorkSettings} by {currentWorkCreator}</DialogTitle>
-      <DialogContent>
-
-        {/* Text field for username of additional owner */}
-        <TextField
-          // onKeyPress={handleEnterPress}
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Username"
-          // value={oldPassword}
-          fullWidth
-          className={classes.settingsWorkspacePopUp}
-          onChange={({ target: { value } }) => {
-            setOwnerToAdd(value);
-          }}
-        />
-        <div>
-          <Button
-            color="primary"
-            variant="contained"
-            className={classes.buttonAddOwner}
-            onClick={() => addNewOwner()}
-          >
-            Add Owner
-          </Button>
-        </div>
-
-        {/* Table for workspace owners */}
-        <div>
-          <DataGrid
-            rows={currentWorkOwners}
-            columns={columnsSettings}
-            pageSize={10}
-            checkboxSelection
-            className={classes.settingsTable}
-            disableSelectionOnClick={true}
-            onCellClick={(params, event) => {
-              if (params.field === '__check__') return;
-              if (params.field === 'deleteField') {
-                removeOwner(params.row.id);
-              }
+        <DialogTitle id="form-dialog-title">
+          Workspace settings - {currentWorkSettings} by {currentWorkCreator}
+        </DialogTitle>
+        <DialogContent>
+          {/* Text field for username of additional owner */}
+          <TextField
+            // onKeyPress={handleEnterPress}
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Username"
+            // value={oldPassword}
+            fullWidth
+            className={classes.settingsWorkspacePopUp}
+            onChange={({ target: { value } }) => {
+              setOwnerToAdd(value);
             }}
           />
-        </div>
+          <div>
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.buttonAddOwner}
+              onClick={() => addNewOwner()}
+            >
+              Add Owner
+            </Button>
+          </div>
 
-      </DialogContent>
-      <DialogActions>
-        {/* <Button onClick={() => changeWorkspaceSettings()} color="primary">
+          {/* Table for workspace owners */}
+          <div>
+            <DataGrid
+              rows={currentWorkOwners}
+              columns={columnsSettings}
+              pageSize={10}
+              checkboxSelection
+              className={classes.settingsTable}
+              disableSelectionOnClick={true}
+              onCellClick={(params, event) => {
+                if (params.field === '__check__') return;
+                if (params.field === 'deleteField') {
+                  removeOwner(params.row.id);
+                }
+              }}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          {/* <Button onClick={() => changeWorkspaceSettings()} color="primary">
           Confirm
         </Button> */}
-        <Button onClick={handleClose} color="primary">
-          Close
-        </Button>
-      </DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
-
     </div>
   );
 }
