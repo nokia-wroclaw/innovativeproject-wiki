@@ -325,8 +325,21 @@ async def invite_user(
             detail="Only creator of the workspace can invite users",
         )
 
+    if not user_db.does_user_exist(invited_user):
+        return Message(status=MsgStatus.ERROR, detail="Given user doesn't exists")
+
+    if invited_user == workspace_data["creator"]:
+        return Message(status=MsgStatus.ERROR, detail="Given user is already added to workspace")
+
+    for element in workspace_data["permissions"]:
+        if element["username"] == invited_user:
+            return Message(
+                status=MsgStatus.ERROR,
+                detail="Given user is already added to workspace",
+            )
+
     workspace_db.change_user_permissions(
-        workspace_name, invited_user, PermissionType.OWNER
+        workspace_name, invited_user, PermissionType.ALL
     )
 
     user_db.add_active_workspace(invited_user, workspace_name)
@@ -348,6 +361,9 @@ async def remove_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Only creator of the workspace can remove users",
         )
+
+    if not user_db.does_user_exist(removed_user):
+        return Message(status=MsgStatus.ERROR, detail="Given user doesn't exists")
 
     workspace_db.remove_user_from_workspace(workspace_name, removed_user)
 

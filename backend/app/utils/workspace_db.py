@@ -15,7 +15,8 @@ class PermissionType(Enum):
     TODO enum docstring
     """
 
-    OWNER = 3
+    OWNER = 4
+    ALL = 3
     EDIT_WORKSPACE = 2
     EDIT_DOCUMENTS = 1
     VIEW_ONLY = 0
