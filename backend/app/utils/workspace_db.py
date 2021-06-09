@@ -15,7 +15,8 @@ class PermissionType(Enum):
     TODO enum docstring
     """
 
-    OWNER = 3
+    OWNER = 4
+    ALL = 3
     EDIT_WORKSPACE = 2
     EDIT_DOCUMENTS = 1
     VIEW_ONLY = 0
@@ -141,7 +142,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"virtual_structure": virtual_structure},
-            where("username") == workspace_name,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -169,7 +170,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"virtual_structure": virtual_structure},
-            where("username") == workspace_name,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -202,7 +203,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"permissions": permissions},
-            where("username") == username,
+            where("name") == workspace_name,
         )
 
         return Message(
@@ -228,7 +229,7 @@ class WorkspaceDB:
 
         self.database.update(
             {"permissions": permissions},
-            where("username") == username,
+            where("name") == workspace_name,
         )
 
         return Message(

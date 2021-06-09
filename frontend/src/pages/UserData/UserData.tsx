@@ -63,7 +63,7 @@ export default function UserData() {
   const fetchUserData = async () => {
     try {
       const token = getCookie('token');
-      const response = await fetch('/api/authorization/me', {
+      const response = await fetch('/api/user/me', {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),

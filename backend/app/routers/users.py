@@ -72,7 +72,7 @@ async def get_user_profile_picture(user: dict = Depends(get_current_user)):
     """TODO function docstring"""
 
     filename = user["profile_picture"]
-    path = get_profile_picture_path(filename)
+    path = get_profile_picture_path(filename if filename is not None else "default.png")
 
     return FileResponse(path.absolute())
 

@@ -325,8 +325,21 @@ async def invite_user(
             detail="Only creator of the workspace can invite users",
         )
 
+    if not user_db.does_user_exist(invited_user):
+        return Message(status=MsgStatus.ERROR, detail="Given user doesn't exists")
+
+    if invited_user == workspace_data["creator"]:
+        return Message(status=MsgStatus.ERROR, detail="Given user is already added to workspace")
+
+    for element in workspace_data["permissions"]:
+        if element["username"] == invited_user:
+            return Message(
+                status=MsgStatus.ERROR,
+                detail="Given user is already added to workspace",
+            )
+
     workspace_db.change_user_permissions(
-        workspace_name, invited_user, PermissionType.OWNER
+        workspace_name, invited_user, PermissionType.ALL
     )
 
     user_db.add_active_workspace(invited_user, workspace_name)
@@ -349,8 +362,27 @@ async def remove_user(
             detail="Only creator of the workspace can remove users",
         )
 
+    if not user_db.does_user_exist(removed_user):
+        return Message(status=MsgStatus.ERROR, detail="Given user doesn't exists")
+
     workspace_db.remove_user_from_workspace(workspace_name, removed_user)
 
     user_db.remove_active_workspace(removed_user, workspace_name)
 
     return Message(status=MsgStatus.INFO, detail="User removed successfully")
+
+
+@router.get("/{workspace_name}/get_contributors")
+async def get_all_contributors(workspace_name: str) -> Message:
+    """TODO function docstring"""
+
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
+    all_contributors = workspace_data["permissions"]
+    all_contributors.append(
+        {
+            "username": workspace_data["creator"],
+            "permission_type": PermissionType.OWNER.value,
+        }
+    )
+
+    return all_contributors
