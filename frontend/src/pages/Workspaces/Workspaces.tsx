@@ -60,8 +60,20 @@ const columnsSettings: GridColDef[] = [
   {
     field: 'ownerField',
     headerName: 'Owner',
-    width: 380,
+    width: 280,
     disableClickEventBubbling: true,
+  },
+  {
+    field: 'deleteField',
+    headerName: 'Delete',
+    sortable: false,
+    width: 150,
+    disableClickEventBubbling: true,
+    renderCell: (params) => (
+      <IconButton>
+        <DeleteIcon />
+      </IconButton>
+    ),
   },
 ];
 
@@ -232,11 +244,11 @@ export default function DataTable() {
     }
   };
 
-  const fetchWorkspaceOwners = () => {
+  const fetchWorkspaceOwners = (workspace_name: string) => {
     const token = getCookie('token');
-    const currentWS = currentWorkSettings;
+    // const currentWS = currentWorkSettings;
     if (token) {
-      fetch(`/api/workspace/${currentWS}/get_contributors`, {
+      fetch(`/api/workspace/${workspace_name}/get_contributors`, {
         method: 'GET',
         headers: {
           Authorization: 'Bearer '.concat(token),
@@ -245,7 +257,7 @@ export default function DataTable() {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);  // [ {username, }, {}, {}, {}, {}]
+          console.log(data);  
           const newData = data.map(
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
             (owner: any) => ({
@@ -265,9 +277,8 @@ export default function DataTable() {
 
   const addNewOwner = () => {
     const token = getCookie('token');
-    const currentWS = currentWorkSettings;
     if (token) {
-      fetch(`/api/workspace/${currentWS}/invite_user?invited_user=${ownerToAdd}`,
+      fetch(`/api/workspace/${currentWorkSettings}/invite_user?invited_user=${ownerToAdd}`,
         {
           method: 'POST',
           headers: {
@@ -279,7 +290,30 @@ export default function DataTable() {
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
-          fetchWorkspaceOwners();
+          fetchWorkspaceOwners(currentWorkSettings);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+  };
+
+  const removeOwner = (owner_name: string) => {
+    const token = getCookie('token');
+    if (token) {
+      fetch(`/api/workspace/${currentWorkSettings}/remove_user?removed_user=${owner_name}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer '.concat(token),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          fetchWorkspaceOwners(currentWorkSettings);
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -354,11 +388,9 @@ export default function DataTable() {
               return;
             }
             if (params.field === 'settingsField') {
-              // openWorkspaceSettings(params.row.id);
-              setOpenSettings(true);
               setCurrentWorkSettings(params.row.id);
-              // setTimeout(() => {  fetchWorkspaceOwners(); }, 1000);
-              fetchWorkspaceOwners();
+              setOpenSettings(true);
+              fetchWorkspaceOwners(params.row.id);
               return;
             }
             setSelectedWorkspace(params.row.name);
@@ -412,19 +444,10 @@ export default function DataTable() {
             className={classes.settingsTable}
             disableSelectionOnClick={true}
             onCellClick={(params, event) => {
-              // if (params.field === '__check__') return;
-              // if (params.field === 'z') {
-              //   removeWorkspace(params.row.id);
-              //   return;
-              // }
-              // if (params.field === 'settingsField') {
-              //   // openWorkspaceSettings(params.row.id);
-              //   setOpenSettings(true);
-              //   setCurrentWorkSettings(params.row.id);
-              //   return;
-              // }
-              // setSelectedWorkspace(params.row.name);
-              // history.push(`/workspaces/${params.row.name}`);
+              if (params.field === '__check__') return;
+              if (params.field === 'deleteField') {
+                removeOwner(params.row.id);
+              }
             }}
           />
         </div>
