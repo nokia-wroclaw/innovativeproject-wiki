@@ -96,7 +96,7 @@ export default function DataTable() {
     const token = getCookie('token');
     if (token) {
       fetch(
-        '/api/workspace/new/'.concat(typedWorkspaceName).concat(`?private=false`),
+        '/api/workspace/new/'.concat(typedWorkspaceName).concat(`?public=false`),
         {
           method: 'POST',
           headers: {

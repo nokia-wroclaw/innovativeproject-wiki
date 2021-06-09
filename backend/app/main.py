@@ -15,6 +15,14 @@ app.include_router(documents.router)
 app.include_router(users.router)
 
 
+@app.on_event("startup")
+async def startup_event():
+    """
+    TODO function docstring
+    """
+    files.check_files_integrity()
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """

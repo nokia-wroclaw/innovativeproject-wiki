@@ -1,9 +1,8 @@
 """
 TODO module docstring
-#slugify(txt, separator='_', regex_pattern=r'[^-a-z0-9#]+')
 """
+
 import json
-from datetime import datetime
 from pathlib import Path
 from re import fullmatch
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -11,58 +10,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.routers.authorization import get_current_user
 from app.utils.message import Message, MsgStatus
 from app.utils.user_db import UserDB
-from app.routers import files
+from app.utils.workspace_db import WorkspaceDB, PermissionType
+from app.routers.files import clear_directory, get_document_path
+from app.dependencies import Directory
 
 router = APIRouter(prefix="/api/workspace", tags=["Workspace Management"])
+workspace_db = WorkspaceDB()
 user_db = UserDB()
 
-CONFIG_FILE = "config.json"
-INFO_FILE = "info.json"
 DOCUMENT_FILE = "document.json"
-
-
-async def add_document_to_virtual_structure(
-    workspace_name: str, document_name: str, virtual_path: str
-) -> Message:
-    """TODO function docstring"""
-
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}",
-        )
-
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    value = {"name": document_name, "type": "document", "virtual_path": virtual_path}
-
-    for element in config_data["virtual_structure"]:
-        if element["name"] == document_name and element["type"] == "document":
-            element["virtual_path"] = virtual_path
-            break
-    else:
-        config_data["virtual_structure"].append(value)
-
-    with open(path, "w") as config_file:
-        json.dump(config_data, config_file, indent=4)
-
-    return Message(
-        status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully",
-    )
-
-
-def clear_directory(path: Path):
-    """TODO function docstring"""
-
-    for child in path.glob("*"):
-        if child.is_file():
-            child.unlink()
-        else:
-            clear_directory(child)
-    path.rmdir()
 
 
 @router.post("/{workspace_name}/new_folder/{folder_name}")
@@ -78,31 +34,8 @@ async def add_folder_to_virtual_structure(
             + "numbers, and symbols - or _ ",
         )
 
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}",
-        )
-
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    value = {"name": folder_name, "type": "folder", "virtual_path": virtual_path}
-
-    for element in config_data["virtual_structure"]:
-        if element["name"] == folder_name and element["type"] == "folder":
-            element["virtual_path"] = virtual_path
-            break
-    else:
-        config_data["virtual_structure"].append(value)
-
-    with open(path, "w") as config_file:
-        json.dump(config_data, config_file, indent=4)
-
-    return Message(
-        status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully",
+    return workspace_db.add_to_virtual_structure(
+        workspace_name, folder_name, "folder", virtual_path
     )
 
 
@@ -112,26 +45,8 @@ async def remove_folder_from_virtual_structure(
 ) -> Message:
     """TODO function docstring"""
 
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}",
-        )
-
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    for element in config_data["virtual_structure"]:
-        if element["name"] == folder_name and element["type"] == "folder":
-            config_data["virtual_structure"].remove(element)
-
-    with open(path, "w") as config_file:
-        json.dump(config_data, config_file, indent=4)
-
-    return Message(
-        status=MsgStatus.INFO,
-        detail=f"<<{workspace_name}>> virtual structure updated successfully",
+    return workspace_db.remove_from_virtual_structure(
+        workspace_name, folder_name, "folder"
     )
 
 
@@ -179,18 +94,9 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
         HTTPException [404]: if the config file of a workspace cannot be found
     """
 
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}",
-        )
-
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    virtual_structure = config_data["virtual_structure"]
-
+    virtual_structure = workspace_db.get_workspace_data(workspace_name)[
+        "virtual_structure"
+    ]
     nodes = []
 
     for element in virtual_structure:
@@ -236,22 +142,12 @@ async def get_workspace_tree_structure(workspace_name: str) -> json:
 async def get_workspace_raw_structure(workspace_name: str) -> json:
     """TODO function docstring"""
 
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    if not path.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't find config file at {path.absolute()}",
-        )
-
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    return config_data["virtual_structure"]
+    return workspace_db.get_workspace_data(workspace_name)["virtual_structure"]
 
 
 @router.post("/new/{workspace_name}", response_model=Message, status_code=201)
 async def create_new_workspace(
-    workspace_name: str, private: bool, creator: str = Depends(get_current_user)
+    workspace_name: str, public: bool, creator: str = Depends(get_current_user)
 ) -> Message:
     """
     Create a new workspace and its subdirectories
@@ -277,7 +173,9 @@ async def create_new_workspace(
             + "numbers, and symbols - or _ ",
         )
 
-    path = files.get_workspace_path() / workspace_name
+    path = (
+        Path(".") / Directory.DATA.value / Directory.WORKSPACES.value / workspace_name
+    )
 
     if path.exists():
         raise HTTPException(
@@ -286,31 +184,10 @@ async def create_new_workspace(
         )
 
     path.mkdir()
-    (path / files.DOCUMENTS_DIR).mkdir()
-
-    info_data = {
-        "name": workspace_name,
-        "private": private,
-        "creator": creator["username"],
-        "creation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    }
-
-    with open(path / INFO_FILE, "w") as info_file:
-        json.dump(info_data, info_file, indent=4)
-
-    config_data = {"permissions": [], "virtual_structure": []}
-
-    with open(path / CONFIG_FILE, "w") as config_file:
-        json.dump(config_data, config_file, indent=4)
 
     user_db.add_active_workspace(creator["username"], workspace_name)
 
-    return Message(
-        status=MsgStatus.INFO,
-        detail="Workspace created successfully",
-        values={"workspace_name": workspace_name},
-    )
+    return workspace_db.add_workspace(workspace_name, creator["username"], public)
 
 
 @router.post("/remove/{workspace_name}", response_model=Message, status_code=200)
@@ -319,25 +196,27 @@ async def remove_workspace(
 ) -> Message:
     """TODO function docstring"""
 
-    path = files.get_workspace_path(workspace_name)
+    path = (
+        Path(".") / Directory.DATA.value / Directory.WORKSPACES.value / workspace_name
+    )
 
-    with open(path / INFO_FILE, "r") as info_file:
-        info_data = json.load(info_file)
-
-    if user["username"] != info_data["creator"]:
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
+    if user["username"] != workspace_data["creator"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Only creator of the workspace - {info_data['creator']}, can delete it",
+            detail=f"Only creator of the workspace - {workspace_data['creator']}, can delete it",
         )
 
     clear_directory(path)
     user_db.remove_active_workspace(user["username"], workspace_name)
 
-    return Message(status=MsgStatus.INFO, detail="Workspace removed successfully")
+    return workspace_db.remove_workspace(workspace_name)
 
 
 @router.post(
-    "/{workspace_name}/new_document/{document_name}", response_model=Message, status_code=201
+    "/{workspace_name}/new_document/{document_name}",
+    response_model=Message,
+    status_code=201,
 )
 async def create_new_document(
     workspace_name: str,
@@ -370,7 +249,13 @@ async def create_new_document(
             + "numbers, and symbols - or _ ",
         )
 
-    path = files.get_document_path(workspace_name) / document_name
+    path = (
+        Path(".")
+        / Directory.DATA.value
+        / Directory.WORKSPACES.value
+        / workspace_name
+        / document_name
+    )
 
     if path.exists():
         raise HTTPException(
@@ -379,14 +264,16 @@ async def create_new_document(
         )
 
     path.mkdir()
-    (path / files.ATTACHMENTS_DIR).mkdir()
-    (path / files.IMAGES_DIR).mkdir()
+    (path / Directory.IMAGES.value).mkdir()
+    (path / Directory.ATTACHMENTS.value).mkdir()
 
     empty_document = [{"type": "paragraph", "children": [{"text": " "}]}]
     with open(path / DOCUMENT_FILE, "w") as document_file:
         json.dump(empty_document, document_file, indent=4)
 
-    await add_document_to_virtual_structure(workspace_name, document_name, virtual_path)
+    workspace_db.add_to_virtual_structure(
+        workspace_name, document_name, "document", virtual_path
+    )
 
     return Message(
         status=MsgStatus.INFO,
@@ -396,36 +283,74 @@ async def create_new_document(
 
 
 @router.post(
-    "/{workspace_name}/remove_document/{document_name}", response_model=Message, status_code=200
+    "/{workspace_name}/remove_document/{document_name}",
+    response_model=Message,
+    status_code=200,
 )
 async def remove_document(
     workspace_name: str, document_name: str, user: str = Depends(get_current_user)
 ) -> Message:
     """TODO function docstring"""
 
-    path = files.get_workspace_path(workspace_name)
+    path = get_document_path(workspace_name, document_name)
 
-    with open(path / INFO_FILE, "r") as info_file:
-        info_data = json.load(info_file)
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
 
-    if user["username"] != info_data["creator"]:
+    if user["username"] != workspace_data["creator"]:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Only creator of the workspace can delete it",
         )
 
-    path = files.get_workspace_path(workspace_name) / CONFIG_FILE
-    with open(path, "r") as config_file:
-        config_data = json.load(config_file)
-
-    for document in config_data["virtual_structure"]:
-        if document["name"] == document_name:
-            config_data["virtual_structure"].remove(document)
-
-    with open(path, "w") as config_file:
-        json.dump(config_data, config_file, indent=4)
-
-    path = files.get_document_path(workspace_name, document_name)
+    workspace_db.remove_from_virtual_structure(
+        workspace_name, document_name, "document"
+    )
     clear_directory(path)
 
     return Message(status=MsgStatus.INFO, detail="Document removed successfully")
+
+
+@router.post("/{workspace_name}/invite_user")
+async def invite_user(
+    workspace_name: str,
+    invited_user: str,
+    inviting_user: str = Depends(get_current_user),
+) -> Message:
+    """TODO function docstring"""
+
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
+    if inviting_user["username"] != workspace_data["creator"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Only creator of the workspace can invite users",
+        )
+
+    workspace_db.change_user_permissions(
+        workspace_name, invited_user, PermissionType.OWNER
+    )
+
+    user_db.add_active_workspace(invited_user, workspace_name)
+
+    return Message(status=MsgStatus.INFO, detail="User invited successfully")
+
+
+@router.post("/{workspace_name}/remove_user")
+async def remove_user(
+    workspace_name: str,
+    removed_user: str,
+    removing_user: str = Depends(get_current_user),
+) -> Message:
+    """TODO function docstring"""
+
+    workspace_data = workspace_db.get_workspace_data(workspace_name)
+    if removing_user["username"] != workspace_data["creator"]:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Only creator of the workspace can remove users",
+        )
+
+    workspace_db.remove_user_from_workspace(workspace_name, removed_user)
+
+    user_db.remove_active_workspace(removed_user, workspace_name)
+
+    return Message(status=MsgStatus.INFO, detail="User removed successfully")

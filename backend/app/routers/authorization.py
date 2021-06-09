@@ -152,11 +152,3 @@ async def create_user(form: OAuth2PasswordRequestForm = Depends()):
         )
 
     return user_db.add_user(form.username, hash_password(form.password), email)
-
-
-@router.get("/me", response_model=dict)
-async def get_user(user: dict = Depends(get_current_user)):
-    """
-    TODO function docstring
-    """
-    return user

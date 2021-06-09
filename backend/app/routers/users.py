@@ -1,16 +1,22 @@
 """
 TODO module docstring
 """
-import json
-# from pathlib import Path
+
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 
 from app.routers.authorization import get_current_user, hash_password
-from app.routers import files
 from app.utils.message import Message, MsgStatus
 from app.utils.user_db import UserDB
+from app.routers.files import (
+    Directory,
+    random_filename_keep_ext,
+    upload_file,
+    remove_file,
+    get_profile_picture_path,
+)
 
 router = APIRouter(prefix="/api/user", tags=["User Management"])
 user_db = UserDB()
@@ -39,18 +45,26 @@ async def change_user_profile_picture(
 ):
     """TODO function docstring"""
 
-    old_filename = user["profile_picture"] if user["profile_picture"] is not None else ""
-    new_filename = files.random_filename_with_ext(new_picture.filename)
+    old_filename = (
+        user["profile_picture"] if user["profile_picture"] is not None else ""
+    )
+    new_filename = random_filename_keep_ext(new_picture.filename)
 
-    old_path = files.get_profile_picture_path(old_filename)
-    new_path = files.get_profile_picture_path() / new_filename
+    old_path = get_profile_picture_path(old_filename)
+    new_path = (
+        Path(".")
+        / Directory.DATA.value
+        / Directory.USERS.value
+        / Directory.PROFILE_PICTURES.value
+        / new_filename
+    )
 
     user_db.edit_user_data(user["username"], "profile_picture", new_filename)
 
     if old_filename != "":
-        await files.remove_file(old_path)
+        await remove_file(old_path)
 
-    await files.upload_file(new_picture, new_path)
+    await upload_file(new_picture, new_path)
 
 
 @router.get("/profile_picture")
@@ -58,7 +72,7 @@ async def get_user_profile_picture(user: dict = Depends(get_current_user)):
     """TODO function docstring"""
 
     filename = user["profile_picture"]
-    path = files.get_profile_picture_path(filename)
+    path = get_profile_picture_path(filename)
 
     return FileResponse(path.absolute())
 
@@ -67,13 +81,18 @@ async def get_user_profile_picture(user: dict = Depends(get_current_user)):
 async def get_all_user_workspaces(user: dict = Depends(get_current_user)) -> list:
     """TODO function docstring"""
 
-    active_workspaces = []
-    for workspace_name in user["active_workspaces"]:
-        path = files.get_workspace_path() / workspace_name / "info.json"
+    result = []
+    active_workspaces = user_db.get_user_data(user["username"])["active_workspaces"]
 
-        with open(path, "r") as info_file:
-            info_data = json.load(info_file)
+    for workspace_name in active_workspaces:
+        result.append({"name": workspace_name, "last_updated": "TODO"})
 
-        active_workspaces.append({"name": workspace_name, "last_updated": info_data["last_updated"]})
+    return result
 
-    return active_workspaces
+
+@router.get("/me", response_model=dict)
+async def get_user(user: dict = Depends(get_current_user)):
+    """
+    TODO function docstring
+    """
+    return user
