@@ -32,18 +32,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     settingsDialog: {
-      minWidth: "800px"
+      minWidth: '800px',
     },
 
     buttonAddOwner: {
       width: 150,
       marginTop: -680,
       marginLeft: 170,
-
-
     },
-
-
   })
 );
 
