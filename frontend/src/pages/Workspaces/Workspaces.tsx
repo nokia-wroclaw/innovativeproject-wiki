@@ -84,7 +84,8 @@ export default function DataTable() {
   const { selectedWorkspace, setSelectedWorkspace } = useContext(AppContext);
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
-
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [currentSelectedRow, setCurrentSelectedRow] = useState('');
   // states for workspace settings
   const [openSettings, setOpenSettings] = useState(false);
   const [currentWorkSettings, setCurrentWorkSettings] = useState(''); // name of workspace that has current settings dialog
@@ -105,6 +106,7 @@ export default function DataTable() {
   const handleClose = () => {
     setOpen(false);
     setOpenSettings(false);
+    setOpenDeleteConfirmation(false);
     textFieldClear();
     setWorkspaceNameErrorMsg('');
   };
@@ -132,6 +134,7 @@ export default function DataTable() {
           console.error('Error:', error);
         });
     }
+    handleClose();
   };
 
   const changeWorkspaceSettings = () => {};
@@ -395,7 +398,8 @@ export default function DataTable() {
           onCellClick={(params, event) => {
             if (params.field === '__check__') return;
             if (params.field === 'z') {
-              removeWorkspace(params.row.id);
+              setCurrentSelectedRow(params.row.id);
+              setOpenDeleteConfirmation(true);
               return;
             }
             if (params.field === 'settingsField') {
@@ -409,7 +413,29 @@ export default function DataTable() {
           }}
         />
       </div>
+{/* Dialog window for deleting workspaces confirmationg */}
+      <div className={classes.add_dialog}>
+        <Dialog
+          open={openDeleteConfirmation}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Deleting Workspace</DialogTitle>
+          <DialogContent>
+          Are you sure?
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => removeWorkspace(currentSelectedRow)} color="primary">
+              Delete
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
 
+      
       {/* Dialog window for workspace settings */}
       <Dialog
         open={openSettings}
@@ -458,6 +484,7 @@ export default function DataTable() {
               onCellClick={(params, event) => {
                 if (params.field === '__check__') return;
                 if (params.field === 'deleteField') {
+                  setOpenDeleteConfirmation(true);
                   removeOwner(params.row.id);
                 }
               }}
