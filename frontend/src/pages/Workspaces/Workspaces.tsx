@@ -26,7 +26,7 @@ const columns: GridColDef[] = [
 
   {
     field: 'lastUpdate',
-    headerName: 'Last Update',
+    headerName: 'Creation Date', // normally it would be 'last updated' - workaround
     width: 260,
     disableClickEventBubbling: true,
   },
