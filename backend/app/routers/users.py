@@ -90,14 +90,16 @@ async def get_all_user_workspaces(user: dict = Depends(get_current_user)) -> lis
         workspace_data = workspace_db.get_workspace_data(workspace_name)
         # last_updated_data = json.loads(workspace_data["last_updated"])
         last_updated_data = workspace_data["last_updated"]
+
         if last_updated_data['month'] <= 9:
             last_updated_month = f"0{str(last_updated_data['month'])}"
         else:
             last_updated_month = str(last_updated_data['month'])
+
         if last_updated_data['day'] <= 9:
             last_updated_day = f"0{str(last_updated_data['day'])}"
         else:
-            last_updated_day = str(last_updated_day['month'])
+            last_updated_day = str(last_updated_data['day'])
 
         last_updated = f"{str(last_updated_data['year'])}-{last_updated_month}-{last_updated_day}"
         result.append({"name": workspace_name, "last_updated": last_updated})
