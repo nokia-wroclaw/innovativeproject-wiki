@@ -131,7 +131,8 @@ async def clear_directory(path: Path):
         if child.is_file():
             child.unlink()
         else:
-            clear_directory(child)
+            await clear_directory(child)
+
     path.rmdir()
 
 

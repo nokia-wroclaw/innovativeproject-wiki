@@ -305,7 +305,8 @@ async def remove_document(
     workspace_db.remove_from_virtual_structure(
         workspace_name, document_name, "document"
     )
-    clear_directory(path)
+
+    await clear_directory(path)
 
     return Message(status=MsgStatus.INFO, detail="Document removed successfully")
 
