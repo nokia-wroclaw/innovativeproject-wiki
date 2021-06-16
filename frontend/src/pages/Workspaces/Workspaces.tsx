@@ -6,6 +6,7 @@ import {
   DialogTitle,
   IconButton,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -304,6 +305,10 @@ export default function DataTable() {
         .then((data) => {
           console.log(data);
           fetchWorkspaceOwners(currentWorkSettings);
+          setOwnerToAdd('');
+          if (data.status === 'Error')
+            // eslint-disable-next-line no-alert
+            window.alert(data.detail);
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -444,7 +449,18 @@ export default function DataTable() {
         // className={classes.settingsDialog}
       >
         <DialogTitle id="form-dialog-title">
-          Workspace settings - {currentWorkSettings} by {currentWorkCreator}
+          <div>
+            <div>
+              <Typography variant="h6">
+                Workspace settings - {currentWorkSettings}
+              </Typography>
+            </div>
+            <div>
+              <Typography variant="body1" color="textSecondary">
+                Created by {currentWorkCreator}
+              </Typography>
+            </div>
+          </div>
         </DialogTitle>
         <DialogContent>
           {/* Text field for username of additional owner */}
@@ -454,7 +470,7 @@ export default function DataTable() {
             margin="dense"
             id="name"
             label="Username"
-            // value={oldPassword}
+            value={ownerToAdd}
             fullWidth
             className={classes.settingsWorkspacePopUp}
             onChange={({ target: { value } }) => {
@@ -473,7 +489,7 @@ export default function DataTable() {
           </div>
 
           {/* Table for workspace owners */}
-          <div>
+          <div style={{ marginTop: 20 }}>
             <DataGrid
               rows={currentWorkOwners}
               columns={columnsSettings}

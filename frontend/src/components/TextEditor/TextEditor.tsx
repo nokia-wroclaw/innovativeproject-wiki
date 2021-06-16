@@ -447,7 +447,7 @@ const Image = ({ attributes, children, element }: RenderElementProps) => {
   const focused = useFocused();
   return (
     <div {...attributes}>
-      <div contentEditable={true}>
+      <div contentEditable={false}>
         <img
           src={element.url as string}
           alt="a"
