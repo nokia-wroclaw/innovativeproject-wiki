@@ -187,7 +187,9 @@ const Sidebar = (props: any) => {
   };
 
   const removeNode = (item: Node, list: Node[]) => {
-    isFolder ? removeFolder(item.text) : removeItem(item.text);
+    console.log(item);
+    isFolder ? removeFolder(item.text) : removeItem(item.text); // !
+    console.log(isFolder);
   };
 
   const handleClickOpen = () => {
