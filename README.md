@@ -6,13 +6,13 @@
     <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#technologies">Technologies</a></li>
-    <li>
+    <!-- <li>
       <a href="#getting-started">Getting started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
-    </li>
+    </li> -->
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
   </ol>
@@ -86,7 +86,7 @@ Main functionalities of the application:
 
 
 <!-- START -->
-## Getting Started
+<!-- ## Getting Started
 
 TODO
 
@@ -96,7 +96,7 @@ TODO
 
 ### Installation
 
-TODO
+TODO -->
 
 
 <!-- AUTHORS -->
