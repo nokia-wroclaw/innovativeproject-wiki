@@ -306,8 +306,6 @@ async def remove_document(
         workspace_name, document_name, "document"
     )
 
-    print(path)
-
     await clear_directory(path)
 
     return Message(status=MsgStatus.INFO, detail="Document removed successfully")

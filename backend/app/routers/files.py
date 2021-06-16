@@ -128,9 +128,6 @@ async def clear_directory(path: Path):
     """TODO function docstring"""
 
     for child in path.glob("*"):
-
-        print(f"child {str(child)}")
-
         if child.is_file():
             child.unlink()
         else:
