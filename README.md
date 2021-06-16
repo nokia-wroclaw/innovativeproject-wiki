@@ -42,7 +42,7 @@ The project is available to everyone at [https://innodocs.tech](https://innodocs
 Main functionalities of the application:
 * create a workspace with multiple folders and files
 <div style="text-align:center">
-<img src="images/create-workspace.PNG" alt="Workspace" width="500" height="290" style="border: 1px solid black">
+<img src="images/Create-workspace.PNG" alt="Workspace" width="500" height="290" style="border: 1px solid black">
 </div>
 
 * create and edit a document
@@ -53,13 +53,13 @@ Main functionalities of the application:
 </div>
 
 
-* export a document to pdf file
 * publish a workspace for selected users to access
 
+<div style="text-align:center">
+<img src="images/Add_new_owner.PNG" alt="Add_new_owner" width="550" height="290" style="border: 1px solid black">
+</div>
 
-
-
-_For more examples, please refer to the [Documentation](link)_
+* export a document to pdf file
 
 
 
