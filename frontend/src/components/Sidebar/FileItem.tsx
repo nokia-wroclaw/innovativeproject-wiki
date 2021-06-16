@@ -58,13 +58,13 @@ const FileItem: React.FC<FileItemProps> = (props) => {
 
   const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
+    props.setSelectedNode(props.item);
     if (state.mouseY == null) {
       setState({
         mouseX: event.clientX - 2,
         mouseY: event.clientY - 4,
       });
     } else handleClose();
-    props.setSelectedNode(props.item);
   };
 
   const handleEnterPress = (event: {
