@@ -76,6 +76,8 @@ const TextEditor = (props: any) => {
   );
   const selectedWorkspace = props.workspaceName;
 
+    
+
   const classes = useStyles();
 
   const initialValue = [
@@ -86,6 +88,8 @@ const TextEditor = (props: any) => {
   ] as Descendant[];
 
   const [value, setValue] = useState<Descendant[]>(initialValue);
+  const [firstPost, setFirstPost] = useState(true);
+
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const serialize = (node: any) => {
@@ -171,6 +175,13 @@ const TextEditor = (props: any) => {
         editor={editor}
         value={value}
         onChange={(newValue) => {
+
+          if(firstPost)
+          {
+            setFirstPost(false);
+            return;
+          }
+
           setValue(newValue);
           const content = JSON.stringify(newValue);
 
