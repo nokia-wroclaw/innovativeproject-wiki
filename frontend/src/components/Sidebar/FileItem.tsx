@@ -27,7 +27,7 @@ type FileItemProps = {
   setSelectedNode: (selectedNode: Node) => void;
   itemList: Node[];
   addNode: (item: Node, parentItem: Node, list: Node[]) => void;
-  removeNode: (item: Node, list: Node[]) => void;
+  removeNode: (item: Node) => void;
   setItemList: (itemList: Node[]) => void;
   setIsFolder: (isFolder: boolean) => void;
   workspaceName: string;
@@ -59,6 +59,10 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const handleRightClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     props.setSelectedNode(props.item);
+
+    if (props.item.children) props.setIsFolder(true);
+    else props.setIsFolder(false);
+
     if (state.mouseY == null) {
       setState({
         mouseX: event.clientX - 2,
@@ -116,7 +120,7 @@ const FileItem: React.FC<FileItemProps> = (props) => {
   const handleRemoveNode = () => {
     handleClose();
     const newItemList = JSON.parse(JSON.stringify(props.itemList));
-    props.removeNode(props.item, newItemList);
+    props.removeNode(props.item);
     props.setItemList(newItemList);
   };
 
@@ -181,6 +185,9 @@ const FileItem: React.FC<FileItemProps> = (props) => {
           selected={props.selectedNode?.text === props.item.text}
           onClick={(event) => {
             props.setSelectedNode(props.item);
+            console.log(props.item);
+            if (props.item.children) props.setIsFolder(true);
+            else props.setIsFolder(false);
             if (open) {
               props.fetchFiles();
             }

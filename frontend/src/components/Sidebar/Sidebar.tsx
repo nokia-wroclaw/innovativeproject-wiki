@@ -186,7 +186,7 @@ const Sidebar = (props: any) => {
     isFolder ? postFolder(item.text, fullPath) : postItem(item.text, fullPath);
   };
 
-  const removeNode = (item: Node, list: Node[]) => {
+  const removeNode = (item: Node) => {
     console.log(item);
     isFolder ? removeFolder(item.text) : removeItem(item.text); // !
     console.log(isFolder);
@@ -255,11 +255,10 @@ const Sidebar = (props: any) => {
               disableSticky={true}
               className={classes.listName}
             >
-              
               <IconButton to="/workspaces" component={Link}>
-                  <ArrowBackOutlinedIcon fontSize="small" />
-              </IconButton>  
-              
+                <ArrowBackOutlinedIcon fontSize="small" />
+              </IconButton>
+
               <Typography variant="h6">{selectedWorkspace}</Typography>
               <div>
                 <IconButton
