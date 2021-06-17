@@ -86,6 +86,7 @@ export default function DataTable() {
   const [typedWorkspaceName, setTypedWorkspaceName] = useState('');
   const [workspaceNameErrorMsg, setWorkspaceNameErrorMsg] = useState('');
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [openDeleteOwnerConfirmation, setOpenDeleteOwnerConfirmation] = useState(false);
   const [currentSelectedRow, setCurrentSelectedRow] = useState('');
   // states for workspace settings
   const [openSettings, setOpenSettings] = useState(false);
@@ -108,6 +109,7 @@ export default function DataTable() {
     setOpen(false);
     setOpenSettings(false);
     setOpenDeleteConfirmation(false);
+    setOpenDeleteOwnerConfirmation(false);
     textFieldClear();
     setWorkspaceNameErrorMsg('');
   };
@@ -338,6 +340,7 @@ export default function DataTable() {
           console.error('Error:', error);
         });
     }
+    handleClose();
   };
 
   useEffect(() => {
@@ -425,7 +428,7 @@ export default function DataTable() {
           onClose={handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Deleting Workspace</DialogTitle>
+          <DialogTitle id="form-dialog-title">Deleting a Workspace</DialogTitle>
           <DialogContent>
           Are you sure?
           </DialogContent>
@@ -500,8 +503,8 @@ export default function DataTable() {
               onCellClick={(params, event) => {
                 if (params.field === '__check__') return;
                 if (params.field === 'deleteField') {
-                  setOpenDeleteConfirmation(true);
-                  removeOwner(params.row.id);
+                  setCurrentSelectedRow(params.row.id);
+                  setOpenDeleteOwnerConfirmation(true);
                 }
               }}
             />
@@ -516,6 +519,28 @@ export default function DataTable() {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      <div className={classes.add_dialog}>
+        <Dialog
+          open={openDeleteOwnerConfirmation}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Deleting an Owner</DialogTitle>
+          <DialogContent>
+          Are you sure?
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => removeOwner(currentSelectedRow)} color="primary">
+              Delete
+            </Button>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+
     </div>
   );
 }
